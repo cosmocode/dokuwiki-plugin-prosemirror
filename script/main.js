@@ -1,9 +1,10 @@
 const {EditorState} = require("prosemirror-state");
 const {MenuBarEditorView} = require("prosemirror-menu");
-const {DOMParser, Schema} = require("prosemirror-model");
+const {DOMParser, Schema, Node} = require("prosemirror-model");
 const {schema: baseSchema} = require("prosemirror-schema-basic");
 const {addListNodes} = require("prosemirror-schema-list");
 const {exampleSetup} = require("prosemirror-example-setup");
+
 
 const schema = new Schema({
     nodes: addListNodes(baseSchema.nodeSpec, "paragraph block*", "block"),
@@ -11,9 +12,13 @@ const schema = new Schema({
 });
 
 
+// initial data
+let json = document.getElementById('json').value;
+
 
 let view = new MenuBarEditorView(document.querySelector("#editor"), {
     state: EditorState.create({
+        doc: Node.fromJSON(schema, JSON.parse(json)),
         schema: schema,
         plugins: exampleSetup({schema})
     }),
@@ -25,3 +30,5 @@ let view = new MenuBarEditorView(document.querySelector("#editor"), {
     }
 });
 window.view = view.editor;
+
+
