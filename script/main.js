@@ -23,10 +23,10 @@ let view = new MenuBarEditorView(document.querySelector("#editor"), {
         plugins: exampleSetup({schema})
     }),
     onAction(action) {
-
         view.updateState(view.editor.state.applyAction(action));
-        document.getElementById('json').value =  JSON.stringify(view.editor.state.doc.toJSON());
 
+        //current state as json in text area
+        document.getElementById('json').value =  JSON.stringify(view.editor.state.doc.toJSON());
     }
 });
 window.view = view.editor;
