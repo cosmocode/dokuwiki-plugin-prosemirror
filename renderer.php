@@ -70,12 +70,12 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function emphasis_open() {
-        $this->marks['emphasis'] = 1;
+        $this->marks['em'] = 1;
     }
 
     /** @inheritDoc */
     function emphasis_close() {
-        if(isset($this->marks['emphasis'])) unset($this->marks['emphasis']);
+        if(isset($this->marks['em'])) unset($this->marks['em']);
     }
 
     /** @inheritDoc */
