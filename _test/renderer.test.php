@@ -14,7 +14,7 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
         $doc = p_render('prosemirror', $instructions, $info);
 
         $expect = '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"bold","marks":[{"type":"strong"}]}]}]}';
-        $this->assertJsonStringEqualsJsonString($expect, json_encode($doc));
+        $this->assertJsonStringEqualsJsonString($expect, $doc);
     }
 
 }

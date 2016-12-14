@@ -16,8 +16,8 @@ require_once DOKU_INC.'inc/parser/renderer.php';
 
 class renderer_plugin_prosemirror extends Doku_Renderer {
 
-    /** @var Node the document node*/
-    public $doc;
+    /** @var Node the document node,*/
+    public $docnode;
 
     /** @var  Node the node we're currently appending to */
     protected $current;
@@ -36,20 +36,25 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function document_start() {
-        $this->doc = new Node('doc');
-        $this->current = $this->doc;
+        $this->docnode = new Node('doc');
+        $this->current = $this->docnode;
+    }
+
+    /** @inheritDoc */
+    function document_end() {
+        $this->doc = json_encode($this->docnode, JSON_PRETTY_PRINT);
     }
 
     /** @inheritDoc */
     function p_open() {
         $node = new Node('paragraph');
-        $this->doc->addChild($node);
+        $this->docnode->addChild($node);
         $this->current = $node;
     }
 
     /** @inheritdoc */
     function p_close() {
-        $this->current = $this->doc;
+        $this->current = $this->docnode;
     }
 
 
