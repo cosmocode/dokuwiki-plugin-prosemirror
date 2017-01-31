@@ -23,5 +23,5 @@ $doc = p_cached_output(wikiFN('wiki:syntax'), 'prosemirror', 'wiki:syntax');
 echo $doc;
 ?></textarea>
 
-<script src="script.js"></script>
+<script src="load.js"></script>
 </body>
