@@ -13435,7 +13435,7 @@ let view = new MenuBarEditorView(document.querySelector("#editor"), {
         view.updateState(view.editor.state.applyAction(action));
 
         //current state as json in text area
-        document.getElementById('json').value =  JSON.stringify(view.editor.state.doc.toJSON());
+        document.getElementById('json').value =  JSON.stringify(view.editor.state.doc.toJSON(), null, 4);
     }
 });
 window.view = view.editor;

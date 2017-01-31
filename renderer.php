@@ -57,6 +57,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->current = $this->docnode;
     }
 
+    /** @inheritDoc */
+    function header($text, $level, $pos) {
+        $node = new Node('heading');
+        $node->attr('level', $level);
+
+        // FIXME we do not want a text node here, because we do not accept stuff within a headline
+        $tnode = new Node('text');
+        $tnode->setText($text);
+        $node->addChild($tnode);
+
+        $this->docnode->addChild($node);
+    }
 
     /** @inheritDoc */
     function strong_open() {
@@ -87,6 +99,25 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         foreach(array_keys($this->marks) as $mark) {
             $node->addMark(new Mark($mark));
         }
+        $this->current->addChild($node);
+    }
+
+    /**
+     * @inheritDoc
+     * @fixme this implementation is much too naive. we'll probably need our own node types for internal/external/interwiki and have more attributes
+     */
+    function internallink($link, $title = null) {
+        $title = $this->_simpleTitle($link);
+
+        $node = new Node('text');
+        $node->setText($title);
+
+        $mark = new Mark('link');
+        $mark->attr('href', $link);
+        $mark->attr('title', $link);
+
+        $node->addMark($mark);
+
         $this->current->addChild($node);
     }
 

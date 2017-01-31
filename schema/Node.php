@@ -21,6 +21,9 @@ class Node implements \JsonSerializable {
     /** @var Mark[] The marks (things like whether it is emphasized or part of a link) associated with this node */
     protected $marks = [];
 
+    /** @var array list of attributes  */
+    protected $attrs = [];
+
     /**
      * Node constructor.
      *
@@ -68,6 +71,24 @@ class Node implements \JsonSerializable {
     }
 
     /**
+     * @param string $key Attribute key to get or set
+     * @param null $value Attribute value to set, null to get
+     * @return $this|mixed Either the wanted value or the Node itself
+     */
+    public function attr($key, $value = null) {
+        if(is_null($value)) {
+            if(isset($this->attrs[$key])) {
+                return $this->attrs[$key];
+            } else {
+                return null;
+            }
+        }
+
+        $this->attrs[$key] = $value;
+        return $this;
+    }
+
+    /**
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed data which can be serialized by <b>json_encode</b>,
@@ -85,6 +106,9 @@ class Node implements \JsonSerializable {
         }
         if($this->marks) {
             $json['marks'] = $this->marks;
+        }
+        if($this->attrs) {
+            $json['attrs'] = $this->attrs;
         }
 
         return $json;
