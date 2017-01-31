@@ -13432,13 +13432,12 @@ const schema = new Schema({
 
 
 
-// initial data
-let json = document.getElementById('json').value;
-
+// textarea holds our intial data and will be updated on editor changes
+const json = document.getElementById('json');
 
 let view = new MenuBarEditorView(document.querySelector("#editor"), {
     state: EditorState.create({
-        doc: Node.fromJSON(schema, JSON.parse(json)),
+        doc: Node.fromJSON(schema, JSON.parse(json.value)),
         schema: schema,
         plugins: exampleSetup({schema})
     }),
@@ -13446,7 +13445,7 @@ let view = new MenuBarEditorView(document.querySelector("#editor"), {
         view.updateState(view.editor.state.applyAction(action));
 
         //current state as json in text area
-        document.getElementById('json').value =  JSON.stringify(view.editor.state.doc.toJSON(), null, 4);
+        json.value =  JSON.stringify(view.editor.state.doc.toJSON(), null, 4);
     }
 });
 window.view = view.editor;
