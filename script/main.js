@@ -10,9 +10,9 @@ const nodes = addListNodes(baseSchema.nodeSpec, "paragraph block*", "block");
 
 // heading shall only contain unmarked text
 const heading = nodes.get('heading');
-heading.content = 'text{0,1}'; // needed to set something as heading before writing the text
+heading.content = 'text*';
 heading.defining = false; // unsure if this does anything
-nodes.update('heading', heading);
+
 
 const schema = new Schema({
     nodes: nodes,
