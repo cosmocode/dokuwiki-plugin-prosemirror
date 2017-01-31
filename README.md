@@ -20,12 +20,12 @@ Use npm to install the dependecies
 
 Create a new loader script:
 
-    ./node_modules/.bin/browserify script/main.js -o load.js
+    ./node_modules/.bin/browserify script/main.js -o load.js -d
 
 Automatically recreate the loader during development:
 
 
-    ./node_modules/.bin/watchify script/main.js -o load.js
+    ./node_modules/.bin/watchify script/main.js -o load.js -v -d
 
 ## Copyright
 Copyright (C) Andreas Gohr <gohr@cosmocode.de>
