@@ -157,6 +157,137 @@
 }));
 
 },{}],2:[function(require,module,exports){
+// ::- Persistent data structure representing an ordered mapping from
+// strings to values, with some convenient update methods.
+function OrderedMap(content) {
+  this.content = content
+}
+
+OrderedMap.prototype = {
+  constructor: OrderedMap,
+
+  find: function(key) {
+    for (var i = 0; i < this.content.length; i += 2)
+      if (this.content[i] === key) return i
+    return -1
+  },
+
+  // :: (string) → ?any
+  // Retrieve the value stored under `key`, or return undefined when
+  // no such key exists.
+  get: function(key) {
+    var found = this.find(key)
+    return found == -1 ? undefined : this.content[found + 1]
+  },
+
+  // :: (string, any, ?string) → OrderedMap
+  // Create a new map by replacing the value of `key` with a new
+  // value, or adding a binding to the end of the map. If `newKey` is
+  // given, the key of the binding will be replaced with that key.
+  update: function(key, value, newKey) {
+    var self = newKey && newKey != key ? this.remove(newKey) : this
+    var found = self.find(key), content = self.content.slice()
+    if (found == -1) {
+      content.push(newKey || key, value)
+    } else {
+      content[found + 1] = value
+      if (newKey) content[found] = newKey
+    }
+    return new OrderedMap(content)
+  },
+
+  // :: (string) → OrderedMap
+  // Return a map with the given key removed, if it existed.
+  remove: function(key) {
+    var found = this.find(key)
+    if (found == -1) return this
+    var content = this.content.slice()
+    content.splice(found, 2)
+    return new OrderedMap(content)
+  },
+
+  // :: (string, any) → OrderedMap
+  // Add a new key to the start of the map.
+  addToStart: function(key, value) {
+    return new OrderedMap([key, value].concat(this.remove(key).content))
+  },
+
+  // :: (string, any) → OrderedMap
+  // Add a new key to the end of the map.
+  addToEnd: function(key, value) {
+    var content = this.remove(key).content.slice()
+    content.push(key, value)
+    return new OrderedMap(content)
+  },
+
+  // :: (string, string, any) → OrderedMap
+  // Add a key after the given key. If `place` is not found, the new
+  // key is added to the end.
+  addBefore: function(place, key, value) {
+    var without = this.remove(key), content = without.content.slice()
+    var found = without.find(place)
+    content.splice(found == -1 ? content.length : found, 0, key, value)
+    return new OrderedMap(content)
+  },
+
+  // :: ((key: string, value: any))
+  // Call the given function for each key/value pair in the map, in
+  // order.
+  forEach: function(f) {
+    for (var i = 0; i < this.content.length; i += 2)
+      f(this.content[i], this.content[i + 1])
+  },
+
+  // :: (union<Object, OrderedMap>) → OrderedMap
+  // Create a new map by prepending the keys in this map that don't
+  // appear in `map` before the keys in `map`.
+  prepend: function(map) {
+    map = OrderedMap.from(map)
+    if (!map.size) return this
+    return new OrderedMap(map.content.concat(this.subtract(map).content))
+  },
+
+  // :: (union<Object, OrderedMap>) → OrderedMap
+  // Create a new map by appending the keys in this map that don't
+  // appear in `map` after the keys in `map`.
+  append: function(map) {
+    map = OrderedMap.from(map)
+    if (!map.size) return this
+    return new OrderedMap(this.subtract(map).content.concat(map.content))
+  },
+
+  // :: (union<Object, OrderedMap>) → OrderedMap
+  // Create a map containing all the keys in this map that don't
+  // appear in `map`.
+  subtract: function(map) {
+    var result = this
+    map = OrderedMap.from(map)
+    for (var i = 0; i < map.content.length; i += 2)
+      result = result.remove(map.content[i])
+    return result
+  },
+
+  // :: number
+  // The amount of keys in this map.
+  get size() {
+    return this.content.length >> 1
+  }
+}
+
+// :: (?union<Object, OrderedMap>) → OrderedMap
+// Return a map with the given content. If null, create an empty
+// map. If given an ordered map, return that map itself. If given an
+// object, create a map from the object's properties.
+OrderedMap.from = function(value) {
+  if (value instanceof OrderedMap) return value
+  var content = []
+  if (value) for (var prop in value) content.push(prop, value[prop])
+  return new OrderedMap(content)
+}
+
+module.exports = OrderedMap
+
+},{}],3:[function(require,module,exports){
 var ref = require("prosemirror-transform");
 var joinPoint = ref.joinPoint;
 var canJoin = ref.canJoin;
@@ -171,25 +302,32 @@ var ref$2 = require("prosemirror-state");
 var Selection = ref$2.Selection;
 var TextSelection = ref$2.TextSelection;
 var NodeSelection = ref$2.NodeSelection;
-var extendTransformAction = ref$2.extendTransformAction;
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // Delete the selection, if there is one.
-function deleteSelection(state, onAction) {
+function deleteSelection(state, dispatch) {
   if (state.selection.empty) { return false }
-  if (onAction) { onAction(state.tr.deleteSelection().scrollAction()) }
+  if (dispatch) {
+    var ref = state.selection;
+    var $from = ref.$from;
+    var $to = ref.$to;
+    var tr = state.tr.deleteSelection().scrollIntoView()
+    if ($from.sameParent($to) && $from.parent.isTextblock)
+      { tr.setStoredMarks($from.marks(true)) }
+    dispatch(tr)
+  }
   return true
 }
 exports.deleteSelection = deleteSelection
 
-// :: (EditorState, ?(action: Action), ?EditorView) → bool
+// :: (EditorState, ?(tr: Transaction), ?EditorView) → bool
 // If the selection is empty and at the start of a textblock, move
 // that block closer to the block before it, by lifting it out of its
 // parent or, if it has no parent it doesn't share with the node
 // before it, moving it into a parent of that node, or joining it with
 // that. Will use the view for accurate start-of-textblock detection
 // if given.
-function joinBackward(state, onAction, view) {
+function joinBackward(state, dispatch, view) {
   var ref = state.selection;
   var $head = ref.$head;
   var empty = ref.empty;
@@ -208,40 +346,40 @@ function joinBackward(state, onAction, view) {
   if (!before) {
     var range = $head.blockRange(), target = range && liftTarget(range)
     if (target == null) { return false }
-    if (onAction) { onAction(state.tr.lift(range, target).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.lift(range, target).scrollIntoView()) }
     return true
   }
 
   // If the node below has no content and the node above is
   // selectable, delete the node below and select the one above.
   if (before.isLeaf && NodeSelection.isSelectable(before) && $head.parent.content.size == 0) {
-    if (onAction) {
+    if (dispatch) {
       var tr = state.tr.delete(cut, cut + $head.parent.nodeSize)
       tr.setSelection(NodeSelection.create(tr.doc, cut - before.nodeSize))
-      onAction(tr.scrollAction())
+      dispatch(tr.scrollIntoView())
     }
     return true
   }
 
   // If the node doesn't allow children, delete it
   if (before.isLeaf) {
-    if (onAction) { onAction(state.tr.delete(cut - before.nodeSize, cut).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.delete(cut - before.nodeSize, cut).scrollIntoView()) }
     return true
   }
 
   // Apply the joining algorithm
-  return deleteBarrier(state, cut, onAction) || selectNextNode(state, cut, -1, onAction)
+  return deleteBarrier(state, cut, dispatch) || selectNextNode(state, cut, -1, dispatch)
 }
 exports.joinBackward = joinBackward
 
-// :: (EditorState, ?(action: Action), ?EditorView) → bool
+// :: (EditorState, ?(tr: Transaction), ?EditorView) → bool
 // If the selection is empty and the cursor is at the end of a
 // textblock, move the node after it closer to the node with the
 // cursor (lifting it out of parents that aren't shared, moving it
 // into parents of the cursor block, or joining the two when they are
 // siblings). Will use the view for accurate start-of-textblock
 // detection if given.
-function joinForward(state, onAction, view) {
+function joinForward(state, dispatch, view) {
   var ref = state.selection;
   var $head = ref.$head;
   var empty = ref.empty;
@@ -264,19 +402,19 @@ function joinForward(state, onAction, view) {
 
   // If the node doesn't allow children, delete it
   if (after.isLeaf) {
-    if (onAction) { onAction(state.tr.delete(cut, cut + after.nodeSize).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.delete(cut, cut + after.nodeSize).scrollIntoView()) }
     return true
   }
   // Apply the joining algorithm
-  return deleteBarrier(state, cut, onAction) || selectNextNode(state, cut, 1, onAction)
+  return deleteBarrier(state, cut, dispatch) || selectNextNode(state, cut, 1, dispatch)
 }
 exports.joinForward = joinForward
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // Join the selected block or, if there is a text selection, the
 // closest ancestor block of the selection that can be joined, with
 // the sibling above it.
-function joinUp(state, onAction) {
+function joinUp(state, dispatch) {
   var ref = state.selection;
   var node = ref.node;
   var from = ref.from;
@@ -288,83 +426,83 @@ function joinUp(state, onAction) {
     point = joinPoint(state.doc, from, -1)
     if (point == null) { return false }
   }
-  if (onAction) {
+  if (dispatch) {
     var tr = state.tr.join(point)
     if (state.selection.node) { tr.setSelection(NodeSelection.create(tr.doc, point - state.doc.resolve(point).nodeBefore.nodeSize)) }
-    onAction(tr.scrollAction())
+    dispatch(tr.scrollIntoView())
   }
   return true
 }
 exports.joinUp = joinUp
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // Join the selected block, or the closest ancestor of the selection
 // that can be joined, with the sibling after it.
-function joinDown(state, onAction) {
+function joinDown(state, dispatch) {
   var node = state.selection.node, nodeAt = state.selection.from
   var point = joinPointBelow(state)
   if (!point) { return false }
-  if (onAction) {
+  if (dispatch) {
     var tr = state.tr.join(point)
     if (node) { tr.setSelection(NodeSelection.create(tr.doc, nodeAt)) }
-    onAction(tr.scrollAction())
+    dispatch(tr.scrollIntoView())
   }
   return true
 }
 exports.joinDown = joinDown
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // Lift the selected block, or the closest ancestor block of the
 // selection that can be lifted, out of its parent node.
-function lift(state, onAction) {
+function lift(state, dispatch) {
   var ref = state.selection;
   var $from = ref.$from;
   var $to = ref.$to;
   var range = $from.blockRange($to), target = range && liftTarget(range)
   if (target == null) { return false }
-  if (onAction) { onAction(state.tr.lift(range, target).scrollAction()) }
+  if (dispatch) { dispatch(state.tr.lift(range, target).scrollIntoView()) }
   return true
 }
 exports.lift = lift
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // If the selection is in a node whose type has a truthy
 // [`code`](#model.NodeSpec.code) property in its spec, replace the
 // selection with a newline character.
-function newlineInCode(state, onAction) {
+function newlineInCode(state, dispatch) {
   var ref = state.selection;
   var $head = ref.$head;
   var anchor = ref.anchor;
   if (!$head || !$head.parent.type.spec.code || $head.sharedDepth(anchor) != $head.depth) { return false }
-  if (onAction) { onAction(state.tr.insertText("\n").scrollAction()) }
+  if (dispatch) { dispatch(state.tr.insertText("\n").scrollIntoView()) }
   return true
 }
 exports.newlineInCode = newlineInCode
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // When the selection is in a node with a truthy
 // [`code`](#model.NodeSpec.code) property in its spec, create a
 // default block after the code block, and move the cursor there.
-function exitCode(state, onAction) {
+function exitCode(state, dispatch) {
   var ref = state.selection;
   var $head = ref.$head;
   var anchor = ref.anchor;
   if (!$head || !$head.parent.type.spec.code || $head.sharedDepth(anchor) != $head.depth) { return false }
   var above = $head.node(-1), after = $head.indexAfter(-1), type = above.defaultContentType(after)
   if (!above.canReplaceWith(after, after, type)) { return false }
-  if (onAction) {
+  if (dispatch) {
     var pos = $head.after(), tr = state.tr.replaceWith(pos, pos, type.createAndFill())
     tr.setSelection(Selection.near(tr.doc.resolve(pos), 1))
-    onAction(tr.scrollAction())
+    dispatch(tr.scrollIntoView())
   }
   return true
 }
 exports.exitCode = exitCode
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // If a block node is selected, create an empty paragraph before (if
 // it is its parent's first child) or after it.
-function createParagraphNear(state, onAction) {
+function createParagraphNear(state, dispatch) {
   var ref = state.selection;
   var $from = ref.$from;
   var $to = ref.$to;
@@ -372,20 +510,20 @@ function createParagraphNear(state, onAction) {
   if (!node || !node.isBlock) { return false }
   var type = $from.parent.defaultContentType($to.indexAfter())
   if (!type || !type.isTextblock) { return false }
-  if (onAction) {
+  if (dispatch) {
     var side = ($from.parentOffset ? $to : $from).pos
     var tr = state.tr.insert(side, type.createAndFill())
     tr.setSelection(TextSelection.create(tr.doc, side + 1))
-    onAction(tr.scrollAction())
+    dispatch(tr.scrollIntoView())
   }
   return true
 }
 exports.createParagraphNear = createParagraphNear
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // If the cursor is in an empty textblock that can be lifted, lift the
 // block.
-function liftEmptyBlock(state, onAction) {
+function liftEmptyBlock(state, dispatch) {
   var ref = state.selection;
   var $head = ref.$head;
   var empty = ref.empty;
@@ -393,32 +531,32 @@ function liftEmptyBlock(state, onAction) {
   if ($head.depth > 1 && $head.after() != $head.end(-1)) {
     var before = $head.before()
     if (canSplit(state.doc, before)) {
-      if (onAction) { onAction(state.tr.split(before).scrollAction()) }
+      if (dispatch) { dispatch(state.tr.split(before).scrollIntoView()) }
       return true
     }
   }
   var range = $head.blockRange(), target = range && liftTarget(range)
   if (target == null) { return false }
-  if (onAction) { onAction(state.tr.lift(range, target).scrollAction()) }
+  if (dispatch) { dispatch(state.tr.lift(range, target).scrollIntoView()) }
   return true
 }
 exports.liftEmptyBlock = liftEmptyBlock
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // Split the parent block of the selection. If the selection is a text
 // selection, also delete its content.
-function splitBlock(state, onAction) {
+function splitBlock(state, dispatch) {
   var ref = state.selection;
   var $from = ref.$from;
   var $to = ref.$to;
   var node = ref.node;
   if (node && node.isBlock) {
     if (!$from.parentOffset || !canSplit(state.doc, $from.pos)) { return false }
-    if (onAction) { onAction(state.tr.split($from.pos).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.split($from.pos).scrollIntoView()) }
     return true
   }
 
-  if (onAction) {
+  if (dispatch) {
     var atEnd = $to.parentOffset == $to.parent.content.size
     var tr = state.tr.delete($from.pos, $to.pos)
     var deflt = $from.depth == 0 ? null : $from.node(-1).defaultContentType($from.indexAfter(-1))
@@ -434,16 +572,16 @@ function splitBlock(state, onAction) {
           $from.node(-1).canReplace($from.index(-1), $from.indexAfter(-1), Fragment.from(deflt.create(), $from.parent)))
         { tr.setNodeType($from.before(), deflt) }
     }
-    onAction(tr.scrollAction())
+    dispatch(tr.scrollIntoView())
   }
   return true
 }
 exports.splitBlock = splitBlock
 
-// :: (EditorState, ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // Move the selection to the node wrapping the current selection, if
 // any. (Will not select the document node.)
-function selectParentNode(state, onAction) {
+function selectParentNode(state, dispatch) {
   var sel = state.selection, pos
   if (sel.node) {
     if (!sel.$from.depth) { return false }
@@ -453,35 +591,35 @@ function selectParentNode(state, onAction) {
     if (same == 0) { return false }
     pos = sel.$head.before(same)
   }
-  if (onAction) { onAction(NodeSelection.create(state.doc, pos).action()) }
+  if (dispatch) { dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos))) }
   return true
 }
 exports.selectParentNode = selectParentNode
 
-function joinMaybeClear(state, $pos, onAction) {
+function joinMaybeClear(state, $pos, dispatch) {
   var before = $pos.nodeBefore, after = $pos.nodeAfter, index = $pos.index()
   if (!before || !after || !before.type.compatibleContent(after.type)) { return false }
   if (!before.content.size && $pos.parent.canReplace(index - 1, index)) {
-    if (onAction) { onAction(state.tr.delete($pos.pos - before.nodeSize, $pos.pos).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.delete($pos.pos - before.nodeSize, $pos.pos).scrollIntoView()) }
     return true
   }
   if (!$pos.parent.canReplace(index, index + 1)) { return false }
-  if (onAction)
-    { onAction(state.tr
+  if (dispatch)
+    { dispatch(state.tr
              .clearNonMatching($pos.pos, before.contentMatchAt(before.childCount))
              .join($pos.pos)
-             .scrollAction()) }
+             .scrollIntoView()) }
   return true
 }
 
-function deleteBarrier(state, cut, onAction) {
+function deleteBarrier(state, cut, dispatch) {
   var $cut = state.doc.resolve(cut), before = $cut.nodeBefore, after = $cut.nodeAfter, conn, match
-  if (joinMaybeClear(state, $cut, onAction)) {
+  if (joinMaybeClear(state, $cut, dispatch)) {
     return true
   } else if (after.isTextblock && $cut.parent.canReplace($cut.index(), $cut.index() + 1) &&
              (conn = (match = before.contentMatchAt(before.childCount)).findWrappingFor(after)) &&
              match.matchType((conn[0] || after).type, (conn[0] || after).attrs).validEnd()) {
-    if (onAction) {
+    if (dispatch) {
       var end = cut + after.nodeSize, wrap = Fragment.empty
       for (var i = conn.length - 1; i >= 0; i--)
         { wrap = Fragment.from(conn[i].type.create(conn[i].attrs, wrap)) }
@@ -489,24 +627,24 @@ function deleteBarrier(state, cut, onAction) {
       var tr = state.tr.step(new ReplaceAroundStep(cut - 1, end, cut, end, new Slice(wrap, 1, 0), conn.length, true))
       var joinAt = end + 2 * conn.length
       if (canJoin(tr.doc, joinAt)) { tr.join(joinAt) }
-      onAction(tr.scrollAction())
+      dispatch(tr.scrollIntoView())
     }
     return true
   } else {
     var selAfter = Selection.findFrom($cut, 1)
     var range = selAfter.$from.blockRange(selAfter.$to), target = range && liftTarget(range)
     if (target == null) { return false }
-    if (onAction) { onAction(state.tr.lift(range, target).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.lift(range, target).scrollIntoView()) }
     return true
   }
 }
 
-function selectNextNode(state, cut, dir, onAction) {
+function selectNextNode(state, cut, dir, dispatch) {
   var $cut = state.doc.resolve(cut)
   var node = dir > 0 ? $cut.nodeAfter : $cut.nodeBefore
   if (!node || !NodeSelection.isSelectable(node)) { return false }
-  if (onAction)
-    { onAction(NodeSelection.create(state.doc, cut - (dir > 0 ? 0 : node.nodeSize)).scrollAction()) }
+  if (dispatch)
+    { dispatch(state.tr.setSelection(NodeSelection.create(state.doc, cut - (dir > 0 ? 0 : node.nodeSize))).scrollIntoView()) }
   return true
 }
 
@@ -520,27 +658,27 @@ function joinPointBelow(state) {
   else { return joinPoint(state.doc, to, 1) }
 }
 
-// :: (NodeType, ?Object) → (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (NodeType, ?Object) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Wrap the selection in a node of the given type with the given
 // attributes.
 function wrapIn(nodeType, attrs) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var $from = ref.$from;
     var $to = ref.$to;
     var range = $from.blockRange($to), wrapping = range && findWrapping(range, nodeType, attrs)
     if (!wrapping) { return false }
-    if (onAction) { onAction(state.tr.wrap(range, wrapping).scrollAction()) }
+    if (dispatch) { dispatch(state.tr.wrap(range, wrapping).scrollIntoView()) }
     return true
   }
 }
 exports.wrapIn = wrapIn
 
-// :: (NodeType, ?Object) → (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (NodeType, ?Object) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Returns a command that tries to set the textblock around the
 // selection to the given node type with the given attributes.
 function setBlockType(nodeType, attrs) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var $from = ref.$from;
     var $to = ref.$to;
@@ -556,12 +694,12 @@ function setBlockType(nodeType, attrs) {
     if (!target.isTextblock || target.hasMarkup(nodeType, attrs)) { return false }
     var index = $from.index(depth)
     if (!$from.node(depth).canReplaceWith(index, index + 1, nodeType)) { return false }
-    if (onAction) {
+    if (dispatch) {
       var where = $from.before(depth + 1)
-      onAction(state.tr
+      dispatch(state.tr
                .clearNonMatching(where, nodeType.contentExpr.start(attrs))
                .setNodeType(where, nodeType, attrs)
-               .scrollAction())
+               .scrollIntoView())
     }
     return true
   }
@@ -569,7 +707,7 @@ function setBlockType(nodeType, attrs) {
 exports.setBlockType = setBlockType
 
 function markApplies(doc, from, to, type) {
-  var can = false
+  var can = doc.contentMatchAt(0).allowsMark(type)
   doc.nodesBetween(from, to, function (node) {
     if (can) { return false }
     can = node.isTextblock && node.contentMatchAt(0).allowsMark(type)
@@ -577,7 +715,7 @@ function markApplies(doc, from, to, type) {
   return can
 }
 
-// :: (MarkType, ?Object) → (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (MarkType, ?Object) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Create a command function that toggles the given mark with the
 // given attributes. Will return `false` when the current selection
 // doesn't support that mark. This will remove the mark if any marks
@@ -586,23 +724,24 @@ function markApplies(doc, from, to, type) {
 // marks](#state.EditorState.storedMarks) instead of a range of the
 // document.
 function toggleMark(markType, attrs) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var empty = ref.empty;
     var from = ref.from;
     var to = ref.to;
+    var $from = ref.$from;
     if (!markApplies(state.doc, from, to, markType)) { return false }
-    if (onAction) {
+    if (dispatch) {
       if (empty) {
-        if (markType.isInSet(state.storedMarks || state.doc.marksAt(from)))
-          { onAction({type: "removeStoredMark", markType: markType}) }
+        if (markType.isInSet(state.storedMarks || $from.marks()))
+          { dispatch(state.tr.removeStoredMark(markType)) }
         else
-          { onAction({type: "addStoredMark", mark: markType.create(attrs)}) }
+          { dispatch(state.tr.addStoredMark(markType.create(attrs))) }
       } else {
         if (state.doc.rangeHasMark(from, to, markType))
-          { onAction(state.tr.removeMark(from, to, markType).scrollAction()) }
+          { dispatch(state.tr.removeMark(from, to, markType).scrollIntoView()) }
         else
-          { onAction(state.tr.addMark(from, to, markType.create(attrs)).scrollAction()) }
+          { dispatch(state.tr.addMark(from, to, markType.create(attrs)).scrollIntoView()) }
       }
     }
     return true
@@ -610,9 +749,10 @@ function toggleMark(markType, attrs) {
 }
 exports.toggleMark = toggleMark
 
-function wrapOnActionForJoin(onAction, isJoinable) {
-  return function (action) { return onAction(extendTransformAction(action, function (tr) {
-    // Gather the ranges touched by the transform
+function wrapDispatchForJoin(dispatch, isJoinable) {
+  return function (tr) {
+    if (!tr.isGeneric) { return dispatch(tr) }
+
     var ranges = []
     for (var i = 0; i < tr.mapping.maps.length; i++) {
       var map = tr.mapping.maps[i]
@@ -643,10 +783,11 @@ function wrapOnActionForJoin(onAction, isJoinable) {
     for (var i$2 = joinable.length - 1; i$2 >= 0; i$2--) {
       if (canJoin(tr.doc, joinable[i$2])) { tr.join(joinable[i$2]) }
     }
-  })); }
+    dispatch(tr)
+  }
 }
 
-// :: ((state: EditorState, ?(action: Action)) → bool, union<(before: Node, after: Node) → bool, [string]>) → (state: EditorState, ?(action: Action)) → bool
+// :: ((state: EditorState, ?(tr: Transaction)) → bool, union<(before: Node, after: Node) → bool, [string]>) → (state: EditorState, ?(tr: Transaction)) → bool
 // Wrap a command so that, when it produces a transform that causes
 // two joinable nodes to end up next to each other, those are joined.
 // Nodes are considered joinable when they are of the same type and
@@ -658,20 +799,20 @@ function autoJoin(command, isJoinable) {
     var types = isJoinable
     isJoinable = function (node) { return types.indexOf(node.type.name) > -1; }
   }
-  return function (state, onAction) { return command(state, onAction && wrapOnActionForJoin(onAction, isJoinable)); }
+  return function (state, dispatch) { return command(state, dispatch && wrapDispatchForJoin(dispatch, isJoinable)); }
 }
 exports.autoJoin = autoJoin
 
-// :: (...[(EditorState, ?(action: Action)) → bool]) → (EditorState, ?(action: Action)) → bool
+// :: (...[(EditorState, ?(tr: Transaction)) → bool]) → (EditorState, ?(tr: Transaction)) → bool
 // Combine a number of command functions into a single function (which
 // calls them one by one until one returns true).
 function chainCommands() {
   var commands = [], len = arguments.length;
   while ( len-- ) commands[ len ] = arguments[ len ];
 
-  return function(state, onAction, view) {
+  return function(state, dispatch, view) {
     for (var i = 0; i < commands.length; i++)
-      { if (commands[i](state, onAction, view)) { return true } }
+      { if (commands[i](state, dispatch, view)) { return true } }
     return false
   }
 }
@@ -725,49 +866,76 @@ if (mac) {
 
 exports.baseKeymap = baseKeymap
 
-},{"prosemirror-model":23,"prosemirror-state":34,"prosemirror-transform":39}],3:[function(require,module,exports){
+},{"prosemirror-model":24,"prosemirror-state":34,"prosemirror-transform":39}],4:[function(require,module,exports){
 var ref = require("prosemirror-state");
 var Plugin = ref.Plugin;
 var ref$1 = require("prosemirror-view");
 var Decoration = ref$1.Decoration;
 var DecorationSet = ref$1.DecorationSet;
 
+var gecko = typeof navigator != "undefined" && /gecko\/\d/i.test(navigator.userAgent)
+var linux = typeof navigator != "undefined" && /linux/i.test(navigator.platform)
+
 function dropCursor(options) {
-  return new Plugin({
+  function dispatch(view, data) {
+    view.dispatch(view.state.tr.setMeta(plugin, data))
+  }
+
+  var timeout = null
+  function scheduleRemoval(view) {
+    clearTimeout(timeout)
+    timeout = setTimeout(function () {
+      if (plugin.getState(view.state)) { dispatch(view, {type: "remove"}) }
+    }, 1000)
+  }
+
+  var plugin = new Plugin({
     state: {
       init: function init() { return null },
-      applyAction: function applyAction(action, prev, state) {
-        if (action.type == "setDropCursor") { return pluginStateFor(state, action.pos, options) }
-        if (action.type == "removeDropCursor") { return null }
-        return prev
+      apply: function apply(tr, prev, state) {
+        // Firefox on Linux gets really confused an breaks dragging when we
+        // mess with the nodes around the target node during a drag. So
+        // disable this plugin there. See https://bugzilla.mozilla.org/show_bug.cgi?id=1323170
+        if (gecko && linux) { return null }
+        var command = tr.getMeta(plugin)
+        if (!command) { return prev }
+        if (command.type == "set") { return pluginStateFor(state, command.pos, options) }
+        return null
       }
     },
     props: {
-      handleDOMEvent: function handleDOMEvent(view, event) {
-        var active = this.getState(view.state)
-        switch (event.type) {
-        case "dragover":
-          var pos = view.posAtCoords({left: event.clientX, top: event.clientY}).pos
-          if (!active || active.pos != pos) { view.props.onAction({type: "setDropCursor", pos: pos}) }
-          break
+      handleDOMEvents: {
+        dragover: function dragover(view, event) {
+          var active = plugin.getState(view.state)
+          var pos = view.posAtCoords({left: event.clientX, top: event.clientY})
+          if (pos && (!active || active.pos != pos.pos))
+            { dispatch(view, {type: "set", pos: pos.pos}) }
+          scheduleRemoval(view)
+          return false
+        },
 
-        case "dragend":
-        case "drop":
-          if (active) { view.props.onAction({type: "removeDropCursor"}) }
-          break
+        dragend: function dragend(view) {
+          if (plugin.getState(view.state)) { dispatch(view, {type: "remove"}) }
+          return false
+        },
 
-        case "dragleave":
-          if (event.target == view.content) { view.props.onAction({type: "removeDropCursor"}) }
-          break
+        drop: function drop(view) {
+          if (plugin.getState(view.state)) { dispatch(view, {type: "remove"}) }
+          return false
+        },
+
+        dragleave: function dragleave(view, event) {
+          if (event.target == view.content) { dispatch(view, {type: "remove"}) }
+          return false
         }
-        return false
       },
       decorations: function decorations(state) {
-        var active = this.getState(state)
+        var active = plugin.getState(state)
         return active && active.deco
       }
     }
   })
+  return plugin
 }
 exports.dropCursor = dropCursor
 
@@ -789,13 +957,13 @@ function pluginStateFor(state, pos, options) {
   if (!deco) {
     var node = document.createElement("span")
     node.textContent = "\u200b"
-    node.style.cssText = style(options, "left") + "; display: inline-block"
+    node.style.cssText = style(options, "left") + "; display: inline-block; pointer-events: none"
     deco = Decoration.widget(pos, node)
   }
   return {pos: pos, deco: DecorationSet.create(state.doc, [deco])}
 }
 
-},{"prosemirror-state":34,"prosemirror-view":54}],4:[function(require,module,exports){
+},{"prosemirror-state":34,"prosemirror-view":54}],5:[function(require,module,exports){
 var ref = require("prosemirror-inputrules");
 var blockQuoteRule = ref.blockQuoteRule;
 var orderedListRule = ref.orderedListRule;
@@ -857,7 +1025,7 @@ function exampleSetup(options) {
 
   return plugins.concat(new Plugin({
     props: {
-      class: function () { return "ProseMirror-example-setup-style"; },
+      attributes: {class: "ProseMirror-example-setup-style"},
       menuContent: buildMenuItems(options.schema).fullMenu,
       floatingMenu: true
     }
@@ -879,7 +1047,7 @@ function buildInputRules(schema) {
 }
 exports.buildInputRules = buildInputRules
 
-},{"./keymap":5,"./menu":6,"prosemirror-commands":2,"prosemirror-dropcursor":3,"prosemirror-history":8,"prosemirror-inputrules":9,"prosemirror-keymap":13,"prosemirror-state":34}],5:[function(require,module,exports){
+},{"./keymap":6,"./menu":7,"prosemirror-commands":3,"prosemirror-dropcursor":4,"prosemirror-history":9,"prosemirror-inputrules":10,"prosemirror-keymap":14,"prosemirror-state":34}],6:[function(require,module,exports){
 var ref = require("prosemirror-commands");
 var wrapIn = ref.wrapIn;
 var setBlockType = ref.setBlockType;
@@ -952,8 +1120,8 @@ function buildKeymap(schema, mapKeys) {
   if (type = schema.nodes.blockquote)
     { bind("Ctrl->", wrapIn(type)) }
   if (type = schema.nodes.hard_break) {
-    var br = type, cmd = chainCommands(exitCode, function (state, onAction) {
-      onAction(state.tr.replaceSelectionWith(br.create()).scrollAction())
+    var br = type, cmd = chainCommands(exitCode, function (state, dispatch) {
+      dispatch(state.tr.replaceSelectionWith(br.create()).scrollIntoView())
       return true
     })
     bind("Mod-Enter", cmd)
@@ -973,8 +1141,8 @@ function buildKeymap(schema, mapKeys) {
     { for (var i = 1; i <= 6; i++) { bind("Shift-Ctrl-" + i, setBlockType(type, {level: i})) } }
   if (type = schema.nodes.horizontal_rule) {
     var hr = type
-    bind("Mod-_", function (state, onAction) {
-      onAction(state.tr.replaceSelectionWith(hr.create()).scrollAction())
+    bind("Mod-_", function (state, dispatch) {
+      dispatch(state.tr.replaceSelectionWith(hr.create()).scrollIntoView())
       return true
     })
   }
@@ -987,7 +1155,7 @@ function buildKeymap(schema, mapKeys) {
 }
 exports.buildKeymap = buildKeymap
 
-},{"prosemirror-commands":2,"prosemirror-history":8,"prosemirror-schema-list":32,"prosemirror-schema-table":33}],6:[function(require,module,exports){
+},{"prosemirror-commands":3,"prosemirror-history":9,"prosemirror-schema-list":32,"prosemirror-schema-table":33}],7:[function(require,module,exports){
 var ref = require("prosemirror-menu");
 var wrapItem = ref.wrapItem;
 var blockTypeItem = ref.blockTypeItem;
@@ -1008,13 +1176,15 @@ var removeColumn = ref$1.removeColumn;
 var addRowBefore = ref$1.addRowBefore;
 var addRowAfter = ref$1.addRowAfter;
 var removeRow = ref$1.removeRow;
-var ref$2 = require("prosemirror-commands");
-var toggleMark = ref$2.toggleMark;
-var ref$3 = require("prosemirror-schema-list");
-var wrapInList = ref$3.wrapInList;
-var ref$4 = require("./prompt");
-var TextField = ref$4.TextField;
-var openPrompt = ref$4.openPrompt;
+var ref$2 = require("prosemirror-state");
+var Selection = ref$2.Selection;
+var ref$3 = require("prosemirror-commands");
+var toggleMark = ref$3.toggleMark;
+var ref$4 = require("prosemirror-schema-list");
+var wrapInList = ref$4.wrapInList;
+var ref$5 = require("./prompt");
+var TextField = ref$5.TextField;
+var openPrompt = ref$5.openPrompt;
 
 // Helpers to create specific types of items
 
@@ -1050,7 +1220,8 @@ function insertImageItem(nodeType) {
         // when it runs, leading to problems in, for example, a
         // collaborative setup
         callback: function callback(attrs) {
-          view.props.onAction(view.state.tr.replaceSelectionWith(nodeType.createAndFill(attrs)).action())
+          view.dispatch(view.state.tr.replaceSelectionWith(nodeType.createAndFill(attrs)))
+          view.focus()
         }
       })
     }
@@ -1075,7 +1246,10 @@ function insertTableItem(tableType) {
           var rows = ref.rows;
           var cols = ref.cols;
 
-          view.props.onAction(view.state.tr.replaceSelectionWith(createTable(tableType, +rows, +cols)).scrollAction())
+          var tr = view.state.tr.replaceSelectionWith(createTable(tableType, +rows, +cols))
+          tr.setSelection(Selection.near(tr.doc.resolve(view.state.selection.from)))
+          view.dispatch(tr.scrollIntoView())
+          view.focus()
         }
       })
     },
@@ -1104,9 +1278,10 @@ function cmdItem(cmd, options) {
 function markActive(state, type) {
   var ref = state.selection;
   var from = ref.from;
+  var $from = ref.$from;
   var to = ref.to;
   var empty = ref.empty;
-  if (empty) { return type.isInSet(state.storedMarks || state.doc.marksAt(from)) }
+  if (empty) { return type.isInSet(state.storedMarks || $from.marks()) }
   else { return state.doc.rangeHasMark(from, to, type) }
 }
 
@@ -1122,9 +1297,9 @@ function linkItem(markType) {
   return markItem(markType, {
     title: "Add or remove link",
     icon: icons.link,
-    run: function run(state, onAction, view) {
+    run: function run(state, dispatch, view) {
       if (markActive(state, markType)) {
-        toggleMark(markType)(state, onAction)
+        toggleMark(markType)(state, dispatch)
         return true
       }
       openPrompt({
@@ -1142,7 +1317,8 @@ function linkItem(markType) {
           title: new TextField({label: "Title"})
         },
         callback: function callback(attrs) {
-          toggleMark(markType, attrs)(view.state, view.props.onAction)
+          toggleMark(markType, attrs)(view.state, view.dispatch)
+          view.focus()
         }
       })
     }
@@ -1268,7 +1444,7 @@ function buildMenuItems(schema) {
       title: "Insert horizontal rule",
       label: "Horizontal rule",
       select: function select(state) { return canInsert(state, hr) },
-      run: function run(state, onAction) { onAction(state.tr.replaceSelectionWith(hr.create()).action()) }
+      run: function run(state, dispatch) { dispatch(state.tr.replaceSelectionWith(hr.create())) }
     })
   }
   if (type = schema.nodes.table)
@@ -1300,7 +1476,7 @@ function buildMenuItems(schema) {
 }
 exports.buildMenuItems = buildMenuItems
 
-},{"./prompt":7,"prosemirror-commands":2,"prosemirror-menu":15,"prosemirror-schema-list":32,"prosemirror-schema-table":33}],7:[function(require,module,exports){
+},{"./prompt":8,"prosemirror-commands":3,"prosemirror-menu":16,"prosemirror-schema-list":32,"prosemirror-schema-table":33,"prosemirror-state":34}],8:[function(require,module,exports){
 var prefix = "ProseMirror-prompt"
 
 function openPrompt(options) {
@@ -1478,7 +1654,7 @@ var SelectField = (function (Field) {
 }(Field));
 exports.SelectField = SelectField
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var RopeSequence = require("rope-sequence")
 var ref = require("prosemirror-transform");
 var Mapping = ref.Mapping;
@@ -1733,27 +1909,28 @@ var DEPTH_OVERFLOW = 20
 
 // : (EditorState, Transform, Selection, Object)
 // Record a transformation in undo history.
-function recordTransform(history, selection, action, options) {
-  var transform = action.transform
-  if (action.historyState) {
-    return action.historyState
-  } else if (transform.steps.length == 0) {
-    return history
-  } else if (action.addToHistory !== false) {
+function applyTransaction(history, selection, tr, options) {
+  var newState = tr.getMeta(historyKey), rebased
+  if (newState) {
+    return newState
+  } else if (tr.steps.length == 0) {
+    if (tr.getMeta(closeHistoryKey)) { return new HistoryState(history.done, history.undone, null, 0) }
+    else { return history }
+  } else if (tr.getMeta("addToHistory") !== false) {
     // Group transforms that occur in quick succession into one event.
-    var newGroup = history.prevTime < (action.time || 0) - options.newGroupDelay ||
-        !isAdjacentToLastStep(transform, history.prevMap, history.done)
-    return new HistoryState(history.done.addTransform(transform, newGroup ? selection.toJSON() : null, options),
-                            Branch.empty, transform.mapping.maps[transform.steps.length - 1], action.time)
-  } else if (action.rebased) {
+    var newGroup = history.prevTime < (tr.time || 0) - options.newGroupDelay ||
+        !isAdjacentToLastStep(tr, history.prevMap, history.done)
+    return new HistoryState(history.done.addTransform(tr, newGroup ? selection.toJSON() : null, options),
+                            Branch.empty, tr.mapping.maps[tr.steps.length - 1], tr.time)
+  } else if (rebased = tr.getMeta("rebased")) {
     // Used by the collab module to tell the history that some of its
     // content has been rebased.
-    return new HistoryState(history.done.rebased(transform, action.rebased),
-                            history.undone.rebased(transform, action.rebased),
-                            history.prevMap && transform.mapping.maps[transform.steps.length - 1], history.prevTime)
+    return new HistoryState(history.done.rebased(tr, rebased),
+                            history.undone.rebased(tr, rebased),
+                            history.prevMap && tr.mapping.maps[tr.steps.length - 1], history.prevTime)
   } else {
-    return new HistoryState(history.done.addMaps(transform.mapping.maps),
-                            history.undone.addMaps(transform.mapping.maps),
+    return new HistoryState(history.done.addMaps(tr.mapping.maps),
+                            history.undone.addMaps(tr.mapping.maps),
                             history.prevMap, history.prevTime)
   }
 }
@@ -1778,11 +1955,11 @@ function isAdjacentToLastStep(transform, prevMap, done) {
   return adjacent
 }
 
-// : (EditorState, bool, Object) → Object
+// : (HistoryState, EditorState, (tr: Transaction), bool)
 // Apply the latest event from one branch to the document and optionally
 // shift the event onto the other branch. Returns true when an event could
 // be shifted.
-function histAction(history, state, onAction, redo) {
+function histTransaction(history, state, dispatch, redo) {
   var histOptions = historyKey.get(state).options.config
   var pop = (redo ? history.undone : history.done).popEvent(state, histOptions.preserveItems)
   if (!pop) { return }
@@ -1792,13 +1969,31 @@ function histAction(history, state, onAction, redo) {
   var added = (redo ? history.done : history.undone).addTransform(pop.transform, selectionBefore.toJSON(), histOptions)
 
   var newHist = new HistoryState(redo ? added : pop.remaining, redo ? pop.remaining : added, null, 0)
-  onAction(pop.transform.action({selection: selection, historyState: newHist, scrollIntoView: true, sealed: true}))
+  dispatch(pop.transform.setSelection(selection).setMeta(historyKey, newHist).scrollIntoView())
 }
 
+function closeHistory(state) {
+  return state.tr.setMeta(closeHistoryKey, true)
+}
+exports.closeHistory = closeHistory
+
 var historyKey = new PluginKey("history")
+var closeHistoryKey = new PluginKey("closeHistory")
 
 // :: (?Object) → Plugin
-// Returns a plugin that enables the undo history for an editor.
+// Returns a plugin that enables the undo history for an editor. The
+// plugin will track undo and redo stacks, which the
+// [`undo`](##history.undo) and [`redo`](##history.redo) commands can
+// use to move the state back and forward.
+//
+// Note that this implementation doesn't implement history by simply
+// resetting back to some previous state. In order to support
+// collaborative editing (as well as some other use cases), it
+// selectively rolls back some transactions, but not other (for
+// example, not the changes made by other users). You can set an
+// `"addToHistory"` [metadata property](##state.Transaction.setMeta)
+// of `false` on a transaction to prevent it from being rolled back by
+// undo.
 //
 //   config::-
 //   Supports the following configuration options:
@@ -1828,12 +2023,8 @@ function history(config) {
       init: function init() {
         return new HistoryState(Branch.empty, Branch.empty, null, 0)
       },
-      applyAction: function applyAction(action, hist, state) {
-        if (action.type == "transform")
-          { return recordTransform(hist, state.selection, action, config) }
-        if (action.type == "historyClose")
-          { return new HistoryState(hist.done, hist.undone, null, 0) }
-        return hist
+      apply: function apply(tr, hist, state) {
+        return applyTransaction(hist, state.selection, tr, config)
       }
     },
 
@@ -1842,22 +2033,22 @@ function history(config) {
 }
 exports.history = history
 
-// :: (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // A command function that undoes the last change, if any.
-function undo(state, onAction) {
+function undo(state, dispatch) {
   var hist = historyKey.getState(state)
   if (!hist || hist.done.eventCount == 0) { return false }
-  if (onAction) { histAction(hist, state, onAction, false) }
+  if (dispatch) { histTransaction(hist, state, dispatch, false) }
   return true
 }
 exports.undo = undo
 
-// :: (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, ?(tr: Transaction)) → bool
 // A command function that redoes the last undone change, if any.
-function redo(state, onAction) {
+function redo(state, dispatch) {
   var hist = historyKey.getState(state)
   if (!hist || hist.undone.eventCount == 0) { return false }
-  if (onAction) { histAction(hist, state, onAction, true) }
+  if (dispatch) { histTransaction(hist, state, dispatch, true) }
   return true
 }
 exports.redo = redo
@@ -1878,7 +2069,7 @@ function redoDepth(state) {
 }
 exports.redoDepth = redoDepth
 
-},{"prosemirror-state":34,"prosemirror-transform":39,"rope-sequence":59}],9:[function(require,module,exports){
+},{"prosemirror-state":34,"prosemirror-transform":39,"rope-sequence":59}],10:[function(require,module,exports){
 ;var assign;
 ((assign = require("./inputrules"), exports.InputRule = assign.InputRule, exports.inputRules = assign.inputRules))
 ;var assign$1;
@@ -1886,9 +2077,10 @@ exports.redoDepth = redoDepth
 ;var assign$2;
 ((assign$2 = require("./util"), exports.wrappingInputRule = assign$2.wrappingInputRule, exports.textblockTypeInputRule = assign$2.textblockTypeInputRule, exports.blockQuoteRule = assign$2.blockQuoteRule, exports.orderedListRule = assign$2.orderedListRule, exports.bulletListRule = assign$2.bulletListRule, exports.codeBlockRule = assign$2.codeBlockRule, exports.headingRule = assign$2.headingRule))
 
-},{"./inputrules":10,"./rules":11,"./util":12}],10:[function(require,module,exports){
+},{"./inputrules":11,"./rules":12,"./util":13}],11:[function(require,module,exports){
 var ref = require("prosemirror-state");
 var Plugin = ref.Plugin;
+var PluginKey = ref.PluginKey;
 
 // ::- Input rules are regular expressions describing a piece of text
 // that, when typed, causes something to happen. This might be
@@ -1913,12 +2105,14 @@ function stringHandler(string) {
         start = end
       }
     }
-    var marks = state.doc.marksAt(start)
+    var marks = state.doc.resolve(start).marks()
     return state.tr.replaceWith(start, end, state.schema.text(insert, marks))
   }
 }
 
 var MAX_MATCH = 100
+
+var stateKey = new PluginKey("fromInputRule")
 
 // :: (config: {rules: [InputRule]}) → Plugin
 // Create an input rules plugin. When enabled, it will cause text
@@ -1931,10 +2125,10 @@ function inputRules(ref) {
   return new Plugin({
     state: {
       init: function init() { return null },
-      applyAction: function applyAction(action, prev) {
-        if (action.type == "transform") { return action.fromInputRule }
-        if (action.type == "selection") { return null }
-        return prev
+      apply: function apply(tr, prev) {
+        var stored = tr.getMeta(stateKey)
+        if (stored) { return stored }
+        return tr.selectionSet || tr.docChanged ? null : prev
       }
     },
 
@@ -1945,16 +2139,16 @@ function inputRules(ref) {
                                                   null, "\ufffc") + text
         for (var i = 0; i < rules.length; i++) {
           var match = rules[i].match.exec(textBefore)
-          var transform = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
-          if (!transform) { continue }
-          view.props.onAction(transform.action({fromInputRule: {transform: transform, from: from, to: to, text: text}}))
+          var tr = match && rules[i].handler(state, match, from - (match[0].length - text.length), to)
+          if (!tr) { continue }
+          view.dispatch(tr.setMeta(stateKey, {transform: tr, from: from, to: to, text: text}))
           return true
         }
         return false
       },
 
       handleKeyDown: function handleKeyDown(view, event) {
-        if (event.keyCode == 8) { return maybeUndoInputRule(view.state, view.props.onAction, this.getState(view.state)) }
+        if (event.keyCode == 8) { return maybeUndoInputRule(view.state, view.dispatch, this.getState(view.state)) }
         return false
       }
     }
@@ -1962,18 +2156,17 @@ function inputRules(ref) {
 }
 exports.inputRules = inputRules
 
-function maybeUndoInputRule(state, onAction, undoable) {
+function maybeUndoInputRule(state, dispatch, undoable) {
   if (!undoable) { return false }
   var tr = state.tr, toUndo = undoable.transform
   for (var i = toUndo.steps.length - 1; i >= 0; i--)
     { tr.step(toUndo.steps[i].invert(toUndo.docs[i])) }
-  var marks = tr.doc.marksAt(undoable.from)
-  tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks))
-  onAction(tr.action())
+  var marks = tr.doc.resolve(undoable.from).marks()
+  dispatch(tr.replaceWith(undoable.from, undoable.to, state.schema.text(undoable.text, marks)))
   return true
 }
 
-},{"prosemirror-state":34}],11:[function(require,module,exports){
+},{"prosemirror-state":34}],12:[function(require,module,exports){
 var ref = require("./inputrules");
 var InputRule = ref.InputRule;
 
@@ -2004,7 +2197,7 @@ exports.smartQuotes = smartQuotes
 var allInputRules = [emDash, ellipsis].concat(smartQuotes)
 exports.allInputRules = allInputRules
 
-},{"./inputrules":10}],12:[function(require,module,exports){
+},{"./inputrules":11}],13:[function(require,module,exports){
 var ref = require("./inputrules");
 var InputRule = ref.InputRule;
 var ref$1 = require("prosemirror-transform");
@@ -2108,7 +2301,7 @@ function headingRule(nodeType, maxLevel) {
 }
 exports.headingRule = headingRule
 
-},{"./inputrules":10,"prosemirror-transform":39}],13:[function(require,module,exports){
+},{"./inputrules":11,"prosemirror-transform":39}],14:[function(require,module,exports){
 var keyName = require("w3c-keyname")
 var ref = require("prosemirror-state");
 var Plugin = ref.Plugin;
@@ -2155,7 +2348,7 @@ function modifiers(name, event, shift) {
 // Create a keymap plugin for the given set of bindings.
 //
 // Bindings should map key names to [command](#commands)-style
-// functions, which will be called with `(EditorState, onAction,
+// functions, which will be called with `(EditorState, dispatch,
 // EditorView)` arguments, and should return true when they've handled
 // the key. Note that the view argument isn't part of the command
 // protocol, but can be used as an escape hatch if a binding needs to
@@ -2189,10 +2382,10 @@ function keymap(bindings) {
       handleKeyDown: function handleKeyDown(view, event) {
         var name = keyName(event), isChar = name.length == 1 && name != " ", baseName
         var direct = map[modifiers(name, event, !isChar)]
-        if (direct && direct(view.state, view.props.onAction, view)) { return true }
+        if (direct && direct(view.state, view.dispatch, view)) { return true }
         if (event.shiftKey && isChar && (baseName = keyName.base[event.keyCode])) {
           var withShift = map[modifiers(baseName, event, true)]
-          if (withShift && withShift(view.state, view.props.onAction, view)) { return true }
+          if (withShift && withShift(view.state, view.dispatch, view)) { return true }
         }
         return false
       }
@@ -2201,7 +2394,7 @@ function keymap(bindings) {
 }
 exports.keymap = keymap
 
-},{"prosemirror-state":34,"w3c-keyname":60}],14:[function(require,module,exports){
+},{"prosemirror-state":34,"w3c-keyname":60}],15:[function(require,module,exports){
 var SVG = "http://www.w3.org/2000/svg"
 var XLINK = "http://www.w3.org/1999/xlink"
 
@@ -2250,7 +2443,7 @@ function buildSVG(name, data) {
   collection.appendChild(sym)
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 ;var assign;
 ((assign = require("./menu"), exports.MenuItem = assign.MenuItem, exports.Dropdown = assign.Dropdown, exports.DropdownSubmenu = assign.DropdownSubmenu, exports.renderGrouped = assign.renderGrouped, exports.icons = assign.icons, exports.joinUpItem = assign.joinUpItem, exports.liftItem = assign.liftItem, exports.selectParentNodeItem = assign.selectParentNodeItem, exports.undoItem = assign.undoItem, exports.redoItem = assign.redoItem, exports.wrapItem = assign.wrapItem, exports.blockTypeItem = assign.blockTypeItem))
 exports.MenuBarEditorView = require("./menubar").MenuBarEditorView
@@ -2268,7 +2461,7 @@ exports.MenuBarEditorView = require("./menubar").MenuBarEditorView
 //   used to signal that this element shouldn't be displayed for the
 //   given editor state.
 
-},{"./menu":16,"./menubar":17}],16:[function(require,module,exports){
+},{"./menu":17,"./menubar":18}],17:[function(require,module,exports){
 var crel = require("crel")
 var ref = require("prosemirror-commands");
 var lift = ref.lift;
@@ -2322,7 +2515,7 @@ MenuItem.prototype.render = function render (view) {
   if (spec.css) { dom.style.cssText += spec.css }
   if (!disabled) { dom.addEventListener(spec.execEvent || "mousedown", function (e) {
     e.preventDefault()
-    spec.run(view.state, view.props.onAction, view)
+    spec.run(view.state, view.dispatch, view)
   }) }
   return dom
 };
@@ -2335,7 +2528,7 @@ function translate(view, text) {
 // MenuItemSpec:: interface
 // The configuration object passed to the `MenuItem` constructor.
 //
-//   run:: (EditorState, (Action), EditorView)
+//   run:: (EditorState, (Transaction), EditorView)
 //   The function to execute when the menu item is activated.
 //
 //   select:: ?(EditorState) → bool
@@ -2635,9 +2828,9 @@ exports.redoItem = redoItem
 // `toggleMarkItem`.
 function wrapItem(nodeType, options) {
   var passedOptions = {
-    run: function run(state, onAction) {
+    run: function run(state, dispatch) {
       // FIXME if (options.attrs instanceof Function) options.attrs(state, attrs => wrapIn(nodeType, attrs)(state))
-      return wrapIn(nodeType, options.attrs)(state, onAction)
+      return wrapIn(nodeType, options.attrs)(state, dispatch)
     },
     select: function select(state) {
       return wrapIn(nodeType, options.attrs instanceof Function ? null : options.attrs)(state)
@@ -2672,7 +2865,7 @@ function blockTypeItem(nodeType, options) {
 }
 exports.blockTypeItem = blockTypeItem
 
-},{"./icons":14,"crel":1,"prosemirror-commands":2,"prosemirror-history":8}],17:[function(require,module,exports){
+},{"./icons":15,"crel":1,"prosemirror-commands":3,"prosemirror-history":9}],18:[function(require,module,exports){
 var crel = require("crel")
 var ref = require("prosemirror-view");
 var EditorView = ref.EditorView;
@@ -2702,6 +2895,8 @@ var MenuBarEditorView = function MenuBarEditorView(place, props) {
   this.wrapper = crel("div", {class: prefix + "-wrapper"})
   if (place && place.appendChild) { place.appendChild(this.wrapper) }
   else if (place) { place(this.wrapper) }
+  if (!props.dispatchTransaction)
+    { props.dispatchTransaction = function (tr) { return this$1.updateState(this$1.editor.state.apply(tr)); } }
   // :: EditorView The wrapped editor view. _Don't_ directly call
   // `update` or `updateState` on this, always go through the
   // wrapping view.
@@ -2804,6 +2999,12 @@ MenuBarEditorView.prototype.updateFloat = function updateFloat () {
     }
   }
 };
+
+// :: ()
+// Destroy the editor instance.
+MenuBarEditorView.prototype.destroy = function destroy () {
+  this.editor.destroy()
+};
 exports.MenuBarEditorView = MenuBarEditorView
 
 // Not precise, but close enough
@@ -2817,7 +3018,7 @@ function findWrappingScrollable(node) {
     { if (cur.scrollHeight > cur.clientHeight) { return cur } }
 }
 
-},{"./menu":16,"crel":1,"prosemirror-view":54}],18:[function(require,module,exports){
+},{"./menu":17,"crel":1,"prosemirror-view":54}],19:[function(require,module,exports){
 function compareDeep(a, b) {
   if (a === b) { return true }
   if (!(a && typeof a == "object") ||
@@ -2835,13 +3036,13 @@ function compareDeep(a, b) {
 }
 exports.compareDeep = compareDeep
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var ref = require("./fragment");
 var Fragment = ref.Fragment;
 var ref$1 = require("./mark");
 var Mark = ref$1.Mark;
 
-var ContentExpr = function ContentExpr(nodeType, elements, inlineContent) {
+var ContentExpr = function(nodeType, elements, inlineContent) {
   this.nodeType = nodeType
   this.elements = elements
   this.inlineContent = inlineContent
@@ -2855,7 +3056,7 @@ prototypeAccessors.isLeaf.get = function () {
 
 // : (?Object) → ContentMatch
 // The content match at the start of this expression.
-ContentExpr.prototype.start = function start (attrs) {
+ContentExpr.prototype.start = function (attrs) {
   return new ContentMatch(this, attrs, 0, 0)
 };
 
@@ -2863,7 +3064,7 @@ ContentExpr.prototype.start = function start (attrs) {
 // Try to find a match that matches the given node, anywhere in the
 // expression. (Useful when synthesizing a match for a node that's
 // open to the left.)
-ContentExpr.prototype.atType = function atType (parentAttrs, type, attrs, marks) {
+ContentExpr.prototype.atType = function (parentAttrs, type, attrs, marks) {
     var this$1 = this;
     if ( marks === void 0 ) marks = Mark.none;
 
@@ -2872,14 +3073,14 @@ ContentExpr.prototype.atType = function atType (parentAttrs, type, attrs, marks)
       { return new ContentMatch(this$1, parentAttrs, i, 0) } }
 };
 
-ContentExpr.prototype.matches = function matches (attrs, fragment, from, to) {
+ContentExpr.prototype.matches = function (attrs, fragment, from, to) {
   return this.start(attrs).matchToEnd(fragment, from, to)
 };
 
 // Get a position in a known-valid fragment. If this is a simple
 // (single-element) expression, we don't have to do any matching,
 // and can simply skip to the position with count `index`.
-ContentExpr.prototype.getMatchAt = function getMatchAt (attrs, fragment, index) {
+ContentExpr.prototype.getMatchAt = function (attrs, fragment, index) {
     if ( index === void 0 ) index = fragment.childCount;
 
   if (this.elements.length == 1)
@@ -2888,7 +3089,7 @@ ContentExpr.prototype.getMatchAt = function getMatchAt (attrs, fragment, index) 
     { return this.start(attrs).matchFragment(fragment, 0, index) }
 };
 
-ContentExpr.prototype.checkReplace = function checkReplace (attrs, content, from, to, replacement, start, end) {
+ContentExpr.prototype.checkReplace = function (attrs, content, from, to, replacement, start, end) {
     var this$1 = this;
     if ( replacement === void 0 ) replacement = Fragment.empty;
     if ( start === void 0 ) start = 0;
@@ -2907,7 +3108,7 @@ ContentExpr.prototype.checkReplace = function checkReplace (attrs, content, from
   return match ? match.matchToEnd(content, to) : false
 };
 
-ContentExpr.prototype.checkReplaceWith = function checkReplaceWith (attrs, content, from, to, type, typeAttrs, marks) {
+ContentExpr.prototype.checkReplaceWith = function (attrs, content, from, to, type, typeAttrs, marks) {
   if (this.elements.length == 1) {
     var elt = this.elements[0]
     if (!checkCount(elt, content.childCount - (to - from) + 1, attrs, this)) { return false }
@@ -2918,7 +3119,7 @@ ContentExpr.prototype.checkReplaceWith = function checkReplaceWith (attrs, conte
   return match ? match.matchToEnd(content, to) : false
 };
 
-ContentExpr.prototype.compatible = function compatible (other) {
+ContentExpr.prototype.compatible = function (other) {
     var this$1 = this;
 
   for (var i = 0; i < this.elements.length; i++) {
@@ -2929,11 +3130,11 @@ ContentExpr.prototype.compatible = function compatible (other) {
   return false
 };
 
-ContentExpr.prototype.generateContent = function generateContent (attrs) {
+ContentExpr.prototype.generateContent = function (attrs) {
   return this.start(attrs).fillBefore(Fragment.empty, true)
 };
 
-ContentExpr.parse = function parse (nodeType, expr, specs) {
+ContentExpr.parse = function (nodeType, expr, specs) {
   var elements = [], pos = 0, inline = null
   for (;;) {
     pos += /^\s*/.exec(expr.slice(pos))[0].length
@@ -2978,7 +3179,7 @@ ContentExpr.parse = function parse (nodeType, expr, specs) {
 Object.defineProperties( ContentExpr.prototype, prototypeAccessors );
 exports.ContentExpr = ContentExpr
 
-var ContentElement = function ContentElement(nodeTypes, attrs, marks, min, max) {
+var ContentElement = function(nodeTypes, attrs, marks, min, max) {
   this.nodeTypes = nodeTypes
   this.attrs = attrs
   this.marks = marks
@@ -2986,13 +3187,13 @@ var ContentElement = function ContentElement(nodeTypes, attrs, marks, min, max) 
   this.max = max
 };
 
-ContentElement.prototype.matchesType = function matchesType (type, attrs, marks, parentAttrs, parentExpr) {
+ContentElement.prototype.matchesType = function (type, attrs, marks, parentAttrs, parentExpr) {
     var this$1 = this;
 
   if (this.nodeTypes.indexOf(type) == -1) { return false }
   if (this.attrs) {
     if (!attrs) { return false }
-    for (var prop in this.attrs)
+    for (var prop in this$1.attrs)
       { if (attrs[prop] != resolveValue(this$1.attrs[prop], parentAttrs, parentExpr)) { return false } }
   }
   if (this.marks === true) { return true }
@@ -3002,11 +3203,11 @@ ContentElement.prototype.matchesType = function matchesType (type, attrs, marks,
   return true
 };
 
-ContentElement.prototype.matches = function matches (node, parentAttrs, parentExpr) {
+ContentElement.prototype.matches = function (node, parentAttrs, parentExpr) {
   return this.matchesType(node.type, node.attrs, node.marks, parentAttrs, parentExpr)
 };
 
-ContentElement.prototype.compatible = function compatible (other) {
+ContentElement.prototype.compatible = function (other) {
     var this$1 = this;
 
   for (var i = 0; i < this.nodeTypes.length; i++)
@@ -3014,31 +3215,31 @@ ContentElement.prototype.compatible = function compatible (other) {
   return false
 };
 
-ContentElement.prototype.constrainedAttrs = function constrainedAttrs (parentAttrs, expr) {
+ContentElement.prototype.constrainedAttrs = function (parentAttrs, expr) {
     var this$1 = this;
 
   if (!this.attrs) { return null }
   var attrs = Object.create(null)
-  for (var prop in this.attrs)
+  for (var prop in this$1.attrs)
     { attrs[prop] = resolveValue(this$1.attrs[prop], parentAttrs, expr) }
   return attrs
 };
 
-ContentElement.prototype.createFiller = function createFiller (parentAttrs, expr) {
+ContentElement.prototype.createFiller = function (parentAttrs, expr) {
   var type = this.nodeTypes[0], attrs = type.computeAttrs(this.constrainedAttrs(parentAttrs, expr))
   return type.create(attrs, type.contentExpr.generateContent(attrs))
 };
 
-ContentElement.prototype.defaultType = function defaultType () {
+ContentElement.prototype.defaultType = function () {
   var first = this.nodeTypes[0]
   if (!(first.hasRequiredAttrs() || first.isText)) { return first }
 };
 
-ContentElement.prototype.overlaps = function overlaps (other) {
+ContentElement.prototype.overlaps = function (other) {
   return this.nodeTypes.some(function (t) { return other.nodeTypes.indexOf(t) > -1; })
 };
 
-ContentElement.prototype.allowsMark = function allowsMark (markType) {
+ContentElement.prototype.allowsMark = function (markType) {
   return this.marks === true || this.marks && this.marks.indexOf(markType) > -1
 };
 
@@ -3046,7 +3247,7 @@ ContentElement.prototype.allowsMark = function allowsMark (markType) {
 // expression](#model.NodeSpec), and can be used to find out whether further
 // content matches here, and whether a given position is a valid end
 // of the parent node.
-var ContentMatch = function ContentMatch(expr, attrs, index, count) {
+var ContentMatch = function(expr, attrs, index, count) {
   this.expr = expr
   this.attrs = attrs
   this.index = index
@@ -3067,28 +3268,27 @@ prototypeAccessors$1.nextElement.get = function () {
   }
 };
 
-ContentMatch.prototype.move = function move (index, count) {
+ContentMatch.prototype.move = function (index, count) {
   return new ContentMatch(this.expr, this.attrs, index, count)
 };
 
-ContentMatch.prototype.resolveValue = function resolveValue$1 (value) {
+ContentMatch.prototype.resolveValue = function (value) {
   return value instanceof AttrValue ? resolveValue(value, this.attrs, this.expr) : value
 };
 
 // :: (Node) → ?ContentMatch
 // Match a node, returning a new match after the node if successful.
-ContentMatch.prototype.matchNode = function matchNode (node) {
+ContentMatch.prototype.matchNode = function (node) {
   return this.matchType(node.type, node.attrs, node.marks)
 };
 
 // :: (NodeType, ?Object, [Mark]) → ?ContentMatch
 // Match a node type and marks, returning an match after that node
 // if successful.
-ContentMatch.prototype.matchType = function matchType (type, attrs, marks) {
+ContentMatch.prototype.matchType = function (type, attrs, marks) {
     var this$1 = this;
     if ( marks === void 0 ) marks = Mark.none;
 
-  // FIXME `var` to work around Babel bug T7293
   for (var ref = this, index = ref.index, count = ref.count; index < this.expr.elements.length; index++, count = 0) {
     var elt = this$1.expr.elements[index], max = this$1.resolveValue(elt.max)
     if (count < max && elt.matchesType(type, attrs, marks, this$1.attrs, this$1.expr)) {
@@ -3104,7 +3304,7 @@ ContentMatch.prototype.matchType = function matchType (type, attrs, marks) {
 // `null` when it ran into a required element it couldn't fit, and
 // `false` if it reached the end of the expression without
 // matching all nodes.
-ContentMatch.prototype.matchFragment = function matchFragment (fragment, from, to) {
+ContentMatch.prototype.matchFragment = function (fragment, from, to) {
     var this$1 = this;
     if ( from === void 0 ) from = 0;
     if ( to === void 0 ) to = fragment.childCount;
@@ -3114,7 +3314,7 @@ ContentMatch.prototype.matchFragment = function matchFragment (fragment, from, t
   for (var ref = this, index = ref.index, count = ref.count; index < end; index++, count = 0) {
     var elt = this$1.expr.elements[index], max = this$1.resolveValue(elt.max)
 
-    while (count < max) {
+    while (count < max && fragPos < to) {
       if (elt.matches(fragment.child(fragPos), this$1.attrs, this$1.expr)) {
         count++
         if (++fragPos == to) { return this$1.move(index, count) }
@@ -3130,7 +3330,7 @@ ContentMatch.prototype.matchFragment = function matchFragment (fragment, from, t
 // :: (Fragment, ?number, ?number) → bool
 // Returns true only if the fragment matches here, and reaches all
 // the way to the end of the content expression.
-ContentMatch.prototype.matchToEnd = function matchToEnd (fragment, start, end) {
+ContentMatch.prototype.matchToEnd = function (fragment, start, end) {
   var matched = this.matchFragment(fragment, start, end)
   return matched && matched.validEnd() || false
 };
@@ -3138,7 +3338,7 @@ ContentMatch.prototype.matchToEnd = function matchToEnd (fragment, start, end) {
 // :: () → bool
 // Returns true if this position represents a valid end of the
 // expression (no required content follows after it).
-ContentMatch.prototype.validEnd = function validEnd () {
+ContentMatch.prototype.validEnd = function () {
     var this$1 = this;
 
   for (var i = this.index, count = this.count; i < this.expr.elements.length; i++, count = 0)
@@ -3153,7 +3353,7 @@ ContentMatch.prototype.validEnd = function validEnd () {
 // empty if nothing had to be inserted). When `toEnd` is true, only
 // return a fragment if the resulting match goes to the end of the
 // content expression.
-ContentMatch.prototype.fillBefore = function fillBefore (after, toEnd, startIndex) {
+ContentMatch.prototype.fillBefore = function (after, toEnd, startIndex) {
     var this$1 = this;
 
   var added = [], match = this, index = startIndex || 0, end = this.expr.elements.length
@@ -3176,7 +3376,7 @@ ContentMatch.prototype.fillBefore = function fillBefore (after, toEnd, startInde
   }
 };
 
-ContentMatch.prototype.possibleContent = function possibleContent () {
+ContentMatch.prototype.possibleContent = function () {
     var this$1 = this;
 
   var found = []
@@ -3194,7 +3394,7 @@ ContentMatch.prototype.possibleContent = function possibleContent () {
 // :: (MarkType) → bool
 // Check whether a node with the given mark type is allowed after
 // this position.
-ContentMatch.prototype.allowsMark = function allowsMark (markType) {
+ContentMatch.prototype.allowsMark = function (markType) {
   return this.element.allowsMark(markType)
 };
 
@@ -3203,8 +3403,7 @@ ContentMatch.prototype.allowsMark = function allowsMark (markType) {
 // `target` with attributes `targetAttrs` to appear at this
 // position. The result may be empty (when it fits directly) and
 // will be null when no such wrapping exists.
-ContentMatch.prototype.findWrapping = function findWrapping (target, targetAttrs, targetMarks) {
-  // FIXME find out how expensive this is. Try to reintroduce caching?
+ContentMatch.prototype.findWrapping = function (target, targetAttrs, targetMarks) {
   var seen = Object.create(null), first = {match: this, via: null}, active = [first]
   while (active.length) {
     var current = active.shift(), match = current.match
@@ -3232,14 +3431,14 @@ ContentMatch.prototype.findWrapping = function findWrapping (target, targetAttrs
 // :: (Node) → ?[{type: NodeType, attrs: Object}]
 // Call [`findWrapping`](#model.ContentMatch.findWrapping) with the
 // properties of the given node.
-ContentMatch.prototype.findWrappingFor = function findWrappingFor (node) {
+ContentMatch.prototype.findWrappingFor = function (node) {
   return this.findWrapping(node.type, node.attrs, node.marks)
 };
 
 Object.defineProperties( ContentMatch.prototype, prototypeAccessors$1 );
 exports.ContentMatch = ContentMatch
 
-var AttrValue = function AttrValue(attr) { this.attr = attr };
+var AttrValue = function(attr) { this.attr = attr };
 
 function parseValue(nodeType, value) {
   if (value.charAt(0) == ".") {
@@ -3328,7 +3527,7 @@ function parseAttrs(nodeType, expr) {
   return attrs
 }
 
-},{"./fragment":21,"./mark":24}],20:[function(require,module,exports){
+},{"./fragment":22,"./mark":25}],21:[function(require,module,exports){
 function findDiffStart(a, b, pos) {
   for (var i = 0;; i++) {
     if (i == a.childCount || i == b.childCount)
@@ -3382,7 +3581,7 @@ function findDiffEnd(a, b, posA, posB) {
 }
 exports.findDiffEnd = findDiffEnd
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var ref = require("./diff");
 var findDiffStart = ref.findDiffStart;
 var findDiffEnd = ref.findDiffEnd;
@@ -3393,7 +3592,7 @@ var findDiffEnd = ref.findDiffEnd;
 // Fragments are persistent data structures. That means you should
 // _not_ mutate them or their content, but create new instances
 // whenever needed. The API tries to make this easy.
-var Fragment = function Fragment(content, size) {
+var Fragment = function(content, size) {
   var this$1 = this;
 
   this.content = content
@@ -3404,7 +3603,7 @@ var Fragment = function Fragment(content, size) {
 
 var prototypeAccessors = { firstChild: {},lastChild: {},childCount: {} };
 
-Fragment.prototype.nodesBetween = function nodesBetween (from, to, f, nodeStart, parent) {
+Fragment.prototype.nodesBetween = function (from, to, f, nodeStart, parent) {
     var this$1 = this;
 
   for (var i = 0, pos = 0; pos < to; i++) {
@@ -3420,7 +3619,7 @@ Fragment.prototype.nodesBetween = function nodesBetween (from, to, f, nodeStart,
 };
 
 // : (number, number, ?string, ?string) → string
-Fragment.prototype.textBetween = function textBetween (from, to, blockSeparator, leafText) {
+Fragment.prototype.textBetween = function (from, to, blockSeparator, leafText) {
   var text = "", separated = true
   this.nodesBetween(from, to, function (node, pos) {
     if (node.isText) {
@@ -3440,7 +3639,7 @@ Fragment.prototype.textBetween = function textBetween (from, to, blockSeparator,
 // :: (Fragment) → Fragment
 // Create a new fragment containing the content of this fragment and
 // `other`.
-Fragment.prototype.append = function append (other) {
+Fragment.prototype.append = function (other) {
   if (!other.size) { return this }
   if (!this.size) { return other }
   var last = this.lastChild, first = other.firstChild, content = this.content.slice(), i = 0
@@ -3454,7 +3653,7 @@ Fragment.prototype.append = function append (other) {
 
 // :: (number, ?number) → Fragment
 // Cut out the sub-fragment between the two given positions.
-Fragment.prototype.cut = function cut (from, to) {
+Fragment.prototype.cut = function (from, to) {
     var this$1 = this;
 
   if (to == null) { to = this.size }
@@ -3477,7 +3676,7 @@ Fragment.prototype.cut = function cut (from, to) {
   return new Fragment(result, size)
 };
 
-Fragment.prototype.cutByIndex = function cutByIndex (from, to) {
+Fragment.prototype.cutByIndex = function (from, to) {
   if (from == to) { return Fragment.empty }
   if (from == 0 && to == this.content.length) { return this }
   return new Fragment(this.content.slice(from, to))
@@ -3486,7 +3685,7 @@ Fragment.prototype.cutByIndex = function cutByIndex (from, to) {
 // :: (number, Node) → Fragment
 // Create a new fragment in which the node at the given index is
 // replaced by the given node.
-Fragment.prototype.replaceChild = function replaceChild (index, node) {
+Fragment.prototype.replaceChild = function (index, node) {
   var current = this.content[index]
   if (current == node) { return this }
   var copy = this.content.slice()
@@ -3498,20 +3697,20 @@ Fragment.prototype.replaceChild = function replaceChild (index, node) {
 // : (Node) → Fragment
 // Create a new fragment by prepending the given node to this
 // fragment.
-Fragment.prototype.addToStart = function addToStart (node) {
+Fragment.prototype.addToStart = function (node) {
   return new Fragment([node].concat(this.content), this.size + node.nodeSize)
 };
 
 // : (Node) → Fragment
 // Create a new fragment by appending the given node to this
 // fragment.
-Fragment.prototype.addToEnd = function addToEnd (node) {
+Fragment.prototype.addToEnd = function (node) {
   return new Fragment(this.content.concat(node), this.size + node.nodeSize)
 };
 
 // :: (Fragment) → bool
 // Compare this fragment to another one.
-Fragment.prototype.eq = function eq (other) {
+Fragment.prototype.eq = function (other) {
     var this$1 = this;
 
   if (this.content.length != other.content.length) { return false }
@@ -3535,7 +3734,7 @@ prototypeAccessors.childCount.get = function () { return this.content.length };
 // :: (number) → Node
 // Get the child node at the given index. Raise an error when the
 // index is out of range.
-Fragment.prototype.child = function child (index) {
+Fragment.prototype.child = function (index) {
   var found = this.content[index]
   if (!found) { throw new RangeError("Index " + index + " out of range for " + this) }
   return found
@@ -3543,7 +3742,7 @@ Fragment.prototype.child = function child (index) {
 
 // :: (number) → number
 // Get the offset at (size of children before) the given index.
-Fragment.prototype.offsetAt = function offsetAt (index) {
+Fragment.prototype.offsetAt = function (index) {
     var this$1 = this;
 
   var offset = 0
@@ -3553,14 +3752,14 @@ Fragment.prototype.offsetAt = function offsetAt (index) {
 
 // :: (number) → ?Node
 // Get the child node at the given index, if it exists.
-Fragment.prototype.maybeChild = function maybeChild (index) {
+Fragment.prototype.maybeChild = function (index) {
   return this.content[index]
 };
 
 // :: ((node: Node, offset: number, index: number))
 // Call `f` for every child node, passing the node, its offset
 // into this parent node, and its index.
-Fragment.prototype.forEach = function forEach (f) {
+Fragment.prototype.forEach = function (f) {
     var this$1 = this;
 
   for (var i = 0, p = 0; i < this.content.length; i++) {
@@ -3573,7 +3772,7 @@ Fragment.prototype.forEach = function forEach (f) {
 // :: (Fragment) → ?number
 // Find the first position at which this fragment and another
 // fragment differ, or `null` if they are the same.
-Fragment.prototype.findDiffStart = function findDiffStart$1 (other, pos) {
+Fragment.prototype.findDiffStart = function (other, pos) {
     if ( pos === void 0 ) pos = 0;
 
   return findDiffStart(this, other, pos)
@@ -3584,7 +3783,7 @@ Fragment.prototype.findDiffStart = function findDiffStart$1 (other, pos) {
 // fragment and the given fragment differ, or `null` if they are the
 // same. Since this position will not be the same in both nodes, an
 // object with two separate positions is returned.
-Fragment.prototype.findDiffEnd = function findDiffEnd$1 (other, pos, otherPos) {
+Fragment.prototype.findDiffEnd = function (other, pos, otherPos) {
     if ( pos === void 0 ) pos = this.size;
     if ( otherPos === void 0 ) otherPos = other.size;
 
@@ -3595,7 +3794,7 @@ Fragment.prototype.findDiffEnd = function findDiffEnd$1 (other, pos, otherPos) {
 // Find the index and inner offset corresponding to a given relative
 // position in this fragment. The result object will be reused
 // (overwritten) the next time the function is called. (Not public.)
-Fragment.prototype.findIndex = function findIndex (pos, round) {
+Fragment.prototype.findIndex = function (pos, round) {
     var this$1 = this;
     if ( round === void 0 ) round = -1;
 
@@ -3614,26 +3813,26 @@ Fragment.prototype.findIndex = function findIndex (pos, round) {
 
 // :: () → string
 // Return a debugging string that describes this fragment.
-Fragment.prototype.toString = function toString () { return "<" + this.toStringInner() + ">" };
+Fragment.prototype.toString = function () { return "<" + this.toStringInner() + ">" };
 
-Fragment.prototype.toStringInner = function toStringInner () { return this.content.join(", ") };
+Fragment.prototype.toStringInner = function () { return this.content.join(", ") };
 
 // :: () → ?Object
 // Create a JSON-serializeable representation of this fragment.
-Fragment.prototype.toJSON = function toJSON () {
+Fragment.prototype.toJSON = function () {
   return this.content.length ? this.content.map(function (n) { return n.toJSON(); }) : null
 };
 
 // :: (Schema, ?Object) → Fragment
 // Deserialize a fragment from its JSON representation.
-Fragment.fromJSON = function fromJSON (schema, value) {
+Fragment.fromJSON = function (schema, value) {
   return value ? new Fragment(value.map(schema.nodeFromJSON)) : Fragment.empty
 };
 
 // :: ([Node]) → Fragment
 // Build a fragment from an array of nodes. Ensures that adjacent
 // text nodes with the same style are joined together.
-Fragment.fromArray = function fromArray (array) {
+Fragment.fromArray = function (array) {
   if (!array.length) { return Fragment.empty }
   var joined, size = 0
   for (var i = 0; i < array.length; i++) {
@@ -3654,7 +3853,7 @@ Fragment.fromArray = function fromArray (array) {
 // of nodes. For `null`, it returns the empty fragment. For a
 // fragment, the fragment itself. For a node or array of nodes, a
 // fragment containing those nodes.
-Fragment.from = function from (nodes) {
+Fragment.from = function (nodes) {
   if (!nodes) { return Fragment.empty }
   if (nodes instanceof Fragment) { return nodes }
   if (Array.isArray(nodes)) { return this.fromArray(nodes) }
@@ -3677,7 +3876,7 @@ function retIndex(index, offset) {
 // each leaf node).
 Fragment.empty = new Fragment([], 0)
 
-},{"./diff":20}],22:[function(require,module,exports){
+},{"./diff":21}],23:[function(require,module,exports){
 var ref = require("./fragment");
 var Fragment = ref.Fragment;
 var ref$1 = require("./replace");
@@ -3755,7 +3954,7 @@ var Mark = ref$2.Mark;
 // ::- A DOM parser represents a strategy for parsing DOM content into
 // a ProseMirror document conforming to a given schema. Its behavior
 // is defined by an array of [rules](#model.ParseRule).
-var DOMParser = function DOMParser(schema, rules) {
+var DOMParser = function(schema, rules) {
   var this$1 = this;
 
   // :: Schema
@@ -3802,7 +4001,7 @@ var DOMParser = function DOMParser(schema, rules) {
 //   Can be used to influence the content match at the start of
 //   the topnode. When given, should be a valid index into
 //   `topNode`.
-DOMParser.prototype.parse = function parse (dom, options) {
+DOMParser.prototype.parse = function (dom, options) {
     if ( options === void 0 ) options = {};
 
   var context = new ParseContext(this, options, false)
@@ -3817,7 +4016,7 @@ DOMParser.prototype.parse = function parse (dom, options) {
 // this one returns a slice that is open at the sides, meaning that
 // the schema constraints aren't applied to the start of nodes to
 // the left of the input and the end of nodes at the end.
-DOMParser.prototype.parseSlice = function parseSlice (dom, options) {
+DOMParser.prototype.parseSlice = function (dom, options) {
     if ( options === void 0 ) options = {};
 
   var context = new ParseContext(this, options, true)
@@ -3825,7 +4024,7 @@ DOMParser.prototype.parseSlice = function parseSlice (dom, options) {
   return Slice.maxOpen(context.finish())
 };
 
-DOMParser.prototype.matchTag = function matchTag (dom) {
+DOMParser.prototype.matchTag = function (dom) {
     var this$1 = this;
 
   for (var i = 0; i < this.tags.length; i++) {
@@ -3841,7 +4040,7 @@ DOMParser.prototype.matchTag = function matchTag (dom) {
   }
 };
 
-DOMParser.prototype.matchStyle = function matchStyle (prop, value) {
+DOMParser.prototype.matchStyle = function (prop, value) {
     var this$1 = this;
 
   for (var i = 0; i < this.styles.length; i++) {
@@ -3860,7 +4059,7 @@ DOMParser.prototype.matchStyle = function matchStyle (prop, value) {
 // :: (Schema) → [ParseRule]
 // Extract the parse rules listed in a schema's [node
 // specs](#model.NodeSpec.parseDOM).
-DOMParser.schemaRules = function schemaRules (schema) {
+DOMParser.schemaRules = function (schema) {
   var result = []
   function insert(rule) {
     var priority = rule.priority == null ? 50 : rule.priority, i = 0
@@ -3895,7 +4094,7 @@ DOMParser.schemaRules = function schemaRules (schema) {
 // :: (Schema) → DOMParser
 // Construct a DOM parser using the parsing rules listed in a
 // schema's [node specs](#model.NodeSpec.parseDOM).
-DOMParser.fromSchema = function fromSchema (schema) {
+DOMParser.fromSchema = function (schema) {
   return schema.cached.domParser ||
     (schema.cached.domParser = new DOMParser(schema, DOMParser.schemaRules(schema)))
 };
@@ -3921,7 +4120,7 @@ var listTags = {ol: true, ul: true}
 // Using a bitfield for node context options
 var OPT_PRESERVE_WS = 1, OPT_OPEN_LEFT = 2
 
-var NodeContext = function NodeContext(type, attrs, solid, match, options) {
+var NodeContext = function(type, attrs, solid, match, options) {
   this.type = type
   this.attrs = attrs
   this.solid = solid
@@ -3930,7 +4129,7 @@ var NodeContext = function NodeContext(type, attrs, solid, match, options) {
   this.content = []
 };
 
-NodeContext.prototype.findWrapping = function findWrapping (type, attrs) {
+NodeContext.prototype.findWrapping = function (type, attrs) {
   if (!this.match) {
     if (!this.type) { return [] }
     var found = this.type.contentExpr.atType(this.attrs, type, attrs)
@@ -3947,7 +4146,7 @@ NodeContext.prototype.findWrapping = function findWrapping (type, attrs) {
   return this.match.findWrapping(type, attrs)
 };
 
-NodeContext.prototype.finish = function finish (openRight) {
+NodeContext.prototype.finish = function (openRight) {
   if (!(this.options & OPT_PRESERVE_WS)) { // Strip trailing whitespace
     var last = this.content[this.content.length - 1], m
     if (last && last.isText && (m = /\s+$/.exec(last.text))) {
@@ -3961,7 +4160,7 @@ NodeContext.prototype.finish = function finish (openRight) {
   return this.type ? this.type.create(this.attrs, content) : content
 };
 
-var ParseContext = function ParseContext(parser, options, open) {
+var ParseContext = function(parser, options, open) {
   // : DOMParser The parser we are using.
   this.parser = parser
   // : Object The options passed to this parse.
@@ -3991,7 +4190,7 @@ prototypeAccessors.top.get = function () {
 
 // : (Mark) → [Mark]
 // Add a mark to the current set of marks, return the old set.
-ParseContext.prototype.addMark = function addMark (mark) {
+ParseContext.prototype.addMark = function (mark) {
   var old = this.marks
   this.marks = mark.addToSet(this.marks)
   return old
@@ -4001,7 +4200,7 @@ ParseContext.prototype.addMark = function addMark (mark) {
 // Add a DOM node to the content. Text is inserted as text node,
 // otherwise, the node is passed to `addElement` or, if it has a
 // `style` attribute, `addElementWithStyles`.
-ParseContext.prototype.addDOM = function addDOM (dom) {
+ParseContext.prototype.addDOM = function (dom) {
   if (dom.nodeType == 3) {
     this.addTextNode(dom)
   } else if (dom.nodeType == 1) {
@@ -4011,7 +4210,7 @@ ParseContext.prototype.addDOM = function addDOM (dom) {
   }
 };
 
-ParseContext.prototype.addTextNode = function addTextNode (dom) {
+ParseContext.prototype.addTextNode = function (dom) {
   var value = dom.nodeValue
   var top = this.top
   if ((top.type && top.type.isTextblock) || /\S/.test(value)) {
@@ -4036,7 +4235,7 @@ ParseContext.prototype.addTextNode = function addTextNode (dom) {
 // : (dom.Element)
 // Try to find a handler for the given tag and use that to parse. If
 // none is found, the element's content nodes are added directly.
-ParseContext.prototype.addElement = function addElement (dom) {
+ParseContext.prototype.addElement = function (dom) {
   var name = dom.nodeName.toLowerCase()
   if (listTags.hasOwnProperty(name)) { normalizeList(dom) }
   var rule = (this.options.ruleFromNode && this.options.ruleFromNode(dom)) || this.parser.matchTag(dom)
@@ -4055,7 +4254,7 @@ ParseContext.prototype.addElement = function addElement (dom) {
 // Run any style parser associated with the node's styles. After
 // that, if no style parser suppressed the node's content, pass it
 // through to `addElement`.
-ParseContext.prototype.addElementWithStyles = function addElementWithStyles (styles, dom) {
+ParseContext.prototype.addElementWithStyles = function (styles, dom) {
     var this$1 = this;
 
   var oldMarks = this.marks, ignore = false
@@ -4073,7 +4272,7 @@ ParseContext.prototype.addElementWithStyles = function addElementWithStyles (sty
 // Look up a handler for the given node. If none are found, return
 // false. Otherwise, apply it, use its return value to drive the way
 // the node's content is wrapped, and return true.
-ParseContext.prototype.addElementByRule = function addElementByRule (dom, rule) {
+ParseContext.prototype.addElementByRule = function (dom, rule) {
     var this$1 = this;
 
   var sync, before, nodeType, markType, mark
@@ -4108,7 +4307,7 @@ ParseContext.prototype.addElementByRule = function addElementByRule (dom, rule) 
 // Add all child nodes between `startIndex` and `endIndex` (or the
 // whole node, if not given). If `sync` is passed, use it to
 // synchronize after every block element.
-ParseContext.prototype.addAll = function addAll (parent, sync, startIndex, endIndex) {
+ParseContext.prototype.addAll = function (parent, sync, startIndex, endIndex) {
     var this$1 = this;
 
   var index = startIndex || 0
@@ -4126,7 +4325,7 @@ ParseContext.prototype.addAll = function addAll (parent, sync, startIndex, endIn
 // Try to find a way to fit the given node type into the current
 // context. May add intermediate wrappers and/or leave non-solid
 // nodes that we're in.
-ParseContext.prototype.findPlace = function findPlace (type, attrs) {
+ParseContext.prototype.findPlace = function (type, attrs) {
     var this$1 = this;
 
   var route, sync
@@ -4149,7 +4348,7 @@ ParseContext.prototype.findPlace = function findPlace (type, attrs) {
 
 // : (Node) → ?Node
 // Try to insert the given node, adjusting the context when needed.
-ParseContext.prototype.insertNode = function insertNode (node) {
+ParseContext.prototype.insertNode = function (node) {
   if (this.findPlace(node.type, node.attrs)) {
     this.closeExtra()
     var top = this.top
@@ -4168,14 +4367,14 @@ ParseContext.prototype.insertNode = function insertNode (node) {
 // : (NodeType, ?Object) → bool
 // Try to start a node of the given type, adjusting the context when
 // necessary.
-ParseContext.prototype.enter = function enter (type, attrs, preserveWS) {
+ParseContext.prototype.enter = function (type, attrs, preserveWS) {
   var ok = this.findPlace(type, attrs)
   if (ok) { this.enterInner(type, attrs, true, preserveWS) }
   return ok
 };
 
 // Open a node of the given type
-ParseContext.prototype.enterInner = function enterInner (type, attrs, solid, preserveWS) {
+ParseContext.prototype.enterInner = function (type, attrs, solid, preserveWS) {
   this.closeExtra()
   var top = this.top
   top.match = top.match && top.match.matchType(type, attrs)
@@ -4187,7 +4386,7 @@ ParseContext.prototype.enterInner = function enterInner (type, attrs, solid, pre
 
 // Make sure all nodes above this.open are finished and added to
 // their parents
-ParseContext.prototype.closeExtra = function closeExtra (openRight) {
+ParseContext.prototype.closeExtra = function (openRight) {
     var this$1 = this;
 
   var i = this.nodes.length - 1
@@ -4198,13 +4397,13 @@ ParseContext.prototype.closeExtra = function closeExtra (openRight) {
   }
 };
 
-ParseContext.prototype.finish = function finish () {
+ParseContext.prototype.finish = function () {
   this.open = 0
   this.closeExtra(this.isOpen)
   return this.nodes[0].finish(this.isOpen || this.options.topOpen)
 };
 
-ParseContext.prototype.sync = function sync (to) {
+ParseContext.prototype.sync = function (to) {
     var this$1 = this;
 
   for (var i = this.open; i >= 0; i--) { if (this$1.nodes[i] == to) {
@@ -4227,7 +4426,7 @@ prototypeAccessors.currentPos.get = function () {
   return pos
 };
 
-ParseContext.prototype.findAtPoint = function findAtPoint (parent, offset) {
+ParseContext.prototype.findAtPoint = function (parent, offset) {
     var this$1 = this;
 
   if (this.find) { for (var i = 0; i < this.find.length; i++) {
@@ -4236,7 +4435,7 @@ ParseContext.prototype.findAtPoint = function findAtPoint (parent, offset) {
   } }
 };
 
-ParseContext.prototype.findInside = function findInside (parent) {
+ParseContext.prototype.findInside = function (parent) {
     var this$1 = this;
 
   if (this.find) { for (var i = 0; i < this.find.length; i++) {
@@ -4245,7 +4444,7 @@ ParseContext.prototype.findInside = function findInside (parent) {
   } }
 };
 
-ParseContext.prototype.findAround = function findAround (parent, content, before) {
+ParseContext.prototype.findAround = function (parent, content, before) {
     var this$1 = this;
 
   if (parent != content && this.find) { for (var i = 0; i < this.find.length; i++) {
@@ -4257,7 +4456,7 @@ ParseContext.prototype.findAround = function findAround (parent, content, before
   } }
 };
 
-ParseContext.prototype.findInText = function findInText (textNode) {
+ParseContext.prototype.findInText = function (textNode) {
     var this$1 = this;
 
   if (this.find) { for (var i = 0; i < this.find.length; i++) {
@@ -4304,7 +4503,7 @@ function copy(obj) {
   return copy
 }
 
-},{"./fragment":21,"./mark":24,"./replace":27}],23:[function(require,module,exports){
+},{"./fragment":22,"./mark":25,"./replace":27}],24:[function(require,module,exports){
 exports.Node = require("./node").Node
 ;var assign;
 ((assign = require("./resolvedpos"), exports.ResolvedPos = assign.ResolvedPos, exports.NodeRange = assign.NodeRange))
@@ -4321,7 +4520,7 @@ exports.Mark = require("./mark").Mark
 exports.DOMParser = require("./from_dom").DOMParser
 exports.DOMSerializer =  require("./to_dom").DOMSerializer
 
-},{"./content":19,"./fragment":21,"./from_dom":22,"./mark":24,"./node":25,"./replace":27,"./resolvedpos":28,"./schema":29,"./to_dom":30}],24:[function(require,module,exports){
+},{"./content":20,"./fragment":22,"./from_dom":23,"./mark":25,"./node":26,"./replace":27,"./resolvedpos":28,"./schema":29,"./to_dom":30}],25:[function(require,module,exports){
 var ref = require("./comparedeep");
 var compareDeep = ref.compareDeep;
 
@@ -4331,7 +4530,7 @@ var compareDeep = ref.compareDeep;
 // (such as the target of the link). Marks are created through a
 // `Schema`, which controls which types exist and which
 // attributes they have.
-var Mark = function Mark(type, attrs) {
+var Mark = function(type, attrs) {
   // :: MarkType
   // The type of this mark.
   this.type = type
@@ -4346,7 +4545,7 @@ var Mark = function Mark(type, attrs) {
 // the set itself is returned. If a mark of this type with different
 // attributes is already in the set, a set in which it is replaced
 // by this one is returned.
-Mark.prototype.addToSet = function addToSet (set) {
+Mark.prototype.addToSet = function (set) {
     var this$1 = this;
 
   for (var i = 0; i < set.length; i++) {
@@ -4366,7 +4565,7 @@ Mark.prototype.addToSet = function addToSet (set) {
 // :: ([Mark]) → [Mark]
 // Remove this mark from the given set, returning a new set. If this
 // mark is not in the set, the set itself is returned.
-Mark.prototype.removeFromSet = function removeFromSet (set) {
+Mark.prototype.removeFromSet = function (set) {
     var this$1 = this;
 
   for (var i = 0; i < set.length; i++)
@@ -4377,7 +4576,7 @@ Mark.prototype.removeFromSet = function removeFromSet (set) {
 
 // :: ([Mark]) → bool
 // Test whether this mark is in the given set of marks.
-Mark.prototype.isInSet = function isInSet (set) {
+Mark.prototype.isInSet = function (set) {
     var this$1 = this;
 
   for (var i = 0; i < set.length; i++)
@@ -4388,7 +4587,7 @@ Mark.prototype.isInSet = function isInSet (set) {
 // :: (Mark) → bool
 // Test whether this mark has the same type and attributes as
 // another mark.
-Mark.prototype.eq = function eq (other) {
+Mark.prototype.eq = function (other) {
   if (this == other) { return true }
   if (this.type != other.type) { return false }
   if (!compareDeep(other.attrs, this.attrs)) { return false }
@@ -4397,11 +4596,11 @@ Mark.prototype.eq = function eq (other) {
 
 // :: () → Object
 // Convert this mark to a JSON-serializeable representation.
-Mark.prototype.toJSON = function toJSON () {
+Mark.prototype.toJSON = function () {
     var this$1 = this;
 
   var obj = {type: this.type.name}
-  for (var _ in this.attrs) {
+  for (var _ in this$1.attrs) {
     obj.attrs = this$1.attrs
     break
   }
@@ -4409,13 +4608,13 @@ Mark.prototype.toJSON = function toJSON () {
 };
 
 // :: (Schema, Object) → Mark
-Mark.fromJSON = function fromJSON (schema, json) {
+Mark.fromJSON = function (schema, json) {
   return schema.marks[json.type].create(json.attrs)
 };
 
 // :: ([Mark], [Mark]) → bool
 // Test whether two sets of marks are identical.
-Mark.sameSet = function sameSet (a, b) {
+Mark.sameSet = function (a, b) {
   if (a == b) { return true }
   if (a.length != b.length) { return false }
   for (var i = 0; i < a.length; i++)
@@ -4426,7 +4625,7 @@ Mark.sameSet = function sameSet (a, b) {
 // :: (?union<Mark, [Mark]>) → [Mark]
 // Create a properly sorted mark set from null, a single mark, or an
 // unsorted array of marks.
-Mark.setFrom = function setFrom (marks) {
+Mark.setFrom = function (marks) {
   if (!marks || marks.length == 0) { return Mark.none }
   if (marks instanceof Mark) { return [marks] }
   var copy = marks.slice()
@@ -4438,7 +4637,7 @@ exports.Mark = Mark
 // :: [Mark] The empty set of marks.
 Mark.none = []
 
-},{"./comparedeep":18}],25:[function(require,module,exports){
+},{"./comparedeep":19}],26:[function(require,module,exports){
 var ref = require("./fragment");
 var Fragment = ref.Fragment;
 var ref$1 = require("./mark");
@@ -4453,6 +4652,8 @@ var compareDeep = ref$4.compareDeep;
 
 var emptyAttrs = Object.create(null)
 
+var warnedAboutMarksAt = false
+
 // ::- This class represents a node in the tree that makes up a
 // ProseMirror document. So a document is an instance of `Node`, with
 // children that are also instances of `Node`.
@@ -4465,7 +4666,7 @@ var emptyAttrs = Object.create(null)
 //
 // **Never** directly mutate the properties of a `Node` object. See
 // [this guide](guide/doc.html) for more information.
-var Node = function Node(type, attrs, content, marks) {
+var Node = function(type, attrs, content, marks) {
   // :: NodeType
   // The type of node that this is.
   this.type = type
@@ -4506,16 +4707,16 @@ prototypeAccessors.childCount.get = function () { return this.content.childCount
 // :: (number) → Node
 // Get the child node at the given index. Raises an error when the
 // index is out of range.
-Node.prototype.child = function child (index) { return this.content.child(index) };
+Node.prototype.child = function (index) { return this.content.child(index) };
 
 // :: (number) → ?Node
 // Get the child node at the given index, if it exists.
-Node.prototype.maybeChild = function maybeChild (index) { return this.content.maybeChild(index) };
+Node.prototype.maybeChild = function (index) { return this.content.maybeChild(index) };
 
 // :: ((node: Node, offset: number, index: number))
 // Call `f` for every child node, passing the node, its offset
 // into this parent node, and its index.
-Node.prototype.forEach = function forEach (f) { this.content.forEach(f) };
+Node.prototype.forEach = function (f) { this.content.forEach(f) };
 
 // :: (?number, ?number, (node: Node, pos: number, parent: Node, index: number))
 // Invoke a callback for all descendant nodes recursively between
@@ -4523,7 +4724,7 @@ Node.prototype.forEach = function forEach (f) { this.content.forEach(f) };
 // The callback is invoked with the node, its parent-relative position,
 // its parent node, and its child index. If the callback returns false,
 // the current node's children will not be recursed over.
-Node.prototype.nodesBetween = function nodesBetween (from, to, f, pos) {
+Node.prototype.nodesBetween = function (from, to, f, pos) {
     if ( pos === void 0 ) pos = 0;
 
   this.content.nodesBetween(from, to, f, pos, this)
@@ -4531,7 +4732,7 @@ Node.prototype.nodesBetween = function nodesBetween (from, to, f, pos) {
 
 // :: ((node: Node, pos: number, parent: Node))
 // Call the given callback for every descendant node.
-Node.prototype.descendants = function descendants (f) {
+Node.prototype.descendants = function (f) {
   this.nodesBetween(0, this.content.size, f)
 };
 
@@ -4545,7 +4746,7 @@ prototypeAccessors.textContent.get = function () { return this.textBetween(0, th
 // `blockSeparator` is given, it will be inserted whenever a new
 // block node is started. When `leafText` is given, it'll be
 // inserted for every non-text leaf node encountered.
-Node.prototype.textBetween = function textBetween (from, to, blockSeparator, leafText) {
+Node.prototype.textBetween = function (from, to, blockSeparator, leafText) {
   return this.content.textBetween(from, to, blockSeparator, leafText)
 };
 
@@ -4561,21 +4762,21 @@ prototypeAccessors.lastChild.get = function () { return this.content.lastChild }
 
 // :: (Node) → bool
 // Test whether two nodes represent the same content.
-Node.prototype.eq = function eq (other) {
+Node.prototype.eq = function (other) {
   return this == other || (this.sameMarkup(other) && this.content.eq(other.content))
 };
 
 // :: (Node) → bool
 // Compare the markup (type, attributes, and marks) of this node to
 // those of another. Returns `true` if both have the same markup.
-Node.prototype.sameMarkup = function sameMarkup (other) {
+Node.prototype.sameMarkup = function (other) {
   return this.hasMarkup(other.type, other.attrs, other.marks)
 };
 
 // :: (NodeType, ?Object, ?[Mark]) → bool
 // Check whether this node's markup correspond to the given type,
 // attributes, and marks.
-Node.prototype.hasMarkup = function hasMarkup (type, attrs, marks) {
+Node.prototype.hasMarkup = function (type, attrs, marks) {
   return this.type == type &&
     compareDeep(this.attrs, attrs || type.defaultAttrs || emptyAttrs) &&
     Mark.sameSet(this.marks, marks || Mark.none)
@@ -4584,7 +4785,7 @@ Node.prototype.hasMarkup = function hasMarkup (type, attrs, marks) {
 // :: (?Fragment) → Node
 // Create a new node with the same markup as this node, containing
 // the given content (or empty, if no content is given).
-Node.prototype.copy = function copy (content) {
+Node.prototype.copy = function (content) {
     if ( content === void 0 ) content = null;
 
   if (content == this.content) { return this }
@@ -4594,7 +4795,7 @@ Node.prototype.copy = function copy (content) {
 // :: ([Mark]) → Node
 // Create a copy of this node, with the given set of marks instead
 // of the node's own marks.
-Node.prototype.mark = function mark (marks) {
+Node.prototype.mark = function (marks) {
   return marks == this.marks ? this : new this.constructor(this.type, this.attrs, this.content, marks)
 };
 
@@ -4602,7 +4803,7 @@ Node.prototype.mark = function mark (marks) {
 // Create a copy of this node with only the content between the
 // given offsets. If `to` is not given, it defaults to the end of
 // the node.
-Node.prototype.cut = function cut (from, to) {
+Node.prototype.cut = function (from, to) {
   if (from == 0 && to == this.content.size) { return this }
   return this.copy(this.content.cut(from, to))
 };
@@ -4610,7 +4811,7 @@ Node.prototype.cut = function cut (from, to) {
 // :: (number, ?number) → Slice
 // Cut out the part of the document between the given positions, and
 // return it as a `Slice` object.
-Node.prototype.slice = function slice (from, to, includeParents) {
+Node.prototype.slice = function (from, to, includeParents) {
     if ( to === void 0 ) to = this.content.size;
     if ( includeParents === void 0 ) includeParents = false;
 
@@ -4630,13 +4831,13 @@ Node.prototype.slice = function slice (from, to, includeParents) {
 // content nodes must be valid children for the node they are placed
 // into. If any of this is violated, an error of type
 // [`ReplaceError`](#model.ReplaceError) is thrown.
-Node.prototype.replace = function replace$1 (from, to, slice) {
+Node.prototype.replace = function (from, to, slice) {
   return replace(this.resolve(from), this.resolve(to), slice)
 };
 
 // :: (number) → ?Node
 // Find the node after the given position.
-Node.prototype.nodeAt = function nodeAt (pos) {
+Node.prototype.nodeAt = function (pos) {
   for (var node = this;;) {
     var ref = node.content.findIndex(pos);
       var index = ref.index;
@@ -4652,7 +4853,7 @@ Node.prototype.nodeAt = function nodeAt (pos) {
 // Find the (direct) child node after the given offset, if any,
 // and return it along with its index and offset relative to this
 // node.
-Node.prototype.childAfter = function childAfter (pos) {
+Node.prototype.childAfter = function (pos) {
   var ref = this.content.findIndex(pos);
     var index = ref.index;
     var offset = ref.offset;
@@ -4663,7 +4864,7 @@ Node.prototype.childAfter = function childAfter (pos) {
 // Find the (direct) child node before the given offset, if any,
 // and return it along with its index and offset relative to this
 // node.
-Node.prototype.childBefore = function childBefore (pos) {
+Node.prototype.childBefore = function (pos) {
   if (pos == 0) { return {node: null, index: 0, offset: 0} }
   var ref = this.content.findIndex(pos);
     var index = ref.index;
@@ -4676,33 +4877,22 @@ Node.prototype.childBefore = function childBefore (pos) {
 // :: (number) → ResolvedPos
 // Resolve the given position in the document, returning an object
 // describing its path through the document.
-Node.prototype.resolve = function resolve (pos) { return ResolvedPos.resolveCached(this, pos) };
+Node.prototype.resolve = function (pos) { return ResolvedPos.resolveCached(this, pos) };
 
-Node.prototype.resolveNoCache = function resolveNoCache (pos) { return ResolvedPos.resolve(this, pos) };
+Node.prototype.resolveNoCache = function (pos) { return ResolvedPos.resolve(this, pos) };
 
-// :: (number, ?bool) → [Mark]
-// Get the marks at the given position factoring in the surrounding
-// marks' inclusiveRight property. If the position is at the start
-// of a non-empty node, or `useAfter` is true, the marks of the node
-// after it are returned.
-Node.prototype.marksAt = function marksAt (pos, useAfter) {
-  var $pos = this.resolve(pos), parent = $pos.parent, index = $pos.index()
-
-  // In an empty parent, return the empty array
-  if (parent.content.size == 0) { return Mark.none }
-  // When inside a text node or at the start of the parent node, return the node's marks
-  if (useAfter || index == 0 || $pos.textOffset) { return parent.child(index).marks }
-
-  var marks = parent.child(index - 1).marks
-  for (var i = 0; i < marks.length; i++) { if (marks[i].type.spec.inclusiveRight === false)
-    { marks = marks[i--].removeFromSet(marks) } }
-  return marks
+Node.prototype.marksAt = function (pos, useAfter) {
+  if (!warnedAboutMarksAt && typeof console != "undefined" && console.warn) {
+    warnedAboutMarksAt = true
+    console.warn("Node.marksAt is deprecated. Use ResolvedPos.marks instead.")
+  }
+  return this.resolve(pos).marks(useAfter)
 };
 
 // :: (?number, ?number, MarkType) → bool
 // Test whether a mark of the given type occurs in this document
 // between the two given positions.
-Node.prototype.rangeHasMark = function rangeHasMark (from, to, type) {
+Node.prototype.rangeHasMark = function (from, to, type) {
   var found = false
   this.nodesBetween(from, to, function (node) {
     if (type.isInSet(node.marks)) { found = true }
@@ -4736,7 +4926,7 @@ prototypeAccessors.isLeaf.get = function () { return this.type.isLeaf };
 // :: () → string
 // Return a string representation of this node for debugging
 // purposes.
-Node.prototype.toString = function toString () {
+Node.prototype.toString = function () {
   var name = this.type.name
   if (this.content.size)
     { name += "(" + this.content.toStringInner() + ")" }
@@ -4745,7 +4935,7 @@ Node.prototype.toString = function toString () {
 
 // :: (number) → ContentMatch
 // Get the content match in this node at the given index.
-Node.prototype.contentMatchAt = function contentMatchAt (index) {
+Node.prototype.contentMatchAt = function (index) {
   return this.type.contentExpr.getMatchAt(this.attrs, this.content, index)
 };
 
@@ -4755,7 +4945,7 @@ Node.prototype.contentMatchAt = function contentMatchAt (index) {
 // fragment) would leave the node's content valid. You can
 // optionally pass `start` and `end` indices into the replacement
 // fragment.
-Node.prototype.canReplace = function canReplace (from, to, replacement, start, end) {
+Node.prototype.canReplace = function (from, to, replacement, start, end) {
   return this.type.contentExpr.checkReplace(this.attrs, this.content, from, to, replacement, start, end)
 };
 
@@ -4763,7 +4953,7 @@ Node.prototype.canReplace = function canReplace (from, to, replacement, start, e
 // Test whether replacing the range `from` to `to` (by index) with a
 // node of the given type with the given attributes and marks would
 // be valid.
-Node.prototype.canReplaceWith = function canReplaceWith (from, to, type, attrs, marks) {
+Node.prototype.canReplaceWith = function (from, to, type, attrs, marks) {
   return this.type.contentExpr.checkReplaceWith(this.attrs, this.content, from, to, type, attrs, marks || Mark.none)
 };
 
@@ -4772,23 +4962,23 @@ Node.prototype.canReplaceWith = function canReplaceWith (from, to, type, attrs, 
 // node. If that node is empty, this will only return true if there
 // is at least one node type that can appear in both nodes (to avoid
 // merging completely incompatible nodes).
-Node.prototype.canAppend = function canAppend (other) {
+Node.prototype.canAppend = function (other) {
   if (other.content.size) { return this.canReplace(this.childCount, this.childCount, other.content) }
   else { return this.type.compatibleContent(other.type) }
 };
 
-Node.prototype.defaultContentType = function defaultContentType (at) {
+Node.prototype.defaultContentType = function (at) {
   var elt = this.contentMatchAt(at).nextElement
   return elt && elt.defaultType()
 };
 
 // :: () → Object
 // Return a JSON-serializeable representation of this node.
-Node.prototype.toJSON = function toJSON () {
+Node.prototype.toJSON = function () {
     var this$1 = this;
 
   var obj = {type: this.type.name}
-  for (var _ in this.attrs) {
+  for (var _ in this$1.attrs) {
     obj.attrs = this$1.attrs
     break
   }
@@ -4801,7 +4991,7 @@ Node.prototype.toJSON = function toJSON () {
 
 // :: (Schema, Object) → Node
 // Deserialize a node from its JSON representation.
-Node.fromJSON = function fromJSON (schema, json) {
+Node.fromJSON = function (schema, json) {
   var marks = json.marks && json.marks.map(schema.markFromJSON)
   if (json.type == "text") { return schema.text(json.text, marks) }
   return schema.nodeType(json.type).create(json.attrs, Fragment.fromJSON(schema, json.content), marks)
@@ -4825,24 +5015,24 @@ var TextNode = (function (Node) {
 
   var prototypeAccessors$1 = { textContent: {},nodeSize: {} };
 
-  TextNode.prototype.toString = function toString () { return wrapMarks(this.marks, JSON.stringify(this.text)) };
+  TextNode.prototype.toString = function () { return wrapMarks(this.marks, JSON.stringify(this.text)) };
 
   prototypeAccessors$1.textContent.get = function () { return this.text };
 
-  TextNode.prototype.textBetween = function textBetween (from, to) { return this.text.slice(from, to) };
+  TextNode.prototype.textBetween = function (from, to) { return this.text.slice(from, to) };
 
   prototypeAccessors$1.nodeSize.get = function () { return this.text.length };
 
-  TextNode.prototype.mark = function mark (marks) {
+  TextNode.prototype.mark = function (marks) {
     return new TextNode(this.type, this.attrs, this.text, marks)
   };
 
-  TextNode.prototype.withText = function withText (text) {
+  TextNode.prototype.withText = function (text) {
     if (text == this.text) { return this }
     return new TextNode(this.type, this.attrs, text, this.marks)
   };
 
-  TextNode.prototype.cut = function cut (from, to) {
+  TextNode.prototype.cut = function (from, to) {
     if ( from === void 0 ) from = 0;
     if ( to === void 0 ) to = this.text.length;
 
@@ -4850,11 +5040,11 @@ var TextNode = (function (Node) {
     return this.withText(this.text.slice(from, to))
   };
 
-  TextNode.prototype.eq = function eq (other) {
+  TextNode.prototype.eq = function (other) {
     return this.sameMarkup(other) && this.text == other.text
   };
 
-  TextNode.prototype.toJSON = function toJSON () {
+  TextNode.prototype.toJSON = function () {
     var base = Node.prototype.toJSON.call(this)
     base.text = this.text
     return base
@@ -4872,139 +5062,7 @@ function wrapMarks(marks, str) {
   return str
 }
 
-},{"./comparedeep":18,"./fragment":21,"./mark":24,"./replace":27,"./resolvedpos":28}],26:[function(require,module,exports){
-// ::- Persistent data structure representing an ordered mapping from
-// strings to values, with some convenient update methods.
-var OrderedMap = function OrderedMap(content) {
-  this.content = content
-};
-
-var prototypeAccessors = { size: {} };
-
-OrderedMap.prototype.find = function find (key) {
-    var this$1 = this;
-
-  for (var i = 0; i < this.content.length; i += 2)
-    { if (this$1.content[i] == key) { return i } }
-  return -1
-};
-
-// :: (string) → ?any
-// Retrieve the value stored under `key`, or return undefined when
-// no such key exists.
-OrderedMap.prototype.get = function get (key) {
-  var found = this.find(key)
-  return found == -1 ? undefined : this.content[found + 1]
-};
-
-// :: (string, any, ?string) → OrderedMap
-// Create a new map by replacing the value of `key` with a new
-// value, or adding a binding to the end of the map. If `newKey` is
-// given, the key of the binding will be replaced with that key.
-OrderedMap.prototype.update = function update (key, value, newKey) {
-  var self = newKey && newKey != key ? this.remove(newKey) : this
-  var found = self.find(key), content = self.content.slice()
-  if (found == -1) {
-    content.push(newKey || key, value)
-  } else {
-    content[found + 1] = value
-    if (newKey) { content[found] = newKey }
-  }
-  return new OrderedMap(content)
-};
-
-// :: (string) → OrderedMap
-// Return a map with the given key removed, if it existed.
-OrderedMap.prototype.remove = function remove (key) {
-  var found = this.find(key)
-  if (found == -1) { return this }
-  var content = this.content.slice()
-  content.splice(found, 2)
-  return new OrderedMap(content)
-};
-
-// :: (string, any) → OrderedMap
-// Add a new key to the start of the map.
-OrderedMap.prototype.addToStart = function addToStart (key, value) {
-  return new OrderedMap([key, value].concat(this.remove(key).content))
-};
-
-// :: (string, any) → OrderedMap
-// Add a new key to the end of the map.
-OrderedMap.prototype.addToEnd = function addToEnd (key, value) {
-  var content = this.remove(key).content.slice()
-  content.push(key, value)
-  return new OrderedMap(content)
-};
-
-// :: (string, string, any) → OrderedMap
-// Add a key after the given key. If `place` is not found, the new
-// key is added to the end.
-OrderedMap.prototype.addBefore = function addBefore (place, key, value) {
-  var without = this.remove(key), content = without.content.slice()
-  var found = without.find(place)
-  content.splice(found == -1 ? content.length : found, 0, key, value)
-  return new OrderedMap(content)
-};
-
-// :: ((key: string, value: any))
-// Call the given function for each key/value pair in the map, in
-// order.
-OrderedMap.prototype.forEach = function forEach (f) {
-    var this$1 = this;
-
-  for (var i = 0; i < this.content.length; i += 2)
-    { f(this$1.content[i], this$1.content[i + 1]) }
-};
-
-// :: (union<Object, OrderedMap>) → OrderedMap
-// Create a new map by prepending the keys in this map that don't
-// appear in `map` before the keys in `map`.
-OrderedMap.prototype.prepend = function prepend (map) {
-  map = OrderedMap.from(map)
-  if (!map.size) { return this }
-  return new OrderedMap(map.content.concat(this.subtract(map).content))
-};
-
-// :: (union<Object, OrderedMap>) → OrderedMap
-// Create a new map by appending the keys in this map that don't
-// appear in `map` after the keys in `map`.
-OrderedMap.prototype.append = function append (map) {
-  map = OrderedMap.from(map)
-  if (!map.size) { return this }
-  return new OrderedMap(this.subtract(map).content.concat(map.content))
-};
-
-// :: (union<Object, OrderedMap>) → OrderedMap
-// Create a map containing all the keys in this map that don't
-// appear in `map`.
-OrderedMap.prototype.subtract = function subtract (map) {
-  var result = this
-  OrderedMap.from(map).forEach(function (key) { return result = result.remove(key); })
-  return result
-};
-
-// :: number
-// The amount of keys in this map.
-prototypeAccessors.size.get = function () {
-  return this.content.length >> 1
-};
-
-// :: (?union<Object, OrderedMap>) → OrderedMap
-// Return a map with the given content. If null, create an empty
-// map. If given an ordered map, return that map itself. If given an
-// object, create a map from the object's properties.
-OrderedMap.from = function from (value) {
-  if (value instanceof OrderedMap) { return value }
-  var content = []
-  if (value) { for (var prop in value) { content.push(prop, value[prop]) } }
-  return new OrderedMap(content)
-};
-
-Object.defineProperties( OrderedMap.prototype, prototypeAccessors );
-exports.OrderedMap = OrderedMap
-
-},{}],27:[function(require,module,exports){
+},{"./comparedeep":19,"./fragment":22,"./mark":25,"./replace":27,"./resolvedpos":28}],27:[function(require,module,exports){
 var ref = require("./fragment");
 var Fragment = ref.Fragment;
 
@@ -5027,7 +5085,7 @@ exports.ReplaceError = ReplaceError
 // ::- A slice represents a piece cut out of a larger document. It
 // stores not only a fragment, but also the depth up to which nodes on
 // both side are 'open' / cut through.
-var Slice = function Slice(content, openLeft, openRight) {
+var Slice = function(content, openLeft, openRight) {
   // :: Fragment The slice's content nodes.
   this.content = content
   // :: number The open depth at the start.
@@ -5044,26 +5102,26 @@ prototypeAccessors.size.get = function () {
   return this.content.size - this.openLeft - this.openRight
 };
 
-Slice.prototype.insertAt = function insertAt (pos, fragment) {
+Slice.prototype.insertAt = function (pos, fragment) {
   var content = insertInto(this.content, pos + this.openLeft, fragment, null)
   return content && new Slice(content, this.openLeft, this.openRight)
 };
 
-Slice.prototype.removeBetween = function removeBetween (from, to) {
+Slice.prototype.removeBetween = function (from, to) {
   return new Slice(removeRange(this.content, from + this.openLeft, to + this.openLeft), this.openLeft, this.openRight)
 };
 
-Slice.prototype.eq = function eq (other) {
+Slice.prototype.eq = function (other) {
   return this.content.eq(other.content) && this.openLeft == other.openLeft && this.openRight == other.openRight
 };
 
-Slice.prototype.toString = function toString () {
+Slice.prototype.toString = function () {
   return this.content + "(" + this.openLeft + "," + this.openRight + ")"
 };
 
 // :: () → ?Object
 // Convert a slice to a JSON-serializable representation.
-Slice.prototype.toJSON = function toJSON () {
+Slice.prototype.toJSON = function () {
   if (!this.content.size) { return null }
   return {content: this.content.toJSON(),
           openLeft: this.openLeft,
@@ -5072,7 +5130,7 @@ Slice.prototype.toJSON = function toJSON () {
 
 // :: (Schema, ?Object) → Slice
 // Deserialize a slice from its JSON representation.
-Slice.fromJSON = function fromJSON (schema, json) {
+Slice.fromJSON = function (schema, json) {
   if (!json) { return Slice.empty }
   return new Slice(Fragment.fromJSON(schema, json.content), json.openLeft, json.openRight)
 };
@@ -5080,7 +5138,7 @@ Slice.fromJSON = function fromJSON (schema, json) {
 // :: (Fragment) → Slice
 // Create a slice from a fragment by taking the maximum possible
 // open value on both side of the fragment.
-Slice.maxOpen = function maxOpen (fragment) {
+Slice.maxOpen = function (fragment) {
   var openLeft = 0, openRight = 0
   for (var n = fragment.firstChild; n && !n.isLeaf; n = n.firstChild) { openLeft++ }
   for (var n$1 = fragment.lastChild; n$1 && !n$1.isLeaf; n$1 = n$1.lastChild) { openRight++ }
@@ -5232,8 +5290,9 @@ function prepareSliceForReplace(slice, $along) {
           end: node.resolveNoCache(node.content.size - slice.openRight - extra)}
 }
 
-},{"./fragment":21}],28:[function(require,module,exports){
-var warnedAboutBoundary = false
+},{"./fragment":22}],28:[function(require,module,exports){
+var ref = require("./mark");
+var Mark = ref.Mark;
 
 // ::- You'll often have to '[resolve](#model.Node.resolve)' a
 // position to get the context you need. Objects of this class
@@ -5243,7 +5302,7 @@ var warnedAboutBoundary = false
 // Throughout this interface, methods that take an optional `depth`
 // parameter will interpret undefined as `this.depth` and negative
 // numbers as `this.depth + value`.
-var ResolvedPos = function ResolvedPos(pos, path, parentOffset) {
+var ResolvedPos = function(pos, path, parentOffset) {
   // :: number The position that was resolved.
   this.pos = pos
   this.path = path
@@ -5256,9 +5315,9 @@ var ResolvedPos = function ResolvedPos(pos, path, parentOffset) {
   this.parentOffset = parentOffset
 };
 
-var prototypeAccessors = { parent: {},atNodeBoundary: {},textOffset: {},nodeAfter: {},nodeBefore: {} };
+var prototypeAccessors = { parent: {},textOffset: {},nodeAfter: {},nodeBefore: {} };
 
-ResolvedPos.prototype.resolveDepth = function resolveDepth (val) {
+ResolvedPos.prototype.resolveDepth = function (val) {
   if (val == null) { return this.depth }
   if (val < 0) { return this.depth + val }
   return val
@@ -5273,18 +5332,18 @@ prototypeAccessors.parent.get = function () { return this.node(this.depth) };
 // :: (?number) → Node
 // The ancestor node at the given level. `p.node(p.depth)` is the
 // same as `p.parent`.
-ResolvedPos.prototype.node = function node (depth) { return this.path[this.resolveDepth(depth) * 3] };
+ResolvedPos.prototype.node = function (depth) { return this.path[this.resolveDepth(depth) * 3] };
 
 // :: (?number) → number
 // The index into the ancestor at the given level. If this points at
 // the 3rd node in the 2nd paragraph on the top level, for example,
 // `p.index(0)` is 2 and `p.index(1)` is 3.
-ResolvedPos.prototype.index = function index (depth) { return this.path[this.resolveDepth(depth) * 3 + 1] };
+ResolvedPos.prototype.index = function (depth) { return this.path[this.resolveDepth(depth) * 3 + 1] };
 
 // :: (?number) → number
 // The index pointing after this position into the ancestor at the
 // given level.
-ResolvedPos.prototype.indexAfter = function indexAfter (depth) {
+ResolvedPos.prototype.indexAfter = function (depth) {
   depth = this.resolveDepth(depth)
   return this.index(depth) + (depth == this.depth && !this.textOffset ? 0 : 1)
 };
@@ -5292,7 +5351,7 @@ ResolvedPos.prototype.indexAfter = function indexAfter (depth) {
 // :: (?number) → number
 // The (absolute) position at the start of the node at the given
 // level.
-ResolvedPos.prototype.start = function start (depth) {
+ResolvedPos.prototype.start = function (depth) {
   depth = this.resolveDepth(depth)
   return depth == 0 ? 0 : this.path[depth * 3 - 1] + 1
 };
@@ -5300,7 +5359,7 @@ ResolvedPos.prototype.start = function start (depth) {
 // :: (?number) → number
 // The (absolute) position at the end of the node at the given
 // level.
-ResolvedPos.prototype.end = function end (depth) {
+ResolvedPos.prototype.end = function (depth) {
   depth = this.resolveDepth(depth)
   return this.start(depth) + this.node(depth).content.size
 };
@@ -5309,7 +5368,7 @@ ResolvedPos.prototype.end = function end (depth) {
 // The (absolute) position directly before the node at the given
 // level, or, when `level` is `this.level + 1`, the original
 // position.
-ResolvedPos.prototype.before = function before (depth) {
+ResolvedPos.prototype.before = function (depth) {
   depth = this.resolveDepth(depth)
   if (!depth) { throw new RangeError("There is no position before the top-level node") }
   return depth == this.depth + 1 ? this.pos : this.path[depth * 3 - 1]
@@ -5319,18 +5378,10 @@ ResolvedPos.prototype.before = function before (depth) {
 // The (absolute) position directly after the node at the given
 // level, or, when `level` is `this.level + 1`, the original
 // position.
-ResolvedPos.prototype.after = function after (depth) {
+ResolvedPos.prototype.after = function (depth) {
   depth = this.resolveDepth(depth)
   if (!depth) { throw new RangeError("There is no position after the top-level node") }
   return depth == this.depth + 1 ? this.pos : this.path[depth * 3 - 1] + this.path[depth * 3].nodeSize
-};
-
-prototypeAccessors.atNodeBoundary.get = function () {
-  if (!warnedAboutBoundary && typeof console != "undefined") {
-    warnedAboutBoundary = true
-    console.warn("ResolvedPos.atNodeBoundary is deprecated. Use textOffset > 0 instead")
-  }
-  return !this.textOffset
 };
 
 // :: number
@@ -5361,10 +5412,30 @@ prototypeAccessors.nodeBefore.get = function () {
   return index == 0 ? null : this.parent.child(index - 1)
 };
 
+// :: (?bool) → [Mark]
+// Get the marks at this position, factoring in the surrounding
+// marks' inclusiveRight property. If the position is at the start
+// of a non-empty node, or `after` is true, the marks of the node
+// after it (if any) are returned.
+ResolvedPos.prototype.marks = function (after) {
+  var parent = this.parent, index = this.index()
+
+  // In an empty parent, return the empty array
+  if (parent.content.size == 0) { return Mark.none }
+  // When inside a text node or at the start of the parent node, return the node's marks
+  if ((after && index < parent.childCount) || index == 0 || this.textOffset)
+    { return parent.child(index).marks }
+
+  var marks = parent.child(index - 1).marks
+  for (var i = 0; i < marks.length; i++) { if (marks[i].type.spec.inclusiveRight === false)
+    { marks = marks[i--].removeFromSet(marks) } }
+  return marks
+};
+
 // :: (number) → number
 // The depth up to which this position and the given (non-resolved)
 // position share the same parent nodes.
-ResolvedPos.prototype.sharedDepth = function sharedDepth (pos) {
+ResolvedPos.prototype.sharedDepth = function (pos) {
     var this$1 = this;
 
   for (var depth = this.depth; depth > 0; depth--)
@@ -5381,7 +5452,7 @@ ResolvedPos.prototype.sharedDepth = function sharedDepth (pos) {
 // is returned. You can pass in an optional predicate that will be
 // called with a parent node to see if a range into that parent is
 // acceptable.
-ResolvedPos.prototype.blockRange = function blockRange (other, pred) {
+ResolvedPos.prototype.blockRange = function (other, pred) {
     var this$1 = this;
     if ( other === void 0 ) other = this;
 
@@ -5393,11 +5464,11 @@ ResolvedPos.prototype.blockRange = function blockRange (other, pred) {
 
 // :: (ResolvedPos) → bool
 // Query whether the given position shares the same parent node.
-ResolvedPos.prototype.sameParent = function sameParent (other) {
+ResolvedPos.prototype.sameParent = function (other) {
   return this.pos - this.parentOffset == other.pos - other.parentOffset
 };
 
-ResolvedPos.prototype.toString = function toString () {
+ResolvedPos.prototype.toString = function () {
     var this$1 = this;
 
   var str = ""
@@ -5406,14 +5477,7 @@ ResolvedPos.prototype.toString = function toString () {
   return str + ":" + this.parentOffset
 };
 
-ResolvedPos.prototype.plusOne = function plusOne () {
-  var copy = this.path.slice(), skip = this.nodeAfter.nodeSize
-  copy[copy.length - 2] += 1
-  var pos = copy[copy.length - 1] = this.pos + skip
-  return new ResolvedPos(pos, copy, this.parentOffset + skip)
-};
-
-ResolvedPos.resolve = function resolve (doc, pos) {
+ResolvedPos.resolve = function (doc, pos) {
   if (!(pos >= 0 && pos <= doc.content.size)) { throw new RangeError("Position " + pos + " out of range") }
   var path = []
   var start = 0, parentOffset = pos
@@ -5432,7 +5496,7 @@ ResolvedPos.resolve = function resolve (doc, pos) {
   return new ResolvedPos(pos, path, parentOffset)
 };
 
-ResolvedPos.resolveCached = function resolveCached (doc, pos) {
+ResolvedPos.resolveCached = function (doc, pos) {
   for (var i = 0; i < resolveCache.length; i++) {
     var cached = resolveCache[i]
     if (cached.pos == pos && cached.node(0) == doc) { return cached }
@@ -5448,7 +5512,7 @@ exports.ResolvedPos = ResolvedPos
 var resolveCache = [], resolveCachePos = 0, resolveCacheSize = 6
 
 // ::- Represents a flat range of content.
-var NodeRange = function NodeRange($from, $to, depth) {
+var NodeRange = function($from, $to, depth) {
   // :: ResolvedPos A resolved position along the start of the
   // content. May have a `depth` greater than this object's `depth`
   // property, since these are the positions that were used to
@@ -5479,7 +5543,9 @@ prototypeAccessors$1.endIndex.get = function () { return this.$to.indexAfter(thi
 Object.defineProperties( NodeRange.prototype, prototypeAccessors$1 );
 exports.NodeRange = NodeRange
 
-},{}],29:[function(require,module,exports){
+},{"./mark":25}],29:[function(require,module,exports){
+var OrderedMap = require("orderedmap")
+
 var ref = require("./node");
 var Node = ref.Node;
 var TextNode = ref.TextNode;
@@ -5489,8 +5555,6 @@ var ref$2 = require("./mark");
 var Mark = ref$2.Mark;
 var ref$3 = require("./content");
 var ContentExpr = ref$3.ContentExpr;
-var ref$4 = require("./orderedmap");
-var OrderedMap = ref$4.OrderedMap;
 
 // For node types where all attrs have a default value (or which don't
 // have any attributes), build up a single reusable default attribute
@@ -5534,7 +5598,7 @@ function initAttrs(attrs) {
 // tag `Node` instances with a type. They contain information about
 // the node type, such as its name and what kind of node it
 // represents.
-var NodeType = function NodeType(name, schema, spec) {
+var NodeType = function(name, schema, spec) {
   // :: string
   // The name the node type has in this schema.
   this.name = name
@@ -5576,19 +5640,19 @@ prototypeAccessors.isTextblock.get = function () { return this.isBlock && this.c
 // True for node types that allow no content.
 prototypeAccessors.isLeaf.get = function () { return this.contentExpr.isLeaf };
 
-NodeType.prototype.hasRequiredAttrs = function hasRequiredAttrs (ignore) {
+NodeType.prototype.hasRequiredAttrs = function (ignore) {
     var this$1 = this;
 
-  for (var n in this.attrs)
+  for (var n in this$1.attrs)
     { if (this$1.attrs[n].isRequired && (!ignore || !(n in ignore))) { return true } }
   return false
 };
 
-NodeType.prototype.compatibleContent = function compatibleContent (other) {
+NodeType.prototype.compatibleContent = function (other) {
   return this == other || this.contentExpr.compatible(other.contentExpr)
 };
 
-NodeType.prototype.computeAttrs = function computeAttrs$1 (attrs) {
+NodeType.prototype.computeAttrs = function (attrs) {
   if (!attrs && this.defaultAttrs) { return this.defaultAttrs }
   else { return computeAttrs(this.attrs, attrs) }
 };
@@ -5600,7 +5664,7 @@ NodeType.prototype.computeAttrs = function computeAttrs$1 (attrs) {
 // may be a `Fragment`, a node, an array of nodes, or
 // `null`. Similarly `marks` may be `null` to default to the empty
 // set of marks.
-NodeType.prototype.create = function create (attrs, content, marks) {
+NodeType.prototype.create = function (attrs, content, marks) {
   if (typeof content == "string") { throw new Error("Calling create with string") }
   return new Node(this, this.computeAttrs(attrs), Fragment.from(content), Mark.setFrom(marks))
 };
@@ -5609,7 +5673,7 @@ NodeType.prototype.create = function create (attrs, content, marks) {
 // Like [`create`](#model.NodeType.create), but check the given content
 // against the node type's content restrictions, and throw an error
 // if it doesn't match.
-NodeType.prototype.createChecked = function createChecked (attrs, content, marks) {
+NodeType.prototype.createChecked = function (attrs, content, marks) {
   attrs = this.computeAttrs(attrs)
   content = Fragment.from(content)
   if (!this.validContent(content, attrs))
@@ -5624,7 +5688,7 @@ NodeType.prototype.createChecked = function createChecked (attrs, content, marks
 // Note that, due to the fact that required nodes can always be
 // created, this will always succeed if you pass null or
 // `Fragment.empty` as content.
-NodeType.prototype.createAndFill = function createAndFill (attrs, content, marks) {
+NodeType.prototype.createAndFill = function (attrs, content, marks) {
   attrs = this.computeAttrs(attrs)
   content = Fragment.from(content)
   if (content.size) {
@@ -5640,11 +5704,11 @@ NodeType.prototype.createAndFill = function createAndFill (attrs, content, marks
 // :: (Fragment, ?Object) → bool
 // Returns true if the given fragment is valid content for this node
 // type with the given attributes.
-NodeType.prototype.validContent = function validContent (content, attrs) {
+NodeType.prototype.validContent = function (content, attrs) {
   return this.contentExpr.matches(attrs, content)
 };
 
-NodeType.compile = function compile (nodes, schema) {
+NodeType.compile = function (nodes, schema) {
   var result = Object.create(null)
   nodes.forEach(function (name, spec) { return result[name] = new NodeType(name, schema, spec); })
 
@@ -5659,7 +5723,7 @@ exports.NodeType = NodeType
 
 // Attribute descriptors
 
-var Attribute = function Attribute(options) {
+var Attribute = function(options) {
   this.default = options.default
   this.compute = options.compute
 };
@@ -5677,7 +5741,7 @@ Object.defineProperties( Attribute.prototype, prototypeAccessors$1 );
 // ::- Like nodes, marks (which are associated with nodes to signify
 // things like emphasis or being part of a link) are tagged with type
 // objects, which are instantiated once per `Schema`.
-var MarkType = function MarkType(name, rank, schema, spec) {
+var MarkType = function(name, rank, schema, spec) {
   // :: string
   // The name of the mark type.
   this.name = name
@@ -5701,12 +5765,12 @@ var MarkType = function MarkType(name, rank, schema, spec) {
 // Create a mark of this type. `attrs` may be `null` or an object
 // containing only some of the mark's attributes. The others, if
 // they have defaults, will be added.
-MarkType.prototype.create = function create (attrs) {
+MarkType.prototype.create = function (attrs) {
   if (!attrs && this.instance) { return this.instance }
   return new Mark(this, computeAttrs(this.attrs, attrs))
 };
 
-MarkType.compile = function compile (marks, schema) {
+MarkType.compile = function (marks, schema) {
   var result = Object.create(null), rank = 0
   marks.forEach(function (name, spec) { return result[name] = new MarkType(name, rank++, schema, spec); })
   return result
@@ -5715,7 +5779,7 @@ MarkType.compile = function compile (marks, schema) {
 // :: ([Mark]) → [Mark]
 // When there is a mark of this type in the given set, a new set
 // without it is returned. Otherwise, the input set is returned.
-MarkType.prototype.removeFromSet = function removeFromSet (set) {
+MarkType.prototype.removeFromSet = function (set) {
     var this$1 = this;
 
   for (var i = 0; i < set.length; i++)
@@ -5726,7 +5790,7 @@ MarkType.prototype.removeFromSet = function removeFromSet (set) {
 
 // :: ([Mark]) → ?Mark
 // Tests whether there is a mark of this type in the given set.
-MarkType.prototype.isInSet = function isInSet (set) {
+MarkType.prototype.isInSet = function (set) {
     var this$1 = this;
 
   for (var i = 0; i < set.length; i++)
@@ -5842,7 +5906,7 @@ exports.MarkType = MarkType
 //   A function that computes a default value for the attribute.
 
 // ::- A document schema.
-var Schema = function Schema(spec) {
+var Schema = function(spec) {
   var this$1 = this;
 
   // :: OrderedMap<NodeSpec> The node specs that the schema is based on.
@@ -5858,7 +5922,7 @@ var Schema = function Schema(spec) {
   // A map from mark names to mark type objects.
   this.marks = MarkType.compile(this.markSpec, this)
 
-  for (var prop in this.nodes) {
+  for (var prop in this$1.nodes) {
     if (prop in this$1.marks)
       { throw new RangeError(prop + " can not be both a node and a mark") }
     var type = this$1.nodes[prop]
@@ -5881,7 +5945,7 @@ var Schema = function Schema(spec) {
 // `NodeType` instance. Attributes will be extended
 // with defaults, `content` may be a `Fragment`,
 // `null`, a `Node`, or an array of nodes.
-Schema.prototype.node = function node (type, attrs, content, marks) {
+Schema.prototype.node = function (type, attrs, content, marks) {
   if (typeof type == "string")
     { type = this.nodeType(type) }
   else if (!(type instanceof NodeType))
@@ -5895,14 +5959,14 @@ Schema.prototype.node = function node (type, attrs, content, marks) {
 // :: (string, ?[Mark]) → Node
 // Create a text node in the schema. Empty text nodes are not
 // allowed.
-Schema.prototype.text = function text (text, marks) {
+Schema.prototype.text = function (text$1, marks) {
   var type = this.nodes.text
-  return new TextNode(type, type.defaultAttrs, text, Mark.setFrom(marks))
+  return new TextNode(type, type.defaultAttrs, text$1, Mark.setFrom(marks))
 };
 
 // :: (union<string, MarkType>, ?Object) → Mark
 // Create a mark with the given type and attributes.
-Schema.prototype.mark = function mark (type, attrs) {
+Schema.prototype.mark = function (type, attrs) {
   if (typeof type == "string") { type = this.marks[type] }
   return type.create(attrs)
 };
@@ -5910,25 +5974,25 @@ Schema.prototype.mark = function mark (type, attrs) {
 // :: (Object) → Node
 // Deserialize a node from its JSON representation. This method is
 // bound.
-Schema.prototype.nodeFromJSON = function nodeFromJSON (json) {
+Schema.prototype.nodeFromJSON = function (json) {
   return Node.fromJSON(this, json)
 };
 
 // :: (Object) → Mark
 // Deserialize a mark from its JSON representation. This method is
 // bound.
-Schema.prototype.markFromJSON = function markFromJSON (json) {
+Schema.prototype.markFromJSON = function (json) {
   return Mark.fromJSON(this, json)
 };
 
-Schema.prototype.nodeType = function nodeType (name) {
+Schema.prototype.nodeType = function (name) {
   var found = this.nodes[name]
   if (!found) { throw new RangeError("Unknown node type: " + name) }
   return found
 };
 exports.Schema = Schema
 
-},{"./content":19,"./fragment":21,"./mark":24,"./node":25,"./orderedmap":26}],30:[function(require,module,exports){
+},{"./content":20,"./fragment":22,"./mark":25,"./node":26,"orderedmap":2}],30:[function(require,module,exports){
 // DOMOutputSpec:: interface
 // A description of a DOM structure. Can be either a string, which is
 // interpreted as a text node, a DOM node, which is interpreted as
@@ -5947,7 +6011,7 @@ exports.Schema = Schema
 
 // ::- A DOM serializer knows how to convert ProseMirror nodes and
 // marks of various types to DOM nodes.
-var DOMSerializer = function DOMSerializer(nodes, marks) {
+var DOMSerializer = function(nodes, marks) {
   // :: Object<(node: Node) → DOMOutputSpec>
   this.nodes = nodes || {}
   // :: Object<(mark: Mark) → DOMOutputSpec>
@@ -5959,7 +6023,7 @@ var DOMSerializer = function DOMSerializer(nodes, marks) {
 // not in the browser, the `document` option, containing a DOM
 // document, should be passed so that the serialize can create
 // nodes.
-DOMSerializer.prototype.serializeFragment = function serializeFragment (fragment, options, target) {
+DOMSerializer.prototype.serializeFragment = function (fragment, options, target) {
     var this$1 = this;
     if ( options === void 0 ) options = {};
 
@@ -5994,13 +6058,13 @@ DOMSerializer.prototype.serializeFragment = function serializeFragment (fragment
 // document. To serialize a whole document, use
 // [`serializeFragment`](#model.DOMSerializer.serializeFragment) on
 // its [`content`](#model.Node.content).
-DOMSerializer.prototype.serializeNode = function serializeNode (node, options) {
+DOMSerializer.prototype.serializeNode = function (node, options) {
     if ( options === void 0 ) options = {};
 
   return this.renderStructure(this.nodes[node.type.name](node), node, options)
 };
 
-DOMSerializer.prototype.serializeNodeAndMarks = function serializeNodeAndMarks (node, options) {
+DOMSerializer.prototype.serializeNodeAndMarks = function (node, options) {
     var this$1 = this;
     if ( options === void 0 ) options = {};
 
@@ -6013,7 +6077,7 @@ DOMSerializer.prototype.serializeNodeAndMarks = function serializeNodeAndMarks (
   return dom
 };
 
-DOMSerializer.prototype.serializeMark = function serializeMark (mark, options) {
+DOMSerializer.prototype.serializeMark = function (mark, options) {
     if ( options === void 0 ) options = {};
 
   return this.renderStructure(this.marks[mark.type.name](mark), null, options)
@@ -6021,7 +6085,7 @@ DOMSerializer.prototype.serializeMark = function serializeMark (mark, options) {
 
 // :: (dom.Document, DOMOutputSpec) → {dom: dom.Node, contentDOM: ?dom.Node}
 // Render an [output spec](##model.DOMOutputSpec).
-DOMSerializer.renderSpec = function renderSpec (doc, structure) {
+DOMSerializer.renderSpec = function (doc, structure) {
   if (typeof structure == "string")
     { return {dom: doc.createTextNode(structure)} }
   if (structure.nodeType != null)
@@ -6055,7 +6119,7 @@ DOMSerializer.renderSpec = function renderSpec (doc, structure) {
   return {dom: dom, contentDOM: contentDOM}
 };
 
-DOMSerializer.prototype.renderStructure = function renderStructure (structure, node, options) {
+DOMSerializer.prototype.renderStructure = function (structure, node, options) {
   var ref = DOMSerializer.renderSpec(doc(options), structure);
     var dom = ref.dom;
     var contentDOM = ref.contentDOM;
@@ -6074,7 +6138,7 @@ DOMSerializer.prototype.renderStructure = function renderStructure (structure, n
 // :: (Schema) → DOMSerializer
 // Build a serializer using the [`toDOM`](#model.NodeSpec.toDOM)
 // properties in a schema's node and mark specs.
-DOMSerializer.fromSchema = function fromSchema (schema) {
+DOMSerializer.fromSchema = function (schema) {
   return schema.cached.domSerializer ||
     (schema.cached.domSerializer = new DOMSerializer(this.nodesFromSchema(schema), this.marksFromSchema(schema)))
 };
@@ -6082,13 +6146,13 @@ DOMSerializer.fromSchema = function fromSchema (schema) {
 // :: (Schema) → Object<(node: Node) → DOMOutputSpec>
 // Gather the serializers in a schema's node specs into an object.
 // This can be useful as a base to build a custom serializer from.
-DOMSerializer.nodesFromSchema = function nodesFromSchema (schema) {
+DOMSerializer.nodesFromSchema = function (schema) {
   return gatherToDOM(schema.nodes)
 };
 
 // :: (Schema) → Object<(mark: Mark) → DOMOutputSpec>
 // Gather the serializers in a schema's mark specs into an object.
-DOMSerializer.marksFromSchema = function marksFromSchema (schema) {
+DOMSerializer.marksFromSchema = function (schema) {
   return gatherToDOM(schema.marks)
 };
 exports.DOMSerializer = DOMSerializer
@@ -6150,13 +6214,13 @@ var nodes = {
     group: "block",
     defining: true,
     parseDOM: [{tag: "blockquote"}],
-    toDOM: function toDOM$1() { return ["blockquote", 0] }
+    toDOM: function toDOM() { return ["blockquote", 0] }
   },
 
   horizontal_rule: {
     group: "block",
     parseDOM: [{tag: "hr"}],
-    toDOM: function toDOM$2() { return ["hr"] }
+    toDOM: function toDOM() { return ["hr"] }
   },
 
   heading: {
@@ -6170,7 +6234,7 @@ var nodes = {
                {tag: "h4", attrs: {level: 4}},
                {tag: "h5", attrs: {level: 5}},
                {tag: "h6", attrs: {level: 6}}],
-    toDOM: function toDOM$3(node) { return ["h" + node.attrs.level, 0] }
+    toDOM: function toDOM(node) { return ["h" + node.attrs.level, 0] }
   },
 
   code_block: {
@@ -6179,12 +6243,12 @@ var nodes = {
     code: true,
     defining: true,
     parseDOM: [{tag: "pre", preserveWhitespace: true}],
-    toDOM: function toDOM$4() { return ["pre", ["code", 0]] }
+    toDOM: function toDOM() { return ["pre", ["code", 0]] }
   },
 
   text: {
     group: "inline",
-    toDOM: function toDOM$5(node) { return node.text }
+    toDOM: function toDOM(node) { return node.text }
   },
 
   image: {
@@ -6203,7 +6267,7 @@ var nodes = {
         alt: dom.getAttribute("alt")
       }
     }}],
-    toDOM: function toDOM$6(node) { return ["img", node.attrs] }
+    toDOM: function toDOM(node) { return ["img", node.attrs] }
   },
 
   hard_break: {
@@ -6211,7 +6275,7 @@ var nodes = {
     group: "inline",
     selectable: false,
     parseDOM: [{tag: "br"}],
-    toDOM: function toDOM$7() { return ["br"] }
+    toDOM: function toDOM() { return ["br"] }
   }
 }
 exports.nodes = nodes
@@ -6230,7 +6294,7 @@ var marks = {
   em: {
     parseDOM: [{tag: "i"}, {tag: "em"},
                {style: "font-style", getAttrs: function (value) { return value == "italic" && null; }}],
-    toDOM: function toDOM$8() { return ["em"] }
+    toDOM: function toDOM() { return ["em"] }
   },
 
   strong: {
@@ -6240,7 +6304,7 @@ var marks = {
                // tags with a font-weight normal.
                {tag: "b", getAttrs: function (node) { return node.style.fontWeight != "normal" && null; }},
                {style: "font-weight", getAttrs: function (value) { return /^(bold(er)?|[5-9]\d{2,})$/.test(value) && null; }}],
-    toDOM: function toDOM$9() { return ["strong"] }
+    toDOM: function toDOM() { return ["strong"] }
   },
 
   link: {
@@ -6248,15 +6312,15 @@ var marks = {
       href: {},
       title: {default: null}
     },
-    parseDOM: [{tag: "a[href]", getAttrs: function getAttrs$1(dom) {
+    parseDOM: [{tag: "a[href]", getAttrs: function getAttrs(dom) {
       return {href: dom.getAttribute("href"), title: dom.getAttribute("title")}
     }}],
-    toDOM: function toDOM$10(node) { return ["a", node.attrs] }
+    toDOM: function toDOM(node) { return ["a", node.attrs] }
   },
 
   code: {
     parseDOM: [{tag: "code"}],
-    toDOM: function toDOM$11() { return ["code"] }
+    toDOM: function toDOM() { return ["code"] }
   }
 }
 exports.marks = marks
@@ -6272,7 +6336,7 @@ exports.marks = marks
 var schema = new Schema({nodes: nodes, marks: marks})
 exports.schema = schema
 
-},{"prosemirror-model":23}],32:[function(require,module,exports){
+},{"prosemirror-model":24}],32:[function(require,module,exports){
 var ref = require("prosemirror-transform");
 var findWrapping = ref.findWrapping;
 var liftTarget = ref.liftTarget;
@@ -6302,7 +6366,7 @@ exports.orderedList = orderedList
 // A bullet list node spec.
 var bulletList = {
   parseDOM: [{tag: "ul"}],
-  toDOM: function toDOM$1() { return ["ul", 0] }
+  toDOM: function toDOM() { return ["ul", 0] }
 }
 exports.bulletList = bulletList
 
@@ -6310,7 +6374,7 @@ exports.bulletList = bulletList
 // A list item node spec.
 var listItem = {
   parseDOM: [{tag: "li"}],
-  toDOM: function toDOM$2() { return ["li", 0] },
+  toDOM: function toDOM() { return ["li", 0] },
   defining: true
 }
 exports.listItem = listItem
@@ -6341,13 +6405,13 @@ function addListNodes(nodes, itemContent, listGroup) {
 }
 exports.addListNodes = addListNodes
 
-// :: (NodeType, ?Object) → (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (NodeType, ?Object) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Returns a command function that wraps the selection in a list with
 // the given type an attributes. If `apply` is `false`, only return a
 // value to indicate whether this is possible, but don't actually
 // perform the change.
 function wrapInList(nodeType, attrs) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var $from = ref.$from;
     var $to = ref.$to;
@@ -6364,7 +6428,7 @@ function wrapInList(nodeType, attrs) {
     }
     var wrap = findWrapping(outerRange, nodeType, attrs, range)
     if (!wrap) { return false }
-    if (onAction) { onAction(doWrapInList(state.tr, range, wrap, doJoin, nodeType).scrollAction()) }
+    if (dispatch) { dispatch(doWrapInList(state.tr, range, wrap, doJoin, nodeType).scrollIntoView()) }
     return true
   }
 }
@@ -6390,11 +6454,11 @@ function doWrapInList(tr, range, wrappers, joinBefore, nodeType) {
   return tr
 }
 
-// :: (NodeType) → (state: EditorState) → bool
+// :: (NodeType) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Build a command that splits a non-empty textblock at the top level
 // of a list item by also splitting that list item.
 function splitListItem(nodeType) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var $from = ref.$from;
     var $to = ref.$to;
@@ -6407,23 +6471,23 @@ function splitListItem(nodeType) {
     var tr = state.tr.delete($from.pos, $to.pos)
     var types = nextType && [null, {type: nextType}]
     if (!canSplit(tr.doc, $from.pos, 2, types)) { return false }
-    if (onAction) { onAction(tr.split($from.pos, 2, types).scrollAction()) }
+    if (dispatch) { dispatch(tr.split($from.pos, 2, types).scrollIntoView()) }
     return true
   }
 }
 exports.splitListItem = splitListItem
 
-// :: (NodeType) → (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (NodeType) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Create a command to lift the list item around the selection up into
 // a wrapping list.
 function liftListItem(nodeType) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var $from = ref.$from;
     var $to = ref.$to;
     var range = $from.blockRange($to, function (node) { return node.childCount && node.firstChild.type == nodeType; })
     if (!range || range.depth < 2 || $from.node(range.depth - 1).type != nodeType) { return false }
-    if (onAction) {
+    if (dispatch) {
       var tr = state.tr, end = range.end, endOfList = $to.end(range.depth)
       if (end < endOfList) {
         // There are siblings after the lifted items, which must become
@@ -6432,18 +6496,18 @@ function liftListItem(nodeType) {
                                       new Slice(Fragment.from(nodeType.create(null, range.parent.copy())), 1, 0), 1, true))
         range = new NodeRange(tr.doc.resolveNoCache($from.pos), tr.doc.resolveNoCache(endOfList), range.depth)
       }
-      onAction(tr.lift(range, liftTarget(range)).scrollAction())
+      dispatch(tr.lift(range, liftTarget(range)).scrollIntoView())
     }
     return true
   }
 }
 exports.liftListItem = liftListItem
 
-// :: (NodeType) → (state: EditorState, onAction: ?(action: Action)) → bool
+// :: (NodeType) → (state: EditorState, dispatch: ?(tr: Transaction)) → bool
 // Create a command to sink the list item around the selection down
 // into an inner list.
 function sinkListItem(nodeType) {
-  return function(state, onAction) {
+  return function(state, dispatch) {
     var ref = state.selection;
     var $from = ref.$from;
     var $to = ref.$to;
@@ -6454,22 +6518,22 @@ function sinkListItem(nodeType) {
     var parent = range.parent, nodeBefore = parent.child(startIndex - 1)
     if (nodeBefore.type != nodeType) { return false }
 
-    if (onAction) {
+    if (dispatch) {
       var nestedBefore = nodeBefore.lastChild && nodeBefore.lastChild.type == parent.type
       var inner = Fragment.from(nestedBefore ? nodeType.create() : null)
       var slice = new Slice(Fragment.from(nodeType.create(null, Fragment.from(parent.copy(inner)))),
                             nestedBefore ? 3 : 1, 0)
       var before = range.start, after = range.end
-      onAction(state.tr.step(new ReplaceAroundStep(before - (nestedBefore ? 3 : 1), after,
+      dispatch(state.tr.step(new ReplaceAroundStep(before - (nestedBefore ? 3 : 1), after,
                                                    before, after, slice, 1, true))
-               .scrollAction())
+               .scrollIntoView())
     }
     return true
   }
 }
 exports.sinkListItem = sinkListItem
 
-},{"prosemirror-model":23,"prosemirror-transform":39}],33:[function(require,module,exports){
+},{"prosemirror-model":24,"prosemirror-transform":39}],33:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var Fragment = ref.Fragment;
 var Slice = ref.Slice;
@@ -6503,7 +6567,7 @@ exports.table = table
 var tableRow = {
   attrs: {columns: {default: 1}},
   parseDOM: [{tag: "tr", getAttrs: function (dom) { return dom.children.length ? {columns: dom.children.length} : false; }}],
-  toDOM: function toDOM$1() { return ["tr", 0] },
+  toDOM: function toDOM() { return ["tr", 0] },
   tableRow: true
 }
 exports.tableRow = tableRow
@@ -6512,7 +6576,7 @@ exports.tableRow = tableRow
 // A table cell node spec.
 var tableCell = {
   parseDOM: [{tag: "td"}],
-  toDOM: function toDOM$2() { return ["td", 0] }
+  toDOM: function toDOM() { return ["td", 0] }
 }
 exports.tableCell = tableCell
 
@@ -6785,90 +6849,90 @@ function findRow($pos, pred) {
   return -1
 }
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Command function that adds a column before the column with the
 // selection.
-function addColumnBefore(state, onAction) {
+function addColumnBefore(state, dispatch) {
   var $from = state.selection.$from, cellFrom
   var rowDepth = findRow($from, function (d) { return cellFrom = d == $from.depth ? $from.nodeBefore : $from.node(d + 1); })
   if (rowDepth == -1) { return false }
-  if (onAction)
-    { onAction(state.tr.step(AddColumnStep.create(state.doc, $from.before(rowDepth - 1), $from.index(rowDepth),
-                                                cellFrom.type, cellFrom.attrs)).action()) }
+  if (dispatch)
+    { dispatch(state.tr.step(AddColumnStep.create(state.doc, $from.before(rowDepth - 1), $from.index(rowDepth),
+                                                cellFrom.type, cellFrom.attrs))) }
   return true
 }
 exports.addColumnBefore = addColumnBefore
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Command function that adds a column after the column with the
 // selection.
-function addColumnAfter(state, onAction) {
+function addColumnAfter(state, dispatch) {
   var $from = state.selection.$from, cellFrom
   var rowDepth = findRow($from, function (d) { return cellFrom = d == $from.depth ? $from.nodeAfter : $from.node(d + 1); })
   if (rowDepth == -1) { return false }
-  if (onAction)
-    { onAction(state.tr.step(AddColumnStep.create(state.doc, $from.before(rowDepth - 1),
+  if (dispatch)
+    { dispatch(state.tr.step(AddColumnStep.create(state.doc, $from.before(rowDepth - 1),
                                                 $from.indexAfter(rowDepth) + (rowDepth == $from.depth ? 1 : 0),
-                                                cellFrom.type, cellFrom.attrs)).action()) }
+                                                cellFrom.type, cellFrom.attrs))) }
   return true
 }
 exports.addColumnAfter = addColumnAfter
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Command function that removes the column with the selection.
-function removeColumn(state, onAction) {
+function removeColumn(state, dispatch) {
   var $from = state.selection.$from
   var rowDepth = findRow($from, function (d) { return $from.node(d).childCount > 1; })
   if (rowDepth == -1) { return false }
-  if (onAction)
-    { onAction(state.tr.step(RemoveColumnStep.create(state.doc, $from.before(rowDepth - 1), $from.index(rowDepth))).action()) }
+  if (dispatch)
+    { dispatch(state.tr.step(RemoveColumnStep.create(state.doc, $from.before(rowDepth - 1), $from.index(rowDepth)))) }
   return true
 }
 exports.removeColumn = removeColumn
 
-function addRow(state, onAction, side) {
+function addRow(state, dispatch, side) {
   var $from = state.selection.$from
   var rowDepth = findRow($from)
   if (rowDepth == -1) { return false }
-  if (onAction) {
+  if (dispatch) {
     var exampleRow = $from.node(rowDepth)
     var cells = [], pos = side < 0 ? $from.before(rowDepth) : $from.after(rowDepth)
     exampleRow.forEach(function (cell) { return cells.push(cell.type.createAndFill(cell.attrs)); })
     var row = exampleRow.copy(Fragment.from(cells))
-    onAction(state.tr.step(new ReplaceStep(pos, pos, new Slice(Fragment.from(row), 0, 0))).action())
+    dispatch(state.tr.step(new ReplaceStep(pos, pos, new Slice(Fragment.from(row), 0, 0))))
   }
   return true
 }
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Command function that adds a row after the row with the
 // selection.
-function addRowBefore(state, onAction) {
-  return addRow(state, onAction, -1)
+function addRowBefore(state, dispatch) {
+  return addRow(state, dispatch, -1)
 }
 exports.addRowBefore = addRowBefore
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Command function that adds a row before the row with the
 // selection.
-function addRowAfter(state, onAction) {
-  return addRow(state, onAction, 1)
+function addRowAfter(state, dispatch) {
+  return addRow(state, dispatch, 1)
 }
 exports.addRowAfter = addRowAfter
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Command function that removes the row with the selection.
-function removeRow(state, onAction) {
+function removeRow(state, dispatch) {
   var $from = state.selection.$from
   var rowDepth = findRow($from, function (d) { return $from.node(d - 1).childCount > 1; })
   if (rowDepth == -1) { return false }
-  if (onAction)
-    { onAction(state.tr.step(new ReplaceStep($from.before(rowDepth), $from.after(rowDepth), Slice.empty)).action()) }
+  if (dispatch)
+    { dispatch(state.tr.step(new ReplaceStep($from.before(rowDepth), $from.after(rowDepth), Slice.empty))) }
   return true
 }
 exports.removeRow = removeRow
 
-function moveCell(state, dir, onAction) {
+function moveCell(state, dir, dispatch) {
   var ref = state.selection;
   var $from = ref.$from;
   var rowDepth = findRow($from)
@@ -6878,7 +6942,7 @@ function moveCell(state, dir, onAction) {
     var $cellStart = state.doc.resolve(row.content.offsetAt(newIndex) + $from.start(rowDepth))
     var sel = Selection.findFrom($cellStart, 1)
     if (!sel || sel.from >= $cellStart.end()) { return false }
-    if (onAction) { onAction(sel.scrollAction()) }
+    if (dispatch) { dispatch(state.tr.setSelection(sel).scrollIntoView()) }
     return true
   } else {
     var rowIndex = $from.index(rowDepth - 1) + dir, table = $from.node(rowDepth - 1)
@@ -6886,34 +6950,33 @@ function moveCell(state, dir, onAction) {
     var cellStart = dir > 0 ? $from.after(rowDepth) + 2 : $from.before(rowDepth) - 2 - table.child(rowIndex).lastChild.content.size
     var $cellStart$1 = state.doc.resolve(cellStart), sel$1 = Selection.findFrom($cellStart$1, 1)
     if (!sel$1 || sel$1.from >= $cellStart$1.end()) { return false }
-    if (onAction) { onAction(sel$1.scrollAction()) }
+    if (dispatch) { dispatch(state.tr.setSelection(sel$1).scrollIntoView()) }
     return true
   }
 }
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Move to the next cell in the current table, if there is one.
-function selectNextCell(state, onAction) { return moveCell(state, 1, onAction) }
+function selectNextCell(state, dispatch) { return moveCell(state, 1, dispatch) }
 exports.selectNextCell = selectNextCell
 
-// :: (EditorState, onAction: ?(action: Action)) → bool
+// :: (EditorState, dispatch: ?(tr: Transaction)) → bool
 // Move to the previous cell in the current table, if there is one.
-function selectPreviousCell(state, onAction) { return moveCell(state, -1, onAction) }
+function selectPreviousCell(state, dispatch) { return moveCell(state, -1, dispatch) }
 exports.selectPreviousCell = selectPreviousCell
 
-},{"prosemirror-model":23,"prosemirror-state":34,"prosemirror-transform":39}],34:[function(require,module,exports){
+},{"prosemirror-model":24,"prosemirror-state":34,"prosemirror-transform":39}],34:[function(require,module,exports){
 ;var assign;
 ((assign = require("./selection"), exports.Selection = assign.Selection, exports.TextSelection = assign.TextSelection, exports.NodeSelection = assign.NodeSelection))
 
-;var assign$1;
-((assign$1 = require("./transform"), exports.EditorTransform = assign$1.EditorTransform, exports.extendTransformAction = assign$1.extendTransformAction))
+exports.Transaction = require("./transaction").Transaction
 
 exports.EditorState = require("./state").EditorState
 
-;var assign$2;
-((assign$2 = require("./plugin"), exports.Plugin = assign$2.Plugin, exports.PluginKey = assign$2.PluginKey))
+;var assign$1;
+((assign$1 = require("./plugin"), exports.Plugin = assign$1.Plugin, exports.PluginKey = assign$1.PluginKey))
 
-},{"./plugin":35,"./selection":36,"./state":37,"./transform":38}],35:[function(require,module,exports){
+},{"./plugin":35,"./selection":36,"./state":37,"./transaction":38}],35:[function(require,module,exports){
 // ::- Plugins wrap extra functionality that can be added to an
 // editor. They can define new [state fields](#state.StateField), and
 // add [view props](#view.EditorProps).
@@ -6951,9 +7014,9 @@ exports.Plugin = Plugin
 //   that `instance` is a half-initialized state instance, and will
 //   not have values for any fields initialzed after this one.
 //
-//   applyAction:: (action: Action, value: T, oldState: EditorState, newState: EditorState) → T
-//   Apply the given action to this state field, producing a new field
-//   value. Note that the `newState` argument is a partially
+//   apply:: (tr: Transaction, value: T, oldState: EditorState, newState: EditorState) → T
+//   Apply the given transaction to this state field, producing a new
+//   field value. Note that the `newState` argument is a partially
 //   constructed state does not yet contain the state from plugins
 //   coming after this plugin.
 //
@@ -7015,22 +7078,6 @@ prototypeAccessors.to.get = function () { return this.$to.pos };
 
 prototypeAccessors.empty.get = function () {
   return this.from == this.to
-};
-
-// :: (?Object) → SelectionAction
-// Create an [action](#state.Action) that updates the selection to
-// this one.
-Selection.prototype.action = function action (options) {
-  var action = {type: "selection", selection: this, time: Date.now()}
-  if (options) { for (var prop in options) { action[prop] = options[prop] } }
-  return action
-};
-
-// :: () → SelectionAction
-// Create an action that updates the selection to this one and
-// scrolls it into view.
-Selection.prototype.scrollAction = function scrollAction () {
-  return this.action({scrollIntoView: true})
 };
 
 // eq:: (other: Selection) → bool
@@ -7205,7 +7252,7 @@ exports.TextSelection = TextSelection
 // and `to` point directly before and after the selected node.
 var NodeSelection = (function (Selection) {
   function NodeSelection($from) {
-    var $to = $from.plusOne()
+    var $to = $from.node(0).resolve($from.pos + $from.nodeAfter.nodeSize)
     Selection.call(this, $from, $to)
     // :: Node The selected node.
     this.node = $from.nodeAfter
@@ -7269,13 +7316,12 @@ function findSelectionIn(doc, node, pos, index, dir, text) {
 
 },{}],37:[function(require,module,exports){
 var ref = require("prosemirror-model");
-var Mark = ref.Mark;
 var Node = ref.Node;
 
 var ref$1 = require("./selection");
 var Selection = ref$1.Selection;
-var ref$2 = require("./transform");
-var EditorTransform = ref$2.EditorTransform;
+var ref$2 = require("./transaction");
+var Transaction = ref$2.Transaction;
 
 function bind(f, self) {
   return !self || !f ? f : f.bind(self)
@@ -7284,61 +7330,38 @@ function bind(f, self) {
 var FieldDesc = function FieldDesc(name, desc, self) {
   this.name = name
   this.init = bind(desc.init, self)
-  this.applyAction = bind(desc.applyAction, self)
+  this.apply = bind(desc.apply, self)
 };
 
 var baseFields = [
   new FieldDesc("doc", {
     init: function init(config) { return config.doc || config.schema.nodes.doc.createAndFill() },
-    applyAction: function applyAction(action, doc) {
-      return action.type == "transform" ? action.transform.doc : doc
-    }
+    apply: function apply(tr) { return tr.doc }
   }),
 
   new FieldDesc("selection", {
-    init: function init$1(config, instance) { return config.selection || Selection.atStart(instance.doc) },
-    applyAction: function applyAction$1(action, selection) {
-      if (action.type == "transform")
-        { return action.selection || selection.map(action.transform.doc, action.transform.mapping) }
-      if (action.type == "selection")
-        { return action.selection }
-      return selection
-    }
+    init: function init(config, instance) { return config.selection || Selection.atStart(instance.doc) },
+    apply: function apply(tr) { return tr.selection }
   }),
 
   new FieldDesc("storedMarks", {
-    init: function init$2() { return null },
-    applyAction: function applyAction$2(action, storedMarks, state) {
-      if (action.type == "transform") { return action.selection ? null : storedMarks }
-      if (action.type == "selection") { return null }
-      if (action.type == "addStoredMark" && state.selection.empty)
-        { return action.mark.addToSet(storedMarks || currentMarks(state.doc, state.selection)) }
-      if (action.type == "removeStoredMark" && state.selection.empty)
-        { return action.markType.removeFromSet(storedMarks || currentMarks(state.doc, state.selection)) }
-      return storedMarks
-    }
+    init: function init() { return null },
+    apply: function apply(tr, _marks, _old, state) { return state.selection.empty ? tr.storedMarks : null }
   }),
 
   new FieldDesc("scrollToSelection", {
-    init: function init$3() { return 0 },
-    applyAction: function applyAction$3(action, prev) {
-      return (action.type == "transform" || action.type == "selection") && action.scrollIntoView
-        ? prev + 1 : prev
-    }
+    init: function init() { return 0 },
+    apply: function apply(tr, prev) { return tr.scrolledIntoView ? prev + 1 : prev }
   })
 ]
 
-function currentMarks(doc, selection) {
-  return selection.head == null ? Mark.none : doc.marksAt(selection.head)
-}
-
 // Object wrapping the part of a state object that stays the same
-// across actions. Stored in the state's `config` property.
+// across transactions. Stored in the state's `config` property.
 var Configuration = function Configuration(schema, plugins) {
   var this$1 = this;
 
   this.schema = schema
-  this.fields = baseFields.slice()
+  this.fields = baseFields.concat()
   this.plugins = []
   this.pluginsByKey = Object.create(null)
   if (plugins) { plugins.forEach(function (plugin) {
@@ -7354,7 +7377,7 @@ var Configuration = function Configuration(schema, plugins) {
 // ::- The state of a ProseMirror editor is represented by an object
 // of this type. This is a persistent data structure—it isn't updated,
 // but rather a new state value is computed from an old one with the
-// [`applyAction`](#state.EditorState.applyAction) method.
+// [`apply`](#state.EditorState.apply) method.
 //
 // In addition to the built-in state fields, plugins can define
 // additional pieces of state.
@@ -7386,23 +7409,82 @@ prototypeAccessors.plugins.get = function () {
   return this.config.plugins
 };
 
-// :: (Action) → EditorState
-// Apply the given action to produce a new state.
-EditorState.prototype.applyAction = function applyAction (action) {
+// :: (Transaction) → EditorState
+// Apply the given transaction to produce a new state.
+EditorState.prototype.apply = function apply (tr) {
+  return this.applyTransaction(tr).state
+};
+
+// : (Transaction) → ?Transaction
+EditorState.prototype.filterTransaction = function filterTransaction (tr, ignore) {
+    var this$1 = this;
+    if ( ignore === void 0 ) ignore = -1;
+
+  for (var i = 0; i < this.config.plugins.length; i++) { if (i != ignore) {
+    var plugin = this$1.config.plugins[i]
+    if (plugin.options.filterTransaction && !plugin.options.filterTransaction.call(plugin, tr, this$1))
+      { return false }
+  } }
+  return true
+};
+
+// :: (Transaction) → {state: EditorState, transactions: [Transaction]}
+// Verbose variant of [`apply`](##state.EditorState.apply) that
+// returns the precise transactions that were applied (which might
+// be influenced by the [transaction
+// hooks](##state.Plugin.constructor^options.filterTransaction) of
+// plugins) along with the new state.
+EditorState.prototype.applyTransaction = function applyTransaction (tr) {
     var this$1 = this;
 
+  if (!this.filterTransaction(tr)) { return {state: this, transactions: []} }
+
+  var trs = [tr], newState = this.applyInner(tr), seen = null
+  // This loop repeatedly gives plugins a chance to respond to
+  // transactions as new transactions are added, making sure to only
+  // pass the transactions the plugin did not see before.
+  outer: for (;;) {
+    var haveNew = false
+    for (var i = 0; i < this.config.plugins.length; i++) {
+      var plugin = this$1.config.plugins[i]
+      if (plugin.options.appendTransaction) {
+        var n = seen ? seen[i].n : 0, oldState = seen ? seen[i].state : this$1
+        var tr$1 = n < trs.length &&
+            plugin.options.appendTransaction.call(plugin, n ? trs.slice(n) : trs, oldState, newState)
+        if (tr$1 && newState.filterTransaction(tr$1, i)) {
+          if (!seen) {
+            seen = []
+            for (var j = 0; j < this.config.plugins.length; j++)
+              { seen.push(j < i ? {state: newState, n: trs.length} : {state: this$1, n: 0}) }
+          }
+          trs.push(tr$1)
+          newState = newState.applyInner(tr$1)
+          haveNew = true
+        }
+        if (seen) { seen[i] = {state: newState, n: trs.length} }
+      }
+    }
+    if (!haveNew) { return {state: newState, transactions: trs} }
+  }
+};
+
+// : (Transaction) → EditorState
+EditorState.prototype.applyInner = function applyInner (tr) {
+    var this$1 = this;
+
+  if (!tr.before.eq(this.doc)) { throw new RangeError("Applying a mismatched transaction") }
   var newInstance = new EditorState(this.config), fields = this.config.fields
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i]
-    newInstance[field.name] = field.applyAction(action, this$1[field.name], this$1, newInstance)
+    newInstance[field.name] = field.apply(tr, this$1[field.name], this$1, newInstance)
   }
-  for (var i$1 = 0; i$1 < applyListeners.length; i$1++) { applyListeners[i$1](this$1, action, newInstance) }
+  for (var i$1 = 0; i$1 < applyListeners.length; i$1++) { applyListeners[i$1](this$1, tr, newInstance) }
   return newInstance
 };
 
-// :: EditorTransform
-// Create a selection-aware [`Transform` object](#state.EditorTransform).
-prototypeAccessors.tr.get = function () { return new EditorTransform(this) };
+// :: Transaction
+// Start a [transaction](#state.Transaction) from this state.
+prototypeAccessors.tr.get = function () { return new Transaction(this) };
 
 // :: (Object) → EditorState
 // Create a state. `config` must be an object containing at least a
@@ -7502,123 +7584,124 @@ exports.EditorState = EditorState
 
 var applyListeners = []
 
-// Action:: interface
-// State updates are performed through actions, which are objects that
-// describe the update.
-//
-//  type:: string
-//  The type of this action. This determines the way the action is
-//  interpreted, and which other fields it should have.
-
-// TransformAction:: interface
-// An action type that transforms the state's document. Applying this
-// will create a state in which the document is the result of this
-// transformation.
-//
-//   type:: "transform"
-//
-//   transform:: Transform
-//
-//   selection:: ?Selection
-//   If given, this selection will be used as the new selection. If
-//   not, the old selection is mapped through the transform.
-//
-//   time:: number
-//   The timestamp at which the change was made.
-//
-//   sealed: ?bool
-//   Should be set to true when this action's transform should not be
-//   changed after the fact with
-//   [`extendTransformAction`](#state.extendTransformAction) (for
-//   example when the action carries metadata that makes assumptions
-//   about the transform). Defaults to false.
-//
-//   scrollIntoView:: ?bool
-//   When true, the next display update will scroll the cursor into
-//   view.
-
-// SelectionAction:: interface
-// An action that updates the selection.
-//
-//   type:: "selection"
-//
-//   selection:: Selection
-//   The new selection.
-//
-//   origin:: ?string
-//   An optional string giving more information about the source of
-//   the action. The [view](##view) will set this to `"mouse"` for
-//   selection actions originating from mouse events.
-//
-//   scrollIntoView:: ?bool
-//   When true, the next display update will scroll the cursor into
-//   view.
-//
-//   time:: number
-//   The timestamp at which the action was created.
-
-// AddStoredMarkAction:: interface
-// An action type that adds a stored mark to the state.
-//
-//   type:: "addStoredMark"
-//
-//   mark:: Mark
-
-// RemoveStoredMarkAction:: interface
-// An action type that removes a stored mark from the state.
-//
-//   type:: "removeStoredMark"
-//
-//   markType:: MarkType
-
-},{"./selection":36,"./transform":38,"prosemirror-model":23}],38:[function(require,module,exports){
+},{"./selection":36,"./transaction":38,"prosemirror-model":24}],38:[function(require,module,exports){
 var ref = require("prosemirror-transform");
 var Transform = ref.Transform;
-var ref$1 = require("./selection");
-var Selection = ref$1.Selection;
+var ref$1 = require("prosemirror-model");
+var Mark = ref$1.Mark;
+var ref$2 = require("./selection");
+var Selection = ref$2.Selection;
 
-// ::- A selection-aware extension of `Transform`. Use
+var UPDATED_SEL = 1, UPDATED_MARKS = 2, UPDATED_SCROLL = 4
+
+// ::- An editor state transaction, which can be applied to a state to
+// create an updated state. Use
 // [`EditorState.tr`](#state.EditorState.tr) to create an instance.
-var EditorTransform = (function (Transform) {
-  function EditorTransform(state) {
+//
+// Transactions track changes to the document (they are a subclass of
+// [`Transform`](#transform.Transform)), but also other state changes,
+// like selection updates and adjustments of the set of [stored
+// marks](##state.EditorState.storedMarks). In addition, you can store
+// metadata properties in a transaction, which are extra pieces of
+// informations that client code or plugins can use to describe what a
+// transacion represents, so that they can update their [own
+// state](##state.StateField) accordingly.
+//
+// The [editor view](##view.EditorView) uses a single metadata
+// property: it will attach a property `"pointer"` with the value
+// `true` to selection transactions directly caused by mouse or touch
+// input.
+var Transaction = (function (Transform) {
+  function Transaction(state) {
     Transform.call(this, state.doc)
-    this.state = state
+    // :: number
+    // The timestamp associated with this transaction.
+    this.time = Date.now()
     this.curSelection = state.selection
-    this.curSelectionAt = 0
-    this.selectionSet = false
+    // The step count for which the current selection is valid.
+    this.curSelectionFor = 0
+    // :: ?[Mark]
+    // The stored marks in this transaction.
+    this.storedMarks = state.storedMarks
+    // Bitfield to track which aspects of the state were updated by
+    // this transaction.
+    this.updated = 0
+    // Object used to store metadata properties for the transaction.
+    this.meta = Object.create(null)
   }
 
-  if ( Transform ) EditorTransform.__proto__ = Transform;
-  EditorTransform.prototype = Object.create( Transform && Transform.prototype );
-  EditorTransform.prototype.constructor = EditorTransform;
+  if ( Transform ) Transaction.__proto__ = Transform;
+  Transaction.prototype = Object.create( Transform && Transform.prototype );
+  Transaction.prototype.constructor = Transaction;
 
-  var prototypeAccessors = { selection: {} };
+  var prototypeAccessors = { docChanged: {},selection: {},selectionSet: {},storedMarksSet: {},isGeneric: {},scrolledIntoView: {} };
+
+  // :: bool
+  // True when this transaction changes the document.
+  prototypeAccessors.docChanged.get = function () {
+    return this.steps.length > 0
+  };
 
   // :: Selection
   // The transform's current selection. This defaults to the
   // editor selection [mapped](#state.Selection.map) through the steps in
   // this transform, but can be overwritten with
-  // [`setSelection`](#state.EditorTransform.setSelection).
+  // [`setSelection`](#state.Transaction.setSelection).
   prototypeAccessors.selection.get = function () {
-    if (this.curSelectionAt < this.steps.length) {
-      this.curSelection = this.curSelection.map(this.doc, this.mapping.slice(this.curSelectionAt))
-      this.curSelectionAt = this.steps.length
+    if (this.curSelectionFor < this.steps.length) {
+      this.curSelection = this.curSelection.map(this.doc, this.mapping.slice(this.curSelectionFor))
+      this.curSelectionFor = this.steps.length
     }
     return this.curSelection
   };
 
-  // :: (Selection) → EditorTransform
-  // Update the transform's current selection. This will determine the
-  // selection that the editor gets when the transform is applied.
-  EditorTransform.prototype.setSelection = function setSelection (selection) {
+  // :: (Selection) → Transaction
+  // Update the transaction's current selection. This will determine
+  // the selection that the editor gets when the transaction is
+  // applied.
+  Transaction.prototype.setSelection = function setSelection (selection) {
     this.curSelection = selection
-    this.curSelectionAt = this.steps.length
-    this.selectionSet = true
+    this.curSelectionFor = this.steps.length
+    this.updated = (this.updated | UPDATED_SEL) & ~UPDATED_MARKS
+    this.storedMarks = null
     return this
   };
 
-  // :: (Slice) → EditorTransform
-  EditorTransform.prototype.replaceSelection = function replaceSelection (slice) {
+  // :: bool
+  // Whether the selection was explicitly updated by this transaction.
+  prototypeAccessors.selectionSet.get = function () {
+    return this.updated & UPDATED_SEL > 0
+  };
+
+  // :: (?[Mark]) → Transaction
+  // Replace the set of stored marks.
+  Transaction.prototype.setStoredMarks = function setStoredMarks (marks) {
+    this.storedMarks = marks
+    this.updated |= UPDATED_MARKS
+    return this
+  };
+
+  // :: bool
+  // Whether the stored marks were explicitly set for this transaction.
+  prototypeAccessors.storedMarksSet.get = function () {
+    return this.updated & UPDATED_MARKS > 0
+  };
+
+  Transaction.prototype.addStep = function addStep (step, doc) {
+    Transform.prototype.addStep.call(this, step, doc)
+    this.updated = this.updated & ~UPDATED_MARKS
+    this.storedMarks = null
+  };
+
+  // :: (number) → Transaction
+  // Update the timestamp for the transaction.
+  Transaction.prototype.setTime = function setTime (time) {
+    this.time = time
+    return this
+  };
+
+  // :: (Slice) → Transaction
+  Transaction.prototype.replaceSelection = function replaceSelection (slice) {
     var ref = this.selection;
     var from = ref.from;
     var to = ref.to;
@@ -7636,72 +7719,105 @@ var EditorTransform = (function (Transform) {
     return this
   };
 
-  // :: (Node, ?bool) → EditorTransform
+  // :: (Node, ?bool) → Transaction
   // Replace the selection with the given node or slice, or delete it
   // if `content` is null. When `inheritMarks` is true and the content
   // is inline, it inherits the marks from the place where it is
   // inserted.
-  EditorTransform.prototype.replaceSelectionWith = function replaceSelectionWith (node, inheritMarks) {
+  Transaction.prototype.replaceSelectionWith = function replaceSelectionWith (node, inheritMarks) {
     var ref = this.selection;
+    var $from = ref.$from;
     var from = ref.from;
     var to = ref.to;
     var startLen = this.steps.length
     if (inheritMarks !== false)
-      { node = node.mark(this.state.storedMarks || this.doc.marksAt(from, to > from)) }
+      { node = node.mark(this.storedMarks || $from.marks(to > from)) }
     this.replaceRangeWith(from, to, node)
     selectionToInsertionEnd(this, startLen, node.isInline ? -1 : 1)
     return this
   };
 
-  // :: () → EditorTransform
+  // :: () → Transaction
   // Delete the selection.
-  EditorTransform.prototype.deleteSelection = function deleteSelection () {
+  Transaction.prototype.deleteSelection = function deleteSelection () {
     var ref = this.selection;
     var from = ref.from;
     var to = ref.to;
     return this.deleteRange(from, to)
   };
 
-  // :: (string, from: ?number, to: ?number) → EditorTransform
+  // :: (string, from: ?number, to: ?number) → Transaction
   // Replace the given range, or the selection if no range is given,
   // with a text node containing the given string.
-  EditorTransform.prototype.insertText = function insertText (text, from, to) {
+  Transaction.prototype.insertText = function insertText (text, from, to) {
     if ( to === void 0 ) to = from;
 
+    var schema = this.doc.type.schema
     if (from == null) {
       if (!text) { return this.deleteSelection() }
-      return this.replaceSelectionWith(this.state.schema.text(text), true)
+      return this.replaceSelectionWith(schema.text(text), true)
     } else {
       if (!text) { return this.deleteRange(from, to) }
-      var node = this.state.schema.text(text, this.state.storedMarks || this.doc.marksAt(from, to > from))
+      var node = schema.text(text, this.storedMarks || this.doc.resolve(from).marks(to > from))
       return this.replaceRangeWith(from, to, node)
     }
   };
 
-  // :: (?Object) → TransformAction
-  // Create a transform action. `options` can be given to add extra
-  // properties to the action object.
-  EditorTransform.prototype.action = function action (options) {
-    var action = {type: "transform",
-                  transform: this,
-                  selection: this.selectionSet ? this.selection : null,
-                  time: Date.now()}
-    if (options) { for (var prop in options) { action[prop] = options[prop] } }
-    return action
+  // :: (union<string, Plugin, PluginKey>, any) → Transaction
+  // Store a metadata property in this transaction, keyed either by
+  // name or by plugin.
+  Transaction.prototype.setMeta = function setMeta (key, value) {
+    this.meta[typeof key == "string" ? key : key.key] = value
+    return this
   };
 
-  // :: () → TransformAction
-  // Create a transform action with the `scrollIntoView` property set
-  // to true (this is common enough to warrant a shortcut method).
-  EditorTransform.prototype.scrollAction = function scrollAction () {
-    return this.action({scrollIntoView: true})
+  // :: (union<string, Plugin, PluginKey>) → any
+  // Retrieve a metadata property for a given name or plugin.
+  Transaction.prototype.getMeta = function getMeta (key) {
+    return this.meta[typeof key == "string" ? key : key.key]
   };
 
-  Object.defineProperties( EditorTransform.prototype, prototypeAccessors );
+  // :: bool
+  // Returns true if this transaction doesn't contain any metadata,
+  // and can thus be safely extended.
+  prototypeAccessors.isGeneric.get = function () {
+    var this$1 = this;
 
-  return EditorTransform;
+    for (var _ in this$1.meta) { return false }
+    return true
+  };
+
+  // :: () → Transaction
+  // Indicate that the editor should scroll the selection into view
+  // when updated to the state produced by this transaction.
+  Transaction.prototype.scrollIntoView = function scrollIntoView () {
+    this.updated |= UPDATED_SCROLL
+    return this
+  };
+
+  prototypeAccessors.scrolledIntoView.get = function () {
+    return this.updated | UPDATED_SCROLL > 0
+  };
+
+  // :: (Mark) → Transaction
+  // Add a mark to the set of stored marks.
+  Transaction.prototype.addStoredMark = function addStoredMark (mark) {
+    this.storedMarks = mark.addToSet(this.storedMarks || currentMarks(this.selection))
+    return this
+  };
+
+  // :: (union<Mark, MarkType>) → Transaction
+  // Remove a mark or mark type from the set of stored marks.
+  Transaction.prototype.removeStoredMark = function removeStoredMark (mark) {
+    this.storedMarks = mark.removeFromSet(this.storedMarks || currentMarks(this.selection))
+    return this
+  };
+
+  Object.defineProperties( Transaction.prototype, prototypeAccessors );
+
+  return Transaction;
 }(Transform));
-exports.EditorTransform = EditorTransform
+exports.Transaction = Transaction
 
 function selectionToInsertionEnd(tr, startLen, bias) {
   if (tr.steps.length == startLen) { return }
@@ -7710,26 +7826,11 @@ function selectionToInsertionEnd(tr, startLen, bias) {
   if (end != null) { tr.setSelection(Selection.near(tr.doc.resolve(end), bias)) }
 }
 
-// :: (Action, (transform: Transform)) → Action
-// If, when dispatching actions, you need to extend a transform action
-// with additional steps, you can use this helper. It takes an action
-// and a function that extends a transform, and will update the action
-// to reflect any additional steps. It won't call the function if the
-// action is not a transform action or a
-// [sealed](#state.TransformAction.sealed) transform action.
-function extendTransformAction(action, f) {
-  if (action.type != "transform" || action.sealed) { return action }
-  var tr = action.transform, steps = tr.steps.length, set = tr.selectionSet
-  f(tr)
-  if (!set && tr.selectionSet)
-    { action.selection = tr.selection }
-  else if (action.selection && tr.steps.length > steps)
-    { action.selection = action.selection.map(tr.doc, tr.mapping.slice(steps)) }
-  return action
+function currentMarks(selection) {
+  return selection.head == null ? Mark.none : selection.$head.marks()
 }
-exports.extendTransformAction = extendTransformAction
 
-},{"./selection":36,"prosemirror-transform":39}],39:[function(require,module,exports){
+},{"./selection":36,"prosemirror-model":24,"prosemirror-transform":39}],39:[function(require,module,exports){
 ;var assign;
 ((assign = require("./transform"), exports.Transform = assign.Transform, exports.TransformError = assign.TransformError))
 ;var assign$1;
@@ -8142,7 +8243,7 @@ Transform.prototype.clearNonMatching = function(pos, match) {
   return this
 }
 
-},{"./mark_step":42,"./replace_step":44,"./transform":47,"prosemirror-model":23}],42:[function(require,module,exports){
+},{"./mark_step":42,"./replace_step":44,"./transform":47,"prosemirror-model":24}],42:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var Fragment = ref.Fragment;
 var Slice = ref.Slice;
@@ -8265,7 +8366,7 @@ exports.RemoveMarkStep = RemoveMarkStep
 
 Step.jsonID("removeMark", RemoveMarkStep)
 
-},{"./step":45,"prosemirror-model":23}],43:[function(require,module,exports){
+},{"./step":45,"prosemirror-model":24}],43:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var Fragment = ref.Fragment;
 var Slice = ref.Slice;
@@ -8511,7 +8612,6 @@ function fitRightJoin(content, parent, $from, $to, depth, openLeft, openRight) {
 
   var toNode = $to.node(depth)
   if (openRight > 0 && depth < $to.depth) {
-    // FIXME find a less allocaty approach
     var after = toNode.content.cutByIndex($to.indexAfter(depth)).addToStart(content.lastChild)
     var joinable$1 = match.fillBefore(after, true)
     // Can't insert content if there's a single node stretched across this gap
@@ -8586,7 +8686,6 @@ function normalizeSlice(content, openLeft, openRight) {
 // : (ResolvedPos, ResolvedPos, number, Slice) → Slice
 function fitRight($from, $to, slice) {
   var fitted = fitRightJoin(slice.content, $from.node(0), $from, $to, 0, slice.openLeft, slice.openRight)
-  // FIXME we might want to be clever about selectively dropping nodes here?
   if (!fitted) { return null }
   return normalizeSlice(fitted, slice.openLeft, $to.depth)
 }
@@ -8753,7 +8852,7 @@ function matchStrippingMarks(match, fragment) {
   return Fragment.from(newNodes)
 }
 
-},{"./replace_step":44,"./structure":46,"./transform":47,"prosemirror-model":23}],44:[function(require,module,exports){
+},{"./replace_step":44,"./structure":46,"./transform":47,"prosemirror-model":24}],44:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var Slice = ref.Slice;
 
@@ -8917,7 +9016,7 @@ function contentBetween(doc, from, to) {
   return false
 }
 
-},{"./map":40,"./step":45,"prosemirror-model":23}],45:[function(require,module,exports){
+},{"./map":40,"./step":45,"prosemirror-model":24}],45:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var ReplaceError = ref.ReplaceError;
 
@@ -8973,7 +9072,7 @@ Step.prototype.toJSON = function toJSON () {
     var this$1 = this;
 
   var obj = {stepType: this.jsonID}
-  for (var prop in this) { if (this$1.hasOwnProperty(prop)) {
+  for (var prop in this$1) { if (this$1.hasOwnProperty(prop)) {
     var val = this$1[prop]
     obj[prop] = val && val.toJSON ? val.toJSON() : val
   } }
@@ -9031,7 +9130,7 @@ StepResult.fromReplace = function fromReplace (doc, from, to, slice) {
 };
 exports.StepResult = StepResult
 
-},{"./map":40,"prosemirror-model":23}],46:[function(require,module,exports){
+},{"./map":40,"prosemirror-model":24}],46:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var Slice = ref.Slice;
 var Fragment = ref.Fragment;
@@ -9313,7 +9412,7 @@ function insertPoint(doc, pos, nodeType, attrs) {
 }
 exports.insertPoint = insertPoint
 
-},{"./replace_step":44,"./transform":47,"prosemirror-model":23}],47:[function(require,module,exports){
+},{"./replace_step":44,"./transform":47,"prosemirror-model":24}],47:[function(require,module,exports){
 var ref = require("./map");
 var Mapping = ref.Mapping;
 
@@ -9356,11 +9455,11 @@ var prototypeAccessors = { before: {} };
 // :: Node The document at the start of the transformation.
 prototypeAccessors.before.get = function () { return this.docs.length ? this.docs[0] : this.doc };
 
-// :: (Step) → Transform
+// :: (step: Step) → Transform
 // Apply a new step in this transformation, saving the result.
 // Throws an error when the step fails.
-Transform.prototype.step = function step (step) {
-  var result = this.maybeStep(step)
+Transform.prototype.step = function step (object) {
+  var result = this.maybeStep(object)
   if (result.failed) { throw new TransformError(result.failed) }
   return this
 };
@@ -9370,13 +9469,15 @@ Transform.prototype.step = function step (step) {
 // fails. Returns the step result.
 Transform.prototype.maybeStep = function maybeStep (step) {
   var result = step.apply(this.doc)
-  if (!result.failed) {
-    this.docs.push(this.doc)
-    this.steps.push(step)
-    this.mapping.appendMap(step.getMap())
-    this.doc = result.doc
-  }
+  if (!result.failed) { this.addStep(step, result.doc) }
   return result
+};
+
+Transform.prototype.addStep = function addStep (step, doc) {
+  this.docs.push(this.doc)
+  this.steps.push(step)
+  this.mapping.appendMap(step.getMap())
+  this.doc = doc
 };
 
 Object.defineProperties( Transform.prototype, prototypeAccessors );
@@ -9394,6 +9495,7 @@ if (typeof navigator != "undefined") {
   result.ie_version = ie_upto10 ? document.documentMode || 6 : ie_11up && +ie_11up[1]
   result.gecko = /gecko\/\d/i.test(navigator.userAgent)
   result.ios = /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent)
+  result.webkit = 'WebkitAppearance' in document.documentElement.style
 }
 
 },{}],49:[function(require,module,exports){
@@ -9414,7 +9516,7 @@ function moveSelectionBlock(state, dir) {
 }
 
 function apply(view, sel) {
-  view.props.onAction(sel.action({scrollIntoView: true}))
+  view.dispatch(view.state.tr.setSelection(sel).scrollIntoView())
   return true
 }
 
@@ -9471,6 +9573,8 @@ function skipIgnoredNodesLeft(view) {
         moveOffset = --offset
       }
       else { break }
+    } else if (isBlockNode(node)) {
+      break
     } else {
       var prev = node.previousSibling
       while (prev && isIgnorable(prev)) {
@@ -9506,12 +9610,14 @@ function skipIgnoredNodesRight(view) {
         moveOffset = ++offset
       }
       else { break }
+    } else if (isBlockNode(node)) {
+      break
     } else {
       var next = node.nextSibling
       while (next && isIgnorable(next)) {
         moveNode = next.parentNode
         moveOffset = Array.prototype.indexOf.call(moveNode.childNodes, next) + 1
-        next = next.previousSibling
+        next = next.nextSibling
       }
       if (!next) {
         node = node.parentNode
@@ -9525,6 +9631,11 @@ function skipIgnoredNodesRight(view) {
     }
   }
   if (moveNode) { setSel(sel, moveNode, moveOffset) }
+}
+
+function isBlockNode(dom) {
+  var desc = dom.pmViewDesc
+  return desc && desc.node && desc.node.isBlock
 }
 
 function setSel(sel, node, offset) {
@@ -9570,7 +9681,16 @@ function stopNativeHorizontalDelete(view, dir) {
   var empty = ref.empty;
   if (!$head || !$head.sameParent($anchor) || !$head.parent.isTextblock) { return true }
   if (!empty) { return false }
-  return view.endOfTextblock(dir > 0 ? "forward" : "backward")
+  if (view.endOfTextblock(dir > 0 ? "forward" : "backward")) { return true }
+  var nextNode = !$head.textOffset && (dir < 0 ? $head.nodeBefore : $head.nodeAfter)
+  if (nextNode && !nextNode.isText) {
+    var tr = view.state.tr
+    if (dir < 0) { tr.delete($head.pos - nextNode.nodeSize, $head.pos) }
+    else { tr.delete($head.pos, $head.pos + nextNode.nodeSize) }
+    view.dispatch(tr)
+    return true
+  }
+  return false
 }
 
 // A backdrop keymap used to make sure we always suppress keys that
@@ -9807,7 +9927,7 @@ function addContext(slice, context) {
   return new Slice(content, openLeft, openRight)
 }
 
-},{"prosemirror-model":23}],51:[function(require,module,exports){
+},{"prosemirror-model":24}],51:[function(require,module,exports){
 function compareObjs(a, b) {
   if (a == b) { return true }
   for (var p in a) { if (a[p] !== b[p]) { return false } }
@@ -9815,7 +9935,7 @@ function compareObjs(a, b) {
   return true
 }
 
-var WidgetType = function WidgetType(widget, options) {
+var WidgetType = function(widget, options) {
   if (widget.nodeType != 1) {
     var wrap = document.createElement("span")
     wrap.appendChild(widget)
@@ -9827,48 +9947,48 @@ var WidgetType = function WidgetType(widget, options) {
   this.options = options || noOptions
 };
 
-WidgetType.prototype.map = function map (mapping, span, offset, oldOffset) {
-  var ref = mapping.mapResult(span.from + oldOffset);
+WidgetType.prototype.map = function (mapping, span, offset, oldOffset) {
+  var ref = mapping.mapResult(span.from + oldOffset, this.options.associative == "left" ? -1 : 1);
     var pos = ref.pos;
     var deleted = ref.deleted;
   return deleted ? null : new Decoration(pos - offset, pos - offset, this)
 };
 
-WidgetType.prototype.valid = function valid () { return true };
+WidgetType.prototype.valid = function () { return true };
 
-WidgetType.prototype.eq = function eq (other) {
+WidgetType.prototype.eq = function (other) {
   return this == other ||
     (other instanceof WidgetType && (this.widget == other.widget || this.options.key) &&
      compareObjs(this.options, other.options))
 };
 
-var InlineType = function InlineType(attrs, options) {
+var InlineType = function(attrs, options) {
   this.options = options || noOptions
   this.attrs = attrs
 };
 
-InlineType.prototype.map = function map (mapping, span, offset, oldOffset) {
+InlineType.prototype.map = function (mapping, span, offset, oldOffset) {
   var from = mapping.map(span.from + oldOffset, this.options.inclusiveLeft ? -1 : 1) - offset
   var to = mapping.map(span.to + oldOffset, this.options.inclusiveRight ? 1 : -1) - offset
   return from >= to ? null : new Decoration(from, to, this)
 };
 
-InlineType.prototype.valid = function valid (_, span) { return span.from < span.to };
+InlineType.prototype.valid = function (_, span) { return span.from < span.to };
 
-InlineType.prototype.eq = function eq (other) {
+InlineType.prototype.eq = function (other) {
   return this == other ||
     (other instanceof InlineType && compareObjs(this.attrs, other.attrs) &&
      compareObjs(this.options, other.options))
 };
 
-InlineType.is = function is (span) { return span.type instanceof InlineType };
+InlineType.is = function (span) { return span.type instanceof InlineType };
 
-var NodeType = function NodeType(attrs, options) {
+var NodeType = function(attrs, options) {
   this.attrs = attrs
   this.options = options || noOptions
 };
 
-NodeType.prototype.map = function map (mapping, span, offset, oldOffset) {
+NodeType.prototype.map = function (mapping, span, offset, oldOffset) {
   var from = mapping.mapResult(span.from + oldOffset, 1)
   if (from.deleted) { return null }
   var to = mapping.mapResult(span.to + oldOffset, -1)
@@ -9876,14 +9996,14 @@ NodeType.prototype.map = function map (mapping, span, offset, oldOffset) {
   return new Decoration(from.pos - offset, to.pos - offset, this)
 };
 
-NodeType.prototype.valid = function valid (node, span) {
+NodeType.prototype.valid = function (node, span) {
   var ref = node.content.findIndex(span.from);
     var index = ref.index;
     var offset = ref.offset;
   return offset == span.from && offset + node.child(index).nodeSize == span.to
 };
 
-NodeType.prototype.eq = function eq (other) {
+NodeType.prototype.eq = function (other) {
   return this == other ||
     (other instanceof NodeType && compareObjs(this.attrs, other.attrs) &&
      compareObjs(this.options, other.options))
@@ -9893,7 +10013,7 @@ NodeType.prototype.eq = function eq (other) {
 // [`decorations` prop](#view.EditorProps.decorations)) to adjust the
 // way the document is drawn. They come in several variants. See the
 // static members of this class for details.
-var Decoration = function Decoration(from, to, type) {
+var Decoration = function(from, to, type) {
   this.from = from
   this.to = to
   this.type = type
@@ -9901,15 +10021,15 @@ var Decoration = function Decoration(from, to, type) {
 
 var prototypeAccessors = { options: {} };
 
-Decoration.prototype.copy = function copy (from, to) {
+Decoration.prototype.copy = function (from, to) {
   return new Decoration(from, to, this.type)
 };
 
-Decoration.prototype.eq = function eq (other) {
+Decoration.prototype.eq = function (other) {
   return this.type.eq(other.type) && this.from == other.from && this.to == other.to
 };
 
-Decoration.prototype.map = function map (mapping, offset, oldOffset) {
+Decoration.prototype.map = function (mapping, offset, oldOffset) {
   return this.type.map(mapping, this, offset, oldOffset)
 };
 
@@ -9918,6 +10038,12 @@ Decoration.prototype.map = function map (mapping, offset, oldOffset) {
 // the document at the given position.
 //
 // options::- These options are supported:
+//
+//   associative:: ?string
+//   By default, widgets are right-associative, meaning they end
+//   up to the right of content inserted at their position. You
+//   can set this to `"left"` to make it left-associative, so that
+//   the inserted content will end up after the widget.
 //
 //   stopEvent:: ?(event: dom.Event) → bool
 //   Can be used to control which DOM events, when they bubble out
@@ -9930,8 +10056,8 @@ Decoration.prototype.map = function map (mapping, offset, oldOffset) {
 //   that key will be compared instead, which can be useful when
 //   you generate decorations on the fly and don't want to store
 //   and reuse DOM nodes.
-Decoration.widget = function widget (pos, widget, options) {
-  return new Decoration(pos, pos, new WidgetType(widget, options))
+Decoration.widget = function (pos, dom, options) {
+  return new Decoration(pos, pos, new WidgetType(dom, options))
 };
 
 // :: (number, number, DecorationAttrs, ?Object) → Decoration
@@ -9951,7 +10077,7 @@ Decoration.widget = function widget (pos, widget, options) {
 //   Determines how the right side of the decoration is mapped.
 //   See
 //   [`inclusiveLeft`](#view.Decoration^inline^options.inclusiveLeft).
-Decoration.inline = function inline (from, to, attrs, options) {
+Decoration.inline = function (from, to, attrs, options) {
   return new Decoration(from, to, new InlineType(attrs, options))
 };
 
@@ -9959,7 +10085,7 @@ Decoration.inline = function inline (from, to, attrs, options) {
 // Creates a node decoration. `from` and `to` should point precisely
 // before and after a node in the document. That node, and only that
 // node, will receive the given attributes.
-Decoration.node = function node (from, to, attrs, options) {
+Decoration.node = function (from, to, attrs, options) {
   return new Decoration(from, to, new NodeType(attrs, options))
 };
 
@@ -9993,7 +10119,7 @@ var none = [], noOptions = {}
 // such a way that the drawing algorithm can efficiently use and
 // compare them. This is a persistent data structure—it is not
 // modified, updates create a new value.
-var DecorationSet = function DecorationSet(local, children) {
+var DecorationSet = function(local, children) {
   this.local = local && local.length ? local : none
   this.children = children && children.length ? children : none
 };
@@ -10001,7 +10127,7 @@ var DecorationSet = function DecorationSet(local, children) {
 // :: (Node, [Decoration]) → DecorationSet
 // Create a set of decorations, using the structure of the given
 // document.
-DecorationSet.create = function create (doc, decorations) {
+DecorationSet.create = function (doc, decorations) {
   return decorations.length ? buildTree(decorations, doc, 0, noOptions) : empty
 };
 
@@ -10010,13 +10136,13 @@ DecorationSet.create = function create (doc, decorations) {
 // (including decorations that start or end directly at the
 // boundaries). When the arguments are omitted, all decorations in
 // the set are collected.
-DecorationSet.prototype.find = function find (start, end) {
+DecorationSet.prototype.find = function (start, end) {
   var result = []
   this.findInner(start == null ? 0 : start, end == null ? 1e9 : end, result, 0)
   return result
 };
 
-DecorationSet.prototype.findInner = function findInner (start, end, result, offset) {
+DecorationSet.prototype.findInner = function (start, end, result, offset) {
     var this$1 = this;
 
   for (var i = 0; i < this.local.length; i++) {
@@ -10042,12 +10168,12 @@ DecorationSet.prototype.findInner = function findInner (start, end, result, offs
 //   When given, this function will be called for each decoration
 //   that gets dropped as a result of the mapping, passing the
 //   options of that decoration.
-DecorationSet.prototype.map = function map (mapping, doc, options) {
-  if (this == empty) { return this }
+DecorationSet.prototype.map = function (mapping, doc, options) {
+  if (this == empty || mapping.maps.length == 0) { return this }
   return this.mapInner(mapping, doc, 0, 0, options || noOptions)
 };
 
-DecorationSet.prototype.mapInner = function mapInner (mapping, node, offset, oldOffset, options) {
+DecorationSet.prototype.mapInner = function (mapping, node, offset, oldOffset, options) {
     var this$1 = this;
 
   var newLocal
@@ -10067,13 +10193,13 @@ DecorationSet.prototype.mapInner = function mapInner (mapping, node, offset, old
 // Add the given array of decorations to the ones in the set,
 // producing a new set. Needs access to the current document to
 // create the appropriate tree structure.
-DecorationSet.prototype.add = function add (doc, decorations) {
+DecorationSet.prototype.add = function (doc, decorations) {
   if (!decorations.length) { return this }
   if (this == empty) { return DecorationSet.create(doc, decorations) }
   return this.addInner(doc, decorations, 0)
 };
 
-DecorationSet.prototype.addInner = function addInner (doc, decorations, offset) {
+DecorationSet.prototype.addInner = function (doc, decorations, offset) {
     var this$1 = this;
 
   var children, childIndex = 0
@@ -10098,12 +10224,12 @@ DecorationSet.prototype.addInner = function addInner (doc, decorations, offset) 
 // :: ([Decoration]) → DecorationSet
 // Create a new set that contains the decorations in this set, minus
 // the ones in the given array.
-DecorationSet.prototype.remove = function remove (decorations) {
+DecorationSet.prototype.remove = function (decorations) {
   if (decorations.length == 0 || this == empty) { return this }
   return this.removeInner(decorations, 0)
 };
 
-DecorationSet.prototype.removeInner = function removeInner (decorations, offset) {
+DecorationSet.prototype.removeInner = function (decorations, offset) {
     var this$1 = this;
 
   var children = this.children, local = this.local
@@ -10135,7 +10261,7 @@ DecorationSet.prototype.removeInner = function removeInner (decorations, offset)
   return local.length || children.length ? new DecorationSet(local, children) : empty
 };
 
-DecorationSet.prototype.forChild = function forChild (offset, node) {
+DecorationSet.prototype.forChild = function (offset, node) {
     var this$1 = this;
 
   if (this == empty) { return this }
@@ -10161,7 +10287,7 @@ DecorationSet.prototype.forChild = function forChild (offset, node) {
   return child || empty
 };
 
-DecorationSet.prototype.eq = function eq (other) {
+DecorationSet.prototype.eq = function (other) {
     var this$1 = this;
 
   if (this == other) { return true }
@@ -10177,11 +10303,11 @@ DecorationSet.prototype.eq = function eq (other) {
   return false
 };
 
-DecorationSet.prototype.locals = function locals (node) {
+DecorationSet.prototype.locals = function (node) {
   return removeOverlap(this.localsInner(node))
 };
 
-DecorationSet.prototype.localsInner = function localsInner (node) {
+DecorationSet.prototype.localsInner = function (node) {
     var this$1 = this;
 
   if (this == empty) { return none }
@@ -10201,11 +10327,11 @@ var empty = new DecorationSet()
 // The empty set of decorations.
 DecorationSet.empty = empty
 
-var DecorationGroup = function DecorationGroup(members) {
+var DecorationGroup = function(members) {
   this.members = members
 };
 
-DecorationGroup.prototype.forChild = function forChild (offset, child) {
+DecorationGroup.prototype.forChild = function (offset, child) {
     var this$1 = this;
 
   if (child.isLeaf) { return DecorationSet.empty }
@@ -10219,7 +10345,7 @@ DecorationGroup.prototype.forChild = function forChild (offset, child) {
   return DecorationGroup.from(found)
 };
 
-DecorationGroup.prototype.eq = function eq (other) {
+DecorationGroup.prototype.eq = function (other) {
     var this$1 = this;
 
   if (!(other instanceof DecorationGroup) ||
@@ -10229,7 +10355,7 @@ DecorationGroup.prototype.eq = function eq (other) {
   return true
 };
 
-DecorationGroup.prototype.locals = function locals (node) {
+DecorationGroup.prototype.locals = function (node) {
     var this$1 = this;
 
   var result, sorted = true
@@ -10249,7 +10375,7 @@ DecorationGroup.prototype.locals = function locals (node) {
   return result ? removeOverlap(sorted ? result : result.sort(byPos)) : none
 };
 
-DecorationGroup.from = function from (members) {
+DecorationGroup.from = function (members) {
   switch (members.length) {
     case 0: return empty
     case 1: return members[0]
@@ -10467,7 +10593,7 @@ var Selection = ref$1.Selection;
 var ref$2 = require("./trackmappings");
 var TrackMappings = ref$2.TrackMappings;
 
-var DOMChange = function DOMChange(view, id, composing) {
+var DOMChange = function(view, id, composing) {
   var this$1 = this;
 
   this.view = view
@@ -10479,7 +10605,7 @@ var DOMChange = function DOMChange(view, id, composing) {
   this.mappings = new TrackMappings(view.state)
 };
 
-DOMChange.prototype.addRange = function addRange (from, to) {
+DOMChange.prototype.addRange = function (from, to) {
   if (this.from == null) {
     this.from = from
     this.to = to
@@ -10489,28 +10615,38 @@ DOMChange.prototype.addRange = function addRange (from, to) {
   }
 };
 
-DOMChange.prototype.changedRange = function changedRange () {
+DOMChange.prototype.changedRange = function () {
   if (this.from == null) { return rangeAroundSelection(this.state.selection) }
-  var $from = this.state.doc.resolve(this.from), $to = this.state.doc.resolve(this.to)
+  var $from = this.state.doc.resolve(Math.min(this.from, this.state.selection.from)), $to = this.state.doc.resolve(this.to)
   var shared = $from.sharedDepth(this.to)
   return {from: $from.before(shared + 1), to: $to.after(shared + 1)}
 };
 
-DOMChange.prototype.read = function read (range) {
-  readDOMChange(this, this.state, range)
-};
-
-DOMChange.prototype.finish = function finish (force) {
+DOMChange.prototype.finish = function (force) {
   clearTimeout(this.timeout)
   if (this.composing && !force) { return }
   var range = this.changedRange()
   if (this.from == null) { this.view.docView.markDirty(range.from, range.to) }
   else { this.view.docView.markDirty(this.from, this.to) }
-  this.view.inDOMChange = null
-  this.read(range)
+
+  // If there have been changes since this DOM update started, we must
+  // map our start and end positions, as well as the new selection
+  // positions, through them.
+  var mapping = this.mappings.getMapping(this.view.state)
+  this.destroy()
+  if (mapping) { readDOMChange(this.view, mapping, this.state, range) }
+
+  // If the reading didn't result in a view update, force one by
+  // resetting the view to its current state.
+  if (this.view.docView.dirty) { this.view.updateState(this.view.state) }
 };
 
-DOMChange.prototype.compositionEnd = function compositionEnd () {
+DOMChange.prototype.destroy = function () {
+  this.mappings.destroy()
+  this.view.inDOMChange = null
+};
+
+DOMChange.prototype.compositionEnd = function () {
     var this$1 = this;
 
   if (this.composing) {
@@ -10519,7 +10655,7 @@ DOMChange.prototype.compositionEnd = function compositionEnd () {
   }
 };
 
-DOMChange.start = function start (view, composing) {
+DOMChange.start = function (view, composing) {
   if (view.inDOMChange) {
     if (composing) {
       clearTimeout(view.inDOMChange.timeout)
@@ -10549,6 +10685,7 @@ function parseBetween(view, oldState, from, to) {
   // If there's non-view nodes directly after the end of this region,
   // fail and let the caller try again with a wider range.
   if (endOff == parent.childNodes.length) { for (var scan = parent; scan != view.content;) {
+    if (!scan) { return null }
     if (scan.nextSibling) {
       if (!scan.nextSibling.pmViewDesc) { return null }
       break
@@ -10641,8 +10778,9 @@ function keyEvent(keyCode, key) {
   return event
 }
 
-function readDOMChange(domChange, oldState, range) {
-  var parseResult, doc = oldState.doc, view = domChange.view
+function readDOMChange(view, mapping, oldState, range) {
+  var parseResult, doc = oldState.doc
+
   for (;;) {
     parseResult = parseBetween(view, oldState, range.from, range.to)
     if (parseResult) { break }
@@ -10655,7 +10793,14 @@ function readDOMChange(domChange, oldState, range) {
 
   var compare = doc.slice(range.from, range.to)
   var change = findDiff(compare.content, parsed.content, range.from, oldState.selection.from)
-  if (!change) { return false }
+
+  if (!change) {
+    if (parsedSel) {
+      var sel = resolveSelection(view.state.doc, mapping, parsedSel)
+      if (sel && !sel.eq(view.state.selection)) { view.dispatch(view.state.tr.setSelection(sel)) }
+    }
+    return
+  }
 
   var $from = parsed.resolveNoCache(change.start - range.from)
   var $to = parsed.resolveNoCache(change.endB - range.from)
@@ -10667,48 +10812,50 @@ function readDOMChange(domChange, oldState, range) {
       nextSel.head == $to.pos &&
       view.someProp("handleKeyDown", function (f) { return f(view, keyEvent(13, "Enter")); }))
     { return }
+  // Same for backspace
   if (oldState.selection.anchor > change.start &&
       looksLikeJoin(doc, change.start, change.endA, $from, $to) &&
       view.someProp("handleKeyDown", function (f) { return f(view, keyEvent(8, "Backspace")); }))
     { return }
 
-  var from = change.start, to = change.endA
-  // If there have been changes since this DOM update started, we must
-  // map our start and end positions, as well as the new selection
-  // positions, through them.
-  var mapping = domChange.mappings.getMapping(view.state), $from1
-  if (!mapping) { return }
+  var from = mapping.map(change.start), to = mapping.map(change.endA, -1)
 
-  from = mapping.map(from)
-  to = mapping.map(to)
-  if (parsedSel) { parsedSel = {anchor: mapping.map(parsedSel.anchor),
-                              head: mapping.map(parsedSel.head)} }
-
-  var tr = view.state.tr, handled = false, markChange
-  if ($from.sameParent($to) && $from.parent.isTextblock && $from.pos != $to.pos) {
-    if (change.endA == change.endB &&
-        ($from1 = doc.resolve(change.start)) &&
-        (markChange = isMarkChange($from.parent.content.cut($from.parentOffset, $to.parentOffset),
-                                   $from1.parent.content.cut($from1.parentOffset, change.endA - $from1.start())))) {
-      // Adding or removing a mark
+  var tr, storedMarks, markChange, $from1
+  if ($from.sameParent($to) && $from.parent.isTextblock) {
+    if ($from.pos == $to.pos) { // Deletion
+      tr = view.state.tr.delete(from, to)
+      var $start = doc.resolve(change.start)
+      if ($start.parentOffset < $start.parent.content.size) { storedMarks = $start.marks(true) }
+    } else if ( // Adding or removing a mark
+      change.endA == change.endB && ($from1 = doc.resolve(change.start)) &&
+      (markChange = isMarkChange($from.parent.content.cut($from.parentOffset, $to.parentOffset),
+                                 $from1.parent.content.cut($from1.parentOffset, change.endA - $from1.start())))
+    ) {
+      tr = view.state.tr
       if (markChange.type == "add") { tr.addMark(from, to, markChange.mark) }
       else { tr.removeMark(from, to, markChange.mark) }
-      handled = true
     } else if ($from.parent.child($from.index()).isText && $from.index() == $to.index() - ($to.textOffset ? 0 : 1)) {
       // Both positions in the same text node -- simply insert text
       var text = $from.parent.textBetween($from.parentOffset, $to.parentOffset)
       if (view.someProp("handleTextInput", function (f) { return f(view, from, to, text); })) { return }
-      tr.insertText(text, from, to)
-      handled = true
+      tr = view.state.tr.insertText(text, from, to)
     }
   }
 
-  if (!handled)
-    { tr.replace(from, to, parsed.slice(change.start - range.from, change.endB - range.from)) }
-  if (parsedSel)
-    { tr.setSelection(Selection.between(tr.doc.resolve(parsedSel.anchor),
-                                      tr.doc.resolve(parsedSel.head))) }
-  view.props.onAction(tr.scrollAction())
+  if (!tr)
+    { tr = view.state.tr.replace(from, to, parsed.slice(change.start - range.from, change.endB - range.from)) }
+  if (parsedSel) {
+    var sel$1 = resolveSelection(tr.doc, mapping, parsedSel)
+    if (sel$1) { tr.setSelection(sel$1) }
+  }
+  if (storedMarks) { tr.setStoredMarks(storedMarks) }
+  view.dispatch(tr.scrollIntoView())
+}
+
+function resolveSelection(doc, mapping, parsedSel) {
+  if (Math.max(parsedSel.anchor, parsedSel.head) > doc.content.size) { return null }
+  return Selection.between(doc.resolve(mapping.map(parsedSel.anchor)),
+                           doc.resolve(mapping.map(parsedSel.head)))
 }
 
 // : (Fragment, Fragment) → ?{mark: Mark, type: string}
@@ -10777,7 +10924,7 @@ function skipClosingAndOpening($pos, fromEnd, mayOpen) {
 
 function findDiff(a, b, pos, preferedStart) {
   var start = a.findDiffStart(b, pos)
-  if (!start) { return null }
+  if (start == null) { return null }
   var ref = a.findDiffEnd(b, pos + a.size, pos + b.size);
   var endA = ref.a;
   var endB = ref.b;
@@ -10795,7 +10942,7 @@ function findDiff(a, b, pos, preferedStart) {
   return {start: start, endA: endA, endB: endB}
 }
 
-},{"./trackmappings":57,"prosemirror-model":23,"prosemirror-state":34}],53:[function(require,module,exports){
+},{"./trackmappings":57,"prosemirror-model":24,"prosemirror-state":34}],53:[function(require,module,exports){
 function windowRect() {
   return {left: 0, right: window.innerWidth,
           top: 0, bottom: window.innerHeight}
@@ -10806,22 +10953,21 @@ function parentNode(node) {
   return parent.nodeType == 11 ? parent.host : parent
 }
 
-function scrollPosIntoView(view, pos) {
-  var coords = coordsAtPos(view, pos)
+function scrollRectIntoView(view, rect) {
   var scrollThreshold = view.someProp("scrollThreshold") || 0, scrollMargin = view.someProp("scrollMargin")
   if (scrollMargin == null) { scrollMargin = 5 }
   for (var parent = view.content;; parent = parentNode(parent)) {
     var atBody = parent == document.body
-    var rect = atBody ? windowRect() : parent.getBoundingClientRect()
+    var bounding = atBody ? windowRect() : parent.getBoundingClientRect()
     var moveX = 0, moveY = 0
-    if (coords.top < rect.top + scrollThreshold)
-      { moveY = -(rect.top - coords.top + scrollMargin) }
-    else if (coords.bottom > rect.bottom - scrollThreshold)
-      { moveY = coords.bottom - rect.bottom + scrollMargin }
-    if (coords.left < rect.left + scrollThreshold)
-      { moveX = -(rect.left - coords.left + scrollMargin) }
-    else if (coords.right > rect.right - scrollThreshold)
-      { moveX = coords.right - rect.right + scrollMargin }
+    if (rect.top < bounding.top + scrollThreshold)
+      { moveY = -(bounding.top - rect.top + scrollMargin) }
+    else if (rect.bottom > bounding.bottom - scrollThreshold)
+      { moveY = rect.bottom - bounding.bottom + scrollMargin }
+    if (rect.left < bounding.left + scrollThreshold)
+      { moveX = -(bounding.left - rect.left + scrollMargin) }
+    else if (rect.right > bounding.right - scrollThreshold)
+      { moveX = rect.right - bounding.right + scrollMargin }
     if (moveX || moveY) {
       if (atBody) {
         window.scrollBy(moveX, moveY)
@@ -10833,7 +10979,7 @@ function scrollPosIntoView(view, pos) {
     if (atBody) { break }
   }
 }
-exports.scrollPosIntoView = scrollPosIntoView
+exports.scrollRectIntoView = scrollRectIntoView
 
 function findOffsetInNode(node, coords) {
   var closest, dxClosest = 2e8, coordsClosest, offset = 0
@@ -10911,9 +11057,9 @@ function posAtCoords(view, coords) {
     bias = rect.left != rect.right && coords.left > (rect.left + rect.right) / 2 ? 1 : -1
   }
 
-  var nodeView = view.docView.nearestDesc(elt)
+  var desc = view.docView.nearestDesc(elt, true)
   return {pos: view.docView.posFromDOM(node, offset, bias),
-          inside: nodeView && (nodeView.posAtStart - nodeView.border)}
+          inside: desc && (desc.posAtStart - desc.border)}
 }
 exports.posAtCoords = posAtCoords
 
@@ -10994,7 +11140,7 @@ function endOfTextblockVertical(view, state, dir) {
       else { continue }
       for (var i = 0; i < boxes.length; i++) {
         var box = boxes[i]
-        if (dir == "up" ? box.bottom < coords.top : box.top > coords.bottom)
+        if (dir == "up" ? box.bottom < coords.top + 1 : box.top > coords.bottom - 1)
           { return false }
       }
     }
@@ -11045,34 +11191,32 @@ function endOfTextblock(view, state, dir) {
 exports.endOfTextblock = endOfTextblock
 
 },{}],54:[function(require,module,exports){
-var ref = require("prosemirror-state");
-var EditorState = ref.EditorState;
-
-var ref$1 = require("./domcoords");
-var scrollPosIntoView = ref$1.scrollPosIntoView;
-var posAtCoords = ref$1.posAtCoords;
-var coordsAtPos = ref$1.coordsAtPos;
-var endOfTextblock = ref$1.endOfTextblock;
-var ref$2 = require("./viewdesc");
-var docViewDesc = ref$2.docViewDesc;
-var ref$3 = require("./input");
-var initInput = ref$3.initInput;
-var dispatchEvent = ref$3.dispatchEvent;
-var startObserving = ref$3.startObserving;
-var stopObserving = ref$3.stopObserving;
-var ref$4 = require("./selection");
-var SelectionReader = ref$4.SelectionReader;
-var selectionToDOM = ref$4.selectionToDOM;
-var ref$5 = require("./decoration");
-var viewDecorations = ref$5.viewDecorations;var assign;
+var ref = require("./domcoords");
+var scrollRectIntoView = ref.scrollRectIntoView;
+var posAtCoords = ref.posAtCoords;
+var coordsAtPos = ref.coordsAtPos;
+var endOfTextblock = ref.endOfTextblock;
+var ref$1 = require("./viewdesc");
+var docViewDesc = ref$1.docViewDesc;
+var ref$2 = require("./input");
+var initInput = ref$2.initInput;
+var destroyInput = ref$2.destroyInput;
+var dispatchEvent = ref$2.dispatchEvent;
+var startObserving = ref$2.startObserving;
+var stopObserving = ref$2.stopObserving;
+var ensureListeners = ref$2.ensureListeners;
+var ref$3 = require("./selection");
+var SelectionReader = ref$3.SelectionReader;
+var selectionToDOM = ref$3.selectionToDOM;
+var ref$4 = require("./decoration");
+var viewDecorations = ref$4.viewDecorations;
+var Decoration = ref$4.Decoration;var assign;
 ((assign = require("./decoration"), exports.Decoration = assign.Decoration, exports.DecorationSet = assign.DecorationSet))
 
 // ::- An editor view manages the DOM structure that represents an
 // editor. Its state and behavior are determined by its
 // [props](#view.EditorProps).
-var EditorView = function EditorView(place, props) {
-  var this$1 = this;
-
+var EditorView = function(place, props) {
   // :: EditorProps
   // The view's current [props](#view.EditorProps).
   this.props = props
@@ -11080,33 +11224,28 @@ var EditorView = function EditorView(place, props) {
   // The view's current [state](#state.EditorState).
   this.state = props.state
 
-  // Kludge to listen to state changes globally in order to be able
-  // to find mappings from a given state to another when necessary
-  // (during a drag or a DOM change).
-  EditorState.addApplyListener(this.trackState = function (old, action, state) {
-    if (this$1.inDOMChange) { this$1.inDOMChange.mappings.track(old, action, state) }
-    if (this$1.dragging && this$1.dragging.move) { this$1.dragging.move.track(old, action, state) }
-  })
+  this.dispatch = this.dispatch.bind(this)
 
   this._root = null
   this.focused = false
 
-  // :: dom.Node
+  // :: dom.Element
   // The editable DOM node containing the document. (You probably
   // should not be directly interfering with its child nodes.)
   this.content = document.createElement("div")
 
-  this.updateDOMForProps()
-
   if (place && place.appendChild) { place.appendChild(this.content) }
   else if (place) { place(this.content) }
 
-  this.docView = docViewDesc(this.state.doc, viewDecorations(this), this.content, this)
-  this.content.contentEditable = true
+  this.editable = getEditable(this)
+  this.docView = docViewDesc(this.state.doc, computeDocDeco(this), viewDecorations(this), this.content, this)
 
   this.lastSelectedViewDesc = null
   this.selectionReader = new SelectionReader(this)
   initInput(this)
+
+  this.pluginViews = []
+  this.updatePluginViews()
 };
 
 var prototypeAccessors = { root: {} };
@@ -11114,7 +11253,8 @@ var prototypeAccessors = { root: {} };
 // :: (EditorProps)
 // Update the view's props. Will immediately cause an update to
 // the view's DOM.
-EditorView.prototype.update = function update (props) {
+EditorView.prototype.update = function (props) {
+  if (props.handleDOMEvents != this.props.handleDOMEvents) { ensureListeners(this) }
   this.props = props
   this.updateState(props.state)
 };
@@ -11122,58 +11262,66 @@ EditorView.prototype.update = function update (props) {
 // :: (EditorState)
 // Update the editor's `state` prop, without touching any of the
 // other props.
-EditorView.prototype.updateState = function updateState (state) {
+EditorView.prototype.updateState = function (state) {
   var prev = this.state
   this.state = state
+  if (prev.plugins != state.plugins) { ensureListeners(this) }
 
   if (this.inDOMChange) { return }
 
-  var redrawn = false
-  var decorations = viewDecorations(this)
+  var prevEditable = this.editable
+  this.editable = getEditable(this)
+  var innerDeco = viewDecorations(this), outerDeco = computeDocDeco(this)
 
-  if (!this.docView.matchesNode(state.doc, [], decorations)) {
+  if (!this.docView.matchesNode(state.doc, outerDeco, innerDeco)) {
     stopObserving(this)
-    this.docView.update(state.doc, [], decorations, this)
+    this.docView.update(state.doc, outerDeco, innerDeco, this)
+    selectionToDOM(this, state.selection)
     startObserving(this)
-    redrawn = true
+  } else if (!state.selection.eq(prev.selection) || this.selectionReader.domChanged()) {
+    stopObserving(this)
+    selectionToDOM(this, state.selection)
+    startObserving(this)
   }
 
-  if (redrawn || !state.selection.eq(prev.selection))
-    { selectionToDOM(this, state.selection) }
+  if (prevEditable != this.editable) { this.selectionReader.editableChanged() }
+  this.updatePluginViews(prev)
 
-  this.updateDOMForProps()
-
-  // FIXME somehow schedule this relative to ui/update so that it
-  // doesn't cause extra layout
-  if (state.scrollToSelection > prev.scrollToSelection || prev.config != state.config)
-    { scrollPosIntoView(this, state.selection.head == null ? state.selection.from : state.selection.from) }
+  if (state.scrollToSelection > prev.scrollToSelection || prev.config != state.config) {
+    if (state.selection.node)
+      { scrollRectIntoView(this, this.docView.domAfterPos(state.selection.from).getBoundingClientRect()) }
+    else
+      { scrollRectIntoView(this, this.coordsAtPos(state.selection.head)) }
+  }
 };
 
-EditorView.prototype.updateDOMForProps = function updateDOMForProps () {
+EditorView.prototype.destroyPluginViews = function () {
+  var view
+  while (view = this.pluginViews.pop()) { if (view.destroy) { view.destroy() } }
+};
+
+EditorView.prototype.updatePluginViews = function (prevState) {
     var this$1 = this;
 
-  var spellcheck = !!this.someProp("spellcheck")
-  if (spellcheck != this.content.spellcheck) { this.content.spellcheck = spellcheck }
-  var label = this.someProp("label", function (f) { return f(this$1.state); }) || ""
-  if (this.content.getAttribute("aria-label") != label) { this.content.setAttribute("aria-label", label) }
-
-  var classes = ["ProseMirror", "ProseMirror-content"] // FIXME remove backwards-compat class
-  if (this.focused) { classes.push("ProseMirror-focused") }
-  if (this.state.selection.node) { classes.push("ProseMirror-nodeselection") }
-  this.someProp("class", function (f) {
-    var cls = f(this$1.state)
-    if (!cls) { return }
-    var array = cls.split(" ")
-    for (var i = 0; i < array.length; i++) { classes.push(array[i]) }
-  })
-  var className = classes.sort().join(" ")
-  if (this.content.className != className) { this.content.className = className }
+  var plugins = this.state.plugins
+  if (!prevState || prevState.plugins != plugins) {
+    this.destroyPluginViews()
+    for (var i = 0; i < plugins.length; i++) {
+      var plugin = plugins[i]
+      if (plugin.options.view) { this$1.pluginViews.push(plugin.options.view(this$1)) }
+    }
+  } else {
+    for (var i$1 = 0; i$1 < this.pluginViews.length; i$1++) {
+      var pluginView = this$1.pluginViews[i$1]
+      if (pluginView.update) { pluginView.update(this$1) }
+    }
+  }
 };
 
 // :: () → bool
 // Query whether the view has focus.
-EditorView.prototype.hasFocus = function hasFocus () {
-  if (this.content.ownerDocument.activeElement != this.content) { return false }
+EditorView.prototype.hasFocus = function () {
+  if (this.editable && this.content.ownerDocument.activeElement != this.content) { return false }
   var sel = this.root.getSelection()
   return sel.rangeCount && this.content.contains(sel.anchorNode.nodeType == 3 ? sel.anchorNode.parentNode : sel.anchorNode)
 };
@@ -11185,9 +11333,9 @@ EditorView.prototype.hasFocus = function hasFocus () {
 // that is immediately returned. When `f` isn't provided, it is
 // treated as the identity function (the prop value is returned
 // directly).
-EditorView.prototype.someProp = function someProp (propName, f) {
+EditorView.prototype.someProp = function (propName, f) {
   var prop = this.props && this.props[propName], value
-  if (prop && (value = f ? f(prop) : prop)) { return value }
+  if (prop != null && (value = f ? f(prop) : prop)) { return value }
   var plugins = this.state.plugins
   if (plugins) { for (var i = 0; i < plugins.length; i++) {
     var prop$1 = plugins[i].props[propName]
@@ -11197,9 +11345,11 @@ EditorView.prototype.someProp = function someProp (propName, f) {
 
 // :: ()
 // Focus the editor.
-EditorView.prototype.focus = function focus () {
+EditorView.prototype.focus = function () {
+  stopObserving(this)
   selectionToDOM(this, this.state.selection, true)
-  this.content.focus()
+  startObserving(this)
+  if (this.editable) { this.content.focus() }
 };
 
 // :: union<dom.Document, dom.DocumentFragment>
@@ -11225,13 +11375,13 @@ prototypeAccessors.root.get = function () {
 // and its `inside` property holds the position before the inner
 // node that the click happened inside of, or -1 if the click was at
 // the top level.
-EditorView.prototype.posAtCoords = function posAtCoords$1 (coords) { return posAtCoords(this, coords) };
+EditorView.prototype.posAtCoords = function (coords) { return posAtCoords(this, coords) };
 
 // :: (number) → {left: number, right: number, top: number, bottom: number}
 // Returns the screen rectangle at a given document position. `left`
 // and `right` will be the same number, as this returns a flat
 // cursor-ish rectangle.
-EditorView.prototype.coordsAtPos = function coordsAtPos$1 (pos) { return coordsAtPos(this, pos) };
+EditorView.prototype.coordsAtPos = function (pos) { return coordsAtPos(this, pos) };
 
 // :: (union<"up", "down", "left", "right", "forward", "backward">, ?EditorState) → bool
 // Find out whether the selection is at the end of a textblock when
@@ -11240,62 +11390,102 @@ EditorView.prototype.coordsAtPos = function coordsAtPos$1 (pos) { return coordsA
 // position would leave that position's parent textblock. For
 // horizontal motion, it will always return false if the selection
 // isn't a cursor selection.
-EditorView.prototype.endOfTextblock = function endOfTextblock$1 (dir, state) {
+EditorView.prototype.endOfTextblock = function (dir, state) {
   return endOfTextblock(this, state || this.state, dir)
 };
 
 // :: ()
 // Removes the editor from the DOM and destroys all [node
 // views](#view.NodeView).
-EditorView.prototype.destroy = function destroy () {
+EditorView.prototype.destroy = function () {
+  destroyInput(this)
+  this.destroyPluginViews()
   this.docView.destroy()
-  EditorState.removeApplyListener(this.trackState)
+  this.selectionReader.destroy()
   if (this.content.parentNode) { this.content.parentNode.removeChild(this.content) }
 };
 
 // Used for testing.
-EditorView.prototype.dispatchEvent = function dispatchEvent$1 (event) {
+EditorView.prototype.dispatchEvent = function (event) {
   return dispatchEvent(this, event)
+};
+
+// :: (Transaction)
+// Dispatch a transaction. Will call the
+// [`dispatchTransaction`](#view.EditorProps.dispatchTransaction) when given,
+// and defaults to applying the transaction to the current state and
+// calling [`updateState`](#view.EditorView.updateState) otherwise.
+// This method is bound to the view instance, so that it can be
+// easily passed around.
+EditorView.prototype.dispatch = function (tr) {
+  var dispatchTransaction = this.props.dispatchTransaction
+  if (dispatchTransaction) { dispatchTransaction(tr) }
+  else { this.updateState(this.state.apply(tr)) }
 };
 
 Object.defineProperties( EditorView.prototype, prototypeAccessors );
 exports.EditorView = EditorView
 
+function computeDocDeco(view) {
+  var attrs = Object.create(null)
+  attrs.class = "ProseMirror" + (view.focused ? " ProseMirror-focused" : "") +
+    (view.state.selection.node ? " ProseMirror-nodeselection" : "")
+  attrs.contenteditable = String(view.editable)
+
+  view.someProp("attributes", function (value) {
+    if (typeof value == "function") { value = value(view.state) }
+    if (value) { for (var attr in value) {
+      if (attr == "class")
+        { attrs.class += " " + value[attr] }
+      else if (!attrs[attr] && attr != "contenteditable" && attr != "nodeName")
+        { attrs[attr] = String(value[attr]) }
+    } }
+  })
+
+  return [Decoration.node(0, view.state.doc.content.size, attrs)]
+}
+
+function getEditable(view) {
+  return !view.someProp("editable", function (value) { return value(view.state) === false; })
+}
+
 // EditorProps:: interface
 //
 // The configuration object that can be passed to an editor view. It
-// supports the following properties (only `state` and `onAction` are
-// required).
+// supports the following properties (only `state` is required).
 //
 // The various event-handling functions may all return `true` to
 // indicate that they handled the given event. The view will then take
 // care to call `preventDefault` on the event, except with
-// `handleDOMEvent`, where the handler itself is responsible for that.
+// `handleDOMEvents`, where the handler itself is responsible for that.
 //
-// Except for `state` and `onAction`, these may also be present on the
-// `props` property of plugins. How a prop is resolved depends on the
-// prop. Handler functions are called one at a time, starting with the
-// plugins (in order of appearance), and finally looking at the base
-// props, until one of them returns true. For some props, the first
-// plugin that yields a value gets precedence. For `class`, all the
-// classes returned are combined.
+// Except for `state` and `dispatchTransaction`, these may also be
+// present on the `props` property of plugins. How a prop is resolved
+// depends on the prop. Handler functions are called one at a time,
+// starting with the plugins (in order of appearance), and finally
+// looking at the base props, until one of them returns true. For some
+// props, the first plugin that yields a value gets precedence. For
+// `class`, all the classes returned are combined.
 //
 //   state:: EditorState
 //   The state of the editor.
 //
-//   onAction:: (action: Action)
-//   The callback over which to send actions (state updates) produced
-//   by the view. You'll usually want to make sure this ends up
-//   calling the view's [`update`](#view.EditorView.update) method
-//   with a new state that has the action
-//   [applied](#state.EditorState.applyAction).
+//   dispatchTransaction:: ?(tr: Transaction)
+//   The callback over which to send transactions (state updates)
+//   produced by the view. You'll usually want to make sure this ends
+//   up calling the view's
+//   [`updateState`](#view.EditorView.updateState) method with a new
+//   state that has the transaction
+//   [applied](#state.EditorState.apply).
 //
-//   handleDOMEvent:: ?(view: EditorView, event: dom.Event) → bool
-//   Called before the view handles a DOM event. This is a kind of
-//   catch-all override hook. Contrary to the other event handling
-//   props, when returning true from this one, you are responsible for
-//   calling `preventDefault` yourself (or not, if you want to allow
-//   the default behavior).
+//   handleDOMEvents:: ?Object<(view: EditorView, event: dom.Event) → bool>
+//   Can be an object mapping DOM event type names to functions that
+//   handle them. Such functions will be called before any handling
+//   ProseMirror does of events fired on the editable DOM element.
+//   Contrary to the other event handling props, when returning true
+//   from such a function, you are responsible for calling
+//   `preventDefault` yourself (or not, if you want to allow the
+//   default behavior).
 //
 //   handleKeyDown:: ?(view: EditorView, event: dom.KeyboardEvent) → bool
 //   Called when the editor receives a `keydown` event.
@@ -11359,13 +11549,19 @@ exports.EditorView = EditorView
 //   transformPastedText:: ?(string) → string
 //   Transform pasted plain text.
 //
-//   nodeViews:: ?Object<(node: Node, view: EditorView, getPos: () → number) → NodeView>
+//   nodeViews:: ?Object<(node: Node, view: EditorView, getPos: () → number, decorations: [Decoration]) → NodeView>
 //   Allows you to pass custom rendering and behavior logic for nodes
 //   and marks. Should map node and mark names to constructor function
 //   that produce a [`NodeView`](#view.NodeView) object implementing
 //   the node's display behavior. `getPos` is a function that can be
 //   called to get the node's current position, which can be useful
-//   when creating actions that update it.
+//   when creating transactions that update it.
+//
+//   `decorations` is an array of node or inline decorations that are
+//   active around the node. They are automatically drawn in the
+//   normal way, and you will usually just want to ignore this, but
+//   they can also be used as a way to provide context information to
+//   the node view without adding it to the document itself.
 //
 //   clipboardSerializer:: ?DOMSerializer
 //   The DOM serializer to use when putting content onto the
@@ -11377,18 +11573,19 @@ exports.EditorView = EditorView
 //   A set of [document decorations](#view.Decoration) to add to the
 //   view.
 //
-//   spellcheck:: ?bool
-//   Controls whether the DOM spellcheck attribute is enabled on the
-//   editable content. Defaults to false.
+//   editable:: ?(EditorState) → bool
+//   When this returns false, the content of the view is not directly
+//   editable.
 //
-//   class:: ?(state: EditorState) → ?string
-//   Controls the CSS class name of the editor DOM node. Any classes
-//   returned from this will be added to the default `ProseMirror`
-//   class.
-//
-//   label:: ?(state: EditorState) → ?string
-//   Can be used to set an `aria-label` attribute on the editable
-//   content node.
+//   attributes:: ?union<Object<string>, (EditorState) → ?Object<string>>
+//   Control the DOM attributes of the editable element. May be either
+//   an object or a function going from an editor state to an object.
+//   By default, the element will get a class `"ProseMirror"`, and
+//   will have its `contentEditable` attribute determined by the
+//   [`editable` prop](#view.EditorProps.editable). Additional classes
+//   provided here will be added to the class. For other attributes,
+//   the value provided first (as in
+//   [`someProp`](#view.EditorView.someProp)) will be used.
 //
 //   scrollThreshold:: ?number
 //   Determines the distance (in pixels) between the cursor and the
@@ -11399,7 +11596,7 @@ exports.EditorView = EditorView
 //   Determines the extra space (in pixels) that is left above or
 //   below the cursor when it is scrolled into view. Defaults to 5.
 
-},{"./decoration":51,"./domcoords":53,"./input":55,"./selection":56,"./viewdesc":58,"prosemirror-state":34}],55:[function(require,module,exports){
+},{"./decoration":51,"./domcoords":53,"./input":55,"./selection":56,"./viewdesc":58}],55:[function(require,module,exports){
 var ref = require("prosemirror-state");
 var Selection = ref.Selection;
 var NodeSelection = ref.NodeSelection;
@@ -11419,7 +11616,7 @@ var TrackMappings = ref$4.TrackMappings;
 
 // A collection of DOM events that occur within the editor, and callback functions
 // to invoke when the event fires.
-var handlers = {}
+var handlers = {}, editHandlers = {}
 
 function initInput(view) {
   view.shiftKey = false
@@ -11433,14 +11630,41 @@ function initInput(view) {
   var loop = function ( event ) {
     var handler = handlers[event]
     view.content.addEventListener(event, function (event) {
-      if (eventBelongsToView(view, event) && !view.someProp("handleDOMEvent", function (f) { return f(view, event); }))
+      if (eventBelongsToView(view, event) && !runCustomHandler(view, event) &&
+          (view.editable || !(event.type in editHandlers)))
         { handler(view, event) }
     })
   };
 
   for (var event in handlers) loop( event );
+  view.extraHandlers = Object.create(null)
+  ensureListeners(view)
 }
 exports.initInput = initInput
+
+function destroyInput(view) {
+  stopObserving(view)
+  if (view.inDOMChange) { view.inDOMChange.destroy() }
+  if (view.dragging) { view.dragging.destroy() }
+}
+exports.destroyInput = destroyInput
+
+function ensureListeners(view) {
+  view.someProp("handleDOMEvents", function (handlers) {
+    for (var type in handlers) { if (!view.extraHandlers[type] && !handlers.hasOwnProperty(type)) {
+      view.extraHandlers[type] = true
+      view.content.addEventListener(type, function (event) { return runCustomHandler(view, event); })
+    } }
+  })
+}
+exports.ensureListeners = ensureListeners
+
+function runCustomHandler(view, event) {
+  return view.someProp("handleDOMEvents", function (handlers) {
+    var handler = handlers[event.type]
+    return handler ? handler(view, event) : false
+  })
+}
 
 function eventBelongsToView(view, event) {
   if (!event.bubbles) { return true }
@@ -11453,12 +11677,13 @@ function eventBelongsToView(view, event) {
 }
 
 function dispatchEvent(view, event) {
-  var handler = handlers[event.type]
-  if (handler && !view.someProp("handleDOMEvent", function (f) { return f(view, event); })) { handler(view, event) }
+  if (!runCustomHandler(view, event) && handlers[event.type] &&
+      (view.editable || !(event.type in editHandlers)))
+    { handlers[event.type](view, event) }
 }
 exports.dispatchEvent = dispatchEvent
 
-handlers.keydown = function (view, event) {
+editHandlers.keydown = function (view, event) {
   if (event.keyCode == 16) { view.shiftKey = true }
   if (view.inDOMChange) { return }
   if (view.someProp("handleKeyDown", function (f) { return f(view, event); }) || captureKeyDown(view, event))
@@ -11467,11 +11692,11 @@ handlers.keydown = function (view, event) {
     { view.selectionReader.poll() }
 }
 
-handlers.keyup = function (view, e) {
+editHandlers.keyup = function (view, e) {
   if (e.keyCode == 16) { view.shiftKey = false }
 }
 
-handlers.keypress = function (view, event) {
+editHandlers.keypress = function (view, event) {
   if (view.inDOMChange || !event.charCode ||
       event.ctrlKey && !event.altKey || browser.mac && event.metaKey) { return }
 
@@ -11487,7 +11712,7 @@ handlers.keypress = function (view, event) {
   if (node || !$from.sameParent($to)) {
     var text = String.fromCharCode(event.charCode)
     if (!view.someProp("handleTextInput", function (f) { return f(view, $from.pos, $to.pos, text); }))
-      { view.props.onAction(view.state.tr.insertText(text).scrollAction()) }
+      { view.dispatch(view.state.tr.insertText(text).scrollIntoView()) }
     event.preventDefault()
   }
 }
@@ -11520,14 +11745,16 @@ function runHandlerOnContext(view, propName, pos, inside, event) {
 
 function updateSelection(view, selection, origin) {
   view.focus()
-  view.props.onAction(selection.action({origin: origin}))
+  var tr = view.state.tr.setSelection(selection)
+  if (origin == "pointer") { tr.setMeta("pointer", true) }
+  view.dispatch(tr)
 }
 
 function selectClickedLeaf(view, inside) {
   if (inside == -1) { return false }
   var $pos = view.state.doc.resolve(inside), node = $pos.nodeAfter
   if (node && node.isLeaf && NodeSelection.isSelectable(node)) {
-    updateSelection(view, new NodeSelection($pos), "mouse")
+    updateSelection(view, new NodeSelection($pos), "pointer")
     return true
   }
   return false
@@ -11554,17 +11781,17 @@ function selectClickedNode(view, inside) {
   }
 
   if (selectAt != null) {
-    updateSelection(view, NodeSelection.create(view.state.doc, selectAt), "mouse")
+    updateSelection(view, NodeSelection.create(view.state.doc, selectAt), "pointer")
     return true
   } else {
     return false
   }
 }
 
-function handleSingleClick(view, pos, inside, event) {
+function handleSingleClick(view, pos, inside, event, selectNode) {
   return runHandlerOnContext(view, "handleClickOn", pos, inside, event) ||
     view.someProp("handleClick", function (f) { return f(view, pos, event); }) ||
-    selectClickedLeaf(view, inside)
+    (selectNode ? selectClickedNode(view, inside) : selectClickedLeaf(view, inside))
 }
 
 function handleDoubleClick(view, pos, inside, event) {
@@ -11582,7 +11809,7 @@ function defaultTripleClick(view, inside) {
   var doc = view.state.doc
   if (inside == -1) {
     if (doc.isTextblock) {
-      updateSelection(view, TextSelection.create(doc, 0, doc.content.size), "mouse")
+      updateSelection(view, TextSelection.create(doc, 0, doc.content.size), "pointer")
       return true
     }
     return false
@@ -11593,9 +11820,9 @@ function defaultTripleClick(view, inside) {
     var node = i > $pos.depth ? $pos.nodeAfter : $pos.node(i)
     var nodePos = $pos.before(i)
     if (node.isTextblock)
-      { updateSelection(view, TextSelection.create(doc, nodePos + 1, nodePos + 1 + node.content.size), "mouse") }
+      { updateSelection(view, TextSelection.create(doc, nodePos + 1, nodePos + 1 + node.content.size), "pointer") }
     else if (NodeSelection.isSelectable(node))
-      { updateSelection(view, NodeSelection.create(doc, nodePos), "mouse") }
+      { updateSelection(view, NodeSelection.create(doc, nodePos), "pointer") }
     else
       { continue }
     return true
@@ -11627,10 +11854,12 @@ handlers.mousedown = function (view, event) {
   else if ((type == "doubleClick" ? handleDoubleClick : handleTripleClick)(view, pos.pos, pos.inside, event))
     { event.preventDefault() }
   else
-    { view.selectionReader.poll("mouse") }
+    { view.selectionReader.poll("pointer") }
 }
 
-var MouseDown = function MouseDown(view, pos, event, flushed) {
+var MouseDown = function(view, pos, event, flushed) {
+  var this$1 = this;
+
   this.view = view
   this.pos = pos
   this.flushed = flushed
@@ -11653,56 +11882,55 @@ var MouseDown = function MouseDown(view, pos, event, flushed) {
     stopObserving(this.view)
     this.target.draggable = true
     if (browser.gecko && (this.setContentEditable = !this.target.hasAttribute("contentEditable")))
-      { this.target.setAttribute("contentEditable", "false") }
+      { setTimeout(function () { return this$1.target.setAttribute("contentEditable", "false"); }, 20) }
     startObserving(this.view)
   }
 
   view.root.addEventListener("mouseup", this.up = this.up.bind(this))
   view.root.addEventListener("mousemove", this.move = this.move.bind(this))
-  view.selectionReader.poll("mouse")
+  view.selectionReader.poll("pointer")
 };
 
-MouseDown.prototype.done = function done () {
+MouseDown.prototype.done = function () {
   this.view.root.removeEventListener("mouseup", this.up)
   this.view.root.removeEventListener("mousemove", this.move)
   if (this.mightDrag && this.target) {
+    stopObserving(this.view)
     this.target.draggable = false
     if (browser.gecko && this.setContentEditable)
       { this.target.removeAttribute("contentEditable") }
+    startObserving(this.view)
   }
 };
 
-MouseDown.prototype.up = function up (event) {
+MouseDown.prototype.up = function (event) {
   this.done()
 
   if (!this.view.content.contains(event.target.nodeType == 3 ? event.target.parentNode : event.target))
     { return }
 
   if (this.allowDefault) {
-    this.view.selectionReader.poll("mouse")
-  } else if (this.selectNode
-             ? selectClickedNode(this.view, this.pos.inside)
-             : handleSingleClick(this.view, this.pos.pos, this.pos.inside, event)) {
+    this.view.selectionReader.poll("pointer")
+  } else if (handleSingleClick(this.view, this.pos.pos, this.pos.inside, event, this.selectNode)) {
     event.preventDefault()
   } else if (this.flushed) {
-    this.view.focus()
-    this.view.props.onAction(Selection.near(this.view.state.doc.resolve(this.pos.pos)).action({origin: "mouse"}))
+    updateSelection(this.view, Selection.near(this.view.state.doc.resolve(this.pos.pos)), "pointer")
     event.preventDefault()
   } else {
-    this.view.selectionReader.poll("mouse")
+    this.view.selectionReader.poll("pointer")
   }
 };
 
-MouseDown.prototype.move = function move (event) {
+MouseDown.prototype.move = function (event) {
   if (!this.allowDefault && (Math.abs(this.x - event.clientX) > 4 ||
                              Math.abs(this.y - event.clientY) > 4))
     { this.allowDefault = true }
-  this.view.selectionReader.poll("mouse")
+  this.view.selectionReader.poll("pointer")
 };
 
 handlers.touchdown = function (view) {
   forceDOMFlush(view)
-  view.selectionReader.poll("mouse")
+  view.selectionReader.poll("pointer")
 }
 
 handlers.contextmenu = function (view, e) {
@@ -11726,12 +11954,12 @@ handlers.contextmenu = function (view, e) {
 // plain wrong. Instead, when a composition ends, we parse the dom
 // around the original selection, and derive an update from that.
 
-handlers.compositionstart = handlers.compositionupdate = function (view) {
+editHandlers.compositionstart = editHandlers.compositionupdate = function (view) {
   DOMChange.start(view, true)
   if (view.state.storedMarks) { view.inDOMChange.finish(true) }
 }
 
-handlers.compositionend = function (view, e) {
+editHandlers.compositionend = function (view, e) {
   if (!view.inDOMChange) {
     // We received a compositionend without having seen any previous
     // events for the composition. If there's data in the event
@@ -11756,19 +11984,21 @@ function stopObserving(view) {
 exports.stopObserving = stopObserving
 
 function registerMutations(view, mutations) {
-  for (var i = 0; i < mutations.length; i++) {
-    var mut = mutations[i]
-    if (mut.target == view.content && mut.type == "attributes") { continue }
-    var desc = view.docView.nearestDesc(mut.target)
+  if (view.editable) { for (var i = 0; i < mutations.length; i++) {
+    var mut = mutations[i], desc = view.docView.nearestDesc(mut.target)
+    if (mut.type == "attributes" &&
+        (desc == view.docView || mut.attributeName == "contenteditable")) { continue }
     if (!desc || desc.ignoreMutation(mut)) { continue }
 
     var from = (void 0), to = (void 0)
     if (mut.type == "childList") {
       var fromOffset = mut.previousSibling && mut.previousSibling.parentNode == mut.target
-          ? Array.prototype.indexOf.call(mut.target.childNodes, desc.previousSibling) + 1 : 0
+          ? Array.prototype.indexOf.call(mut.target.childNodes, mut.previousSibling) + 1 : 0
+      if (fromOffset == -1) { continue }
       from = desc.localPosFromDOM(mut.target, fromOffset, -1)
       var toOffset = mut.nextSibling && mut.nextSibling.parentNode == mut.target
-          ? Array.prototype.indexOf.call(mut.target.childNodes, desc.nextSibling) : mut.target.childNodes.length
+          ? Array.prototype.indexOf.call(mut.target.childNodes, mut.nextSibling) : mut.target.childNodes.length
+      if (toOffset == -1) { continue }
       to = desc.localPosFromDOM(mut.target, toOffset, 1)
     } else if (mut.type == "attributes") {
       from = desc.posAtStart - desc.border
@@ -11780,12 +12010,12 @@ function registerMutations(view, mutations) {
 
     DOMChange.start(view)
     view.inDOMChange.addRange(from, to)
-  }
+  } }
 }
 
-handlers.input = function (view) { return DOMChange.start(view); }
+editHandlers.input = function (view) { return DOMChange.start(view); }
 
-handlers.copy = handlers.cut = function (view, e) {
+handlers.copy = editHandlers.cut = function (view, e) {
   var sel = view.state.selection, cut = e.type == "cut"
   if (sel.empty) { return }
   if (!e.clipboardData || !canUpdateClipboard(e.clipboardData)) {
@@ -11794,14 +12024,14 @@ handlers.copy = handlers.cut = function (view, e) {
   }
   toClipboard(view, sel, e.clipboardData)
   e.preventDefault()
-  if (cut) { view.props.onAction(view.state.tr.deleteRange(sel.from, sel.to).scrollAction()) }
+  if (cut) { view.dispatch(view.state.tr.deleteRange(sel.from, sel.to).scrollIntoView()) }
 }
 
 function sliceSingleNode(slice) {
   return slice.openLeft == 0 && slice.openRight == 0 && slice.content.childCount == 1 ? slice.content.firstChild : null
 }
 
-handlers.paste = function (view, e) {
+editHandlers.paste = function (view, e) {
   if (!e.clipboardData) {
     if (browser.ie && browser.ie_version <= 11) { DOMChange.start(view) }
     return
@@ -11812,15 +12042,26 @@ handlers.paste = function (view, e) {
     view.someProp("transformPasted", function (f) { slice = f(slice) })
     var singleNode = sliceSingleNode(slice)
     var tr = singleNode ? view.state.tr.replaceSelectionWith(singleNode) : view.state.tr.replaceSelection(slice)
-    view.props.onAction(tr.scrollAction())
+    view.dispatch(tr.scrollIntoView())
   }
 }
 
-var Dragging = function Dragging(state, slice, range, move) {
+var Dragging = function(state, slice, range, move) {
   this.slice = slice
   this.range = range
   this.move = move && new TrackMappings(state)
 };
+
+Dragging.prototype.destroy = function () {
+  if (this.move) { this.move.destroy() }
+};
+
+function clearDragging(view) {
+  if (view.dragging) {
+    view.dragging.destroy()
+    view.dragging = null
+  }
+}
 
 function dropPos(slice, $pos) {
   if (!slice || !slice.content.size) { return $pos.pos }
@@ -11854,14 +12095,14 @@ handlers.dragstart = function (view, e) {
 }
 
 handlers.dragend = function (view) {
-  window.setTimeout(function () { return view.dragging = null; }, 50)
+  window.setTimeout(function () { return clearDragging(view); }, 50)
 }
 
-handlers.dragover = handlers.dragenter = function (_, e) { return e.preventDefault(); }
+editHandlers.dragover = editHandlers.dragenter = function (_, e) { return e.preventDefault(); }
 
-handlers.drop = function (view, e) {
+editHandlers.drop = function (view, e) {
   var dragging = view.dragging
-  view.dragging = null
+  clearDragging(view)
 
   if (!e.dataTransfer) { return }
 
@@ -11882,13 +12123,19 @@ handlers.drop = function (view, e) {
   }
   view.someProp("transformPasted", function (f) { slice = f(slice) })
   var pos = tr.mapping.map(insertPos)
-  if (slice.openLeft == 0 && slice.openRight == 0 && slice.content.childCount == 1)
+  var isNode = slice.openLeft == 0 && slice.openRight == 0 && slice.content.childCount == 1
+  if (isNode)
     { tr.replaceRangeWith(pos, pos, slice.content.firstChild) }
   else
     { tr.replaceRange(pos, pos, slice) }
-  tr.setSelection(Selection.between(tr.doc.resolve(pos), tr.doc.resolve(tr.mapping.map(insertPos))))
+  var $pos = tr.doc.resolve(pos)
+  if (isNode && NodeSelection.isSelectable(slice.content.firstChild) &&
+      $pos.nodeAfter && $pos.nodeAfter.sameMarkup(slice.content.firstChild))
+    { tr.setSelection(new NodeSelection($pos)) }
+  else
+    { tr.setSelection(Selection.between($pos, tr.doc.resolve(tr.mapping.map(insertPos)))) }
   view.focus()
-  view.props.onAction(tr.action())
+  view.dispatch(tr)
 }
 
 handlers.focus = function (view, event) {
@@ -11907,6 +12154,9 @@ handlers.blur = function (view, event) {
   view.someProp("onBlur", function (f) { f(view, event) })
 }
 
+// Make sure all handlers get registered
+for (var prop in editHandlers) { handlers[prop] = editHandlers[prop] }
+
 },{"./browser":48,"./capturekeys":49,"./clipboard":50,"./domchange":52,"./trackmappings":57,"prosemirror-state":34}],56:[function(require,module,exports){
 var ref = require("prosemirror-state");
 var Selection = ref.Selection;
@@ -11917,7 +12167,7 @@ var browser = require("./browser")
 // Track the state of the current editor selection. Keeps the editor
 // selection in sync with the DOM selection by polling for changes,
 // as there is no DOM event for DOM selection changes.
-var SelectionReader = function SelectionReader(view) {
+var SelectionReader = function(view) {
   var this$1 = this;
 
   this.view = view
@@ -11927,22 +12177,31 @@ var SelectionReader = function SelectionReader(view) {
   this.lastSelection = view.state.selection
   this.poller = poller(this)
 
-  view.content.addEventListener("focus", function () { return this$1.poller.receivedFocus(); })
-  view.content.addEventListener("blur", function () { return this$1.poller.lostFocus(); })
+  view.content.addEventListener("focus", function () { return this$1.poller.start(); })
+  view.content.addEventListener("blur", function () { return this$1.poller.stop(); })
+
+  if (!view.editable) { this.poller.start() }
 };
 
-SelectionReader.prototype.poll = function poll (origin) { this.poller.poll(origin) };
+SelectionReader.prototype.destroy = function () { this.poller.stop() };
+
+SelectionReader.prototype.poll = function (origin) { this.poller.poll(origin) };
+
+SelectionReader.prototype.editableChanged = function () {
+  if (!this.view.editable) { this.poller.start() }
+  else if (!this.view.hasFocus()) { this.poller.stop() }
+};
 
 // : () → bool
 // Whether the DOM selection has changed from the last known state.
-SelectionReader.prototype.domChanged = function domChanged () {
+SelectionReader.prototype.domChanged = function () {
   var sel = this.view.root.getSelection()
   return sel.anchorNode != this.lastAnchorNode || sel.anchorOffset != this.lastAnchorOffset ||
     sel.focusNode != this.lastHeadNode || sel.focusOffset != this.lastHeadOffset
 };
 
 // Store the current state of the DOM selection.
-SelectionReader.prototype.storeDOMState = function storeDOMState (selection) {
+SelectionReader.prototype.storeDOMState = function (selection) {
   var sel = this.view.root.getSelection()
   this.lastAnchorNode = sel.anchorNode; this.lastAnchorOffset = sel.anchorOffset
   this.lastHeadNode = sel.focusNode; this.lastHeadOffset = sel.focusOffset
@@ -11952,18 +12211,25 @@ SelectionReader.prototype.storeDOMState = function storeDOMState (selection) {
 // : (?string) → bool
 // When the DOM selection changes in a notable manner, modify the
 // current selection state to match.
-SelectionReader.prototype.readFromDOM = function readFromDOM (origin) {
+SelectionReader.prototype.readFromDOM = function (origin) {
   if (!this.view.hasFocus() || this.view.inDOMChange || !this.domChanged()) { return }
 
   var domSel = this.view.root.getSelection(), doc = this.view.state.doc
-  var domNode = domSel.focusNode, head = this.view.docView.posFromDOM(domNode, domSel.focusOffset)
+  var nearestDesc = this.view.docView.nearestDesc(domSel.focusNode)
+  // If the selection is in a non-document part of the view, ignore it
+  if (!nearestDesc.size) {
+    this.storeDOMState()
+    return
+  }
+  var head = this.view.docView.posFromDOM(domSel.focusNode, domSel.focusOffset)
   var $head = doc.resolve(head), $anchor, selection
   if (domSel.isCollapsed) {
     $anchor = $head
-    var nearestDesc = this.view.docView.nearestDesc(domNode)
     while (nearestDesc && !nearestDesc.node) { nearestDesc = nearestDesc.parent }
-    if (nearestDesc && nearestDesc.node.isLeaf && NodeSelection.isSelectable(nearestDesc.node))
-      { selection = new NodeSelection($head) }
+    if (nearestDesc && nearestDesc.node.isLeaf && NodeSelection.isSelectable(nearestDesc.node)) {
+      var pos = nearestDesc.posAtStart
+      selection = new NodeSelection(head == pos ? $head : doc.resolve(pos))
+    }
   } else {
     $anchor = doc.resolve(this.view.docView.posFromDOM(domSel.anchorNode, domSel.anchorOffset))
   }
@@ -11971,83 +12237,83 @@ SelectionReader.prototype.readFromDOM = function readFromDOM (origin) {
   if (!selection) {
     var bias = this.view.state.selection.head != null && this.view.state.selection.head < $head.pos ? 1 : -1
     selection = Selection.between($anchor, $head, bias)
+    if (bias == -1 && selection.node)
+      { selection = Selection.between($anchor, $head, 1) }
   }
   if ($head.pos == selection.head && $anchor.pos == selection.anchor)
     { this.storeDOMState(selection) }
-  this.view.props.onAction(selection.action(origin && {origin: origin}))
+  var tr = this.view.state.tr.setSelection(selection)
+  if (origin == "pointer") { tr.setMeta("pointer", true) }
+  this.view.dispatch(tr)
 };
 exports.SelectionReader = SelectionReader
 
+// There's two polling models. On browsers that support the
+// selectionchange event (everything except Firefox, basically), we
+// register a listener for that whenever the editor is focused.
+var SelectionChangePoller = function(reader) {
+  var this$1 = this;
+
+  this.listening = false
+  this.curOrigin = null
+  this.originTime = 0
+
+  this.readFunc = function () { return reader.readFromDOM(this$1.originTime > Date.now() - 50 ? this$1.curOrigin : null); }
+};
+
+SelectionChangePoller.prototype.poll = function (origin) {
+  this.curOrigin = origin
+  this.originTime = Date.now()
+};
+
+SelectionChangePoller.prototype.start = function () {
+  if (!this.listening) {
+    document.addEventListener("selectionchange", this.readFunc)
+    this.listening = true
+  }
+};
+
+SelectionChangePoller.prototype.stop = function () {
+  if (this.listening) {
+    document.removeEventListener("selectionchange", this.readFunc)
+    this.listening = false
+  }
+};
+
+// On Firefox, we use timeout-based polling.
+var TimeoutPoller = function(reader) {
+  // The timeout ID for the poller when active.
+  this.polling = null
+  this.reader = reader
+  this.pollFunc = this.doPoll.bind(this, null)
+};
+
+TimeoutPoller.prototype.doPoll = function (origin) {
+  var view = this.reader.view
+  if (view.focused || !view.editable) {
+    this.reader.readFromDOM(origin)
+    this.polling = setTimeout(this.pollFunc, 100)
+  } else {
+    this.polling = null
+  }
+};
+
+TimeoutPoller.prototype.poll = function (origin) {
+  clearTimeout(this.polling)
+  this.polling = setTimeout(origin ? this.doPoll.bind(this, origin) : this.pollFunc, 0)
+};
+
+TimeoutPoller.prototype.start = function () {
+  if (this.polling == null) { this.poll() }
+};
+
+TimeoutPoller.prototype.stop = function () {
+  clearTimeout(this.polling)
+  this.polling = null
+};
+
 function poller(reader) {
-  // There's two polling models. On browsers that support the
-  // selectionchange event (everything except Firefox, basically), we
-  // register a listener for that whenever the editor is focused.
-  if ("onselectionchange" in document) { return new (function () {
-      function anonymous() {
-    var this$1 = this;
-
-      this.listening = false
-      this.curOrigin = null
-      this.originTime = 0
-
-      this.readFunc = function () { return reader.readFromDOM(this$1.originTime > Date.now() - 50 ? this$1.curOrigin : null); }
-    }
-
-    anonymous.prototype.poll = function poll (origin) {
-      this.curOrigin = origin
-      this.originTime = Date.now()
-    };
-
-    anonymous.prototype.receivedFocus = function receivedFocus () {
-      if (!this.listening) {
-        document.addEventListener("selectionchange", this.readFunc)
-        this.listening = true
-      }
-    };
-
-    anonymous.prototype.lostFocus = function lostFocus () {
-      if (this.listening) {
-        document.removeEventListener("selectionchange", this.readFunc)
-        this.listening = false
-      }
-    };
-
-      return anonymous;
-    }()) }
-  // On Firefox, we use timeout-based polling.
-  return new (function () {
-    function anonymous$1() {
-      // The timeout ID for the poller when active.
-      this.polling = null
-      this.reader = reader
-      this.pollFunc = this.doPoll.bind(this, null)
-    }
-
-    anonymous$1.prototype.doPoll = function doPoll (origin) {
-      if (this.reader.view.hasFocus()) {
-        this.reader.readFromDOM(origin)
-        this.polling = setTimeout(this.pollFunc, 100)
-      } else {
-        this.polling = null
-      }
-    };
-
-    anonymous$1.prototype.poll = function poll (origin) {
-      clearTimeout(this.polling)
-      this.polling = setTimeout(origin ? this.doPoll.bind(this, origin) : this.pollFunc, 0)
-    };
-
-    anonymous$1.prototype.receivedFocus = function receivedFocus () {
-      if (this.polling == null) { this.poll() }
-    };
-
-    anonymous$1.prototype.lostFocus = function lostFocus () {
-      clearTimeout(this.polling)
-      this.polling = null
-    };
-
-    return anonymous$1;
-  }())
+  return new ("onselectionchange" in document ? SelectionChangePoller : TimeoutPoller)(reader)
 }
 
 function selectionToDOM(view, sel, takeFocus) {
@@ -12056,14 +12322,27 @@ function selectionToDOM(view, sel, takeFocus) {
   if (!view.hasFocus()) {
     if (!takeFocus) { return }
     // See https://bugzilla.mozilla.org/show_bug.cgi?id=921444
-    else if (browser.gecko) { view.content.focus() }
+    else if (browser.gecko && view.editable) { view.content.focus() }
   }
 
   var reader = view.selectionReader
-  if (sel.eq(reader.lastSelection) && !reader.domChanged()) { return }
-  var anchor = sel.anchor, head = sel.head
-  if (anchor == null) { anchor = sel.from; head = sel.to }
+  if (sel == reader.lastSelection && !reader.domChanged()) { return }
+  var anchor = sel.anchor;
+  var head = sel.head;
+  var resetEditable
+  if (anchor == null) {
+    anchor = sel.from
+    head = sel.to
+    if (browser.webkit && sel.node.isBlock) {
+      var desc = view.docView.descAt(sel.from)
+      if (!desc.contentDOM && desc.dom.contentEditable == "false") {
+        resetEditable = desc.dom
+        desc.dom.contentEditable = "true"
+      }
+    }
+  }
   view.docView.setSelection(anchor, head, view.root)
+  if (resetEditable) { resetEditable.contentEditable = "false" }
   reader.storeDOMState(sel)
 }
 exports.selectionToDOM = selectionToDOM
@@ -12090,20 +12369,29 @@ function clearNodeSelection(view) {
 }
 
 },{"./browser":48,"prosemirror-state":34}],57:[function(require,module,exports){
-var ref = require("prosemirror-transform");
-var Mapping = ref.Mapping;
+var ref = require("prosemirror-state");
+var EditorState = ref.EditorState;
+var ref$1 = require("prosemirror-transform");
+var Mapping = ref$1.Mapping;
 
-var TrackedRecord = function TrackedRecord(prev, mapping, state) {
+var TrackedRecord = function(prev, mapping, state) {
   this.prev = prev
   this.mapping = mapping
   this.state = state
 };
 
-var TrackMappings = function TrackMappings(state) {
+var TrackMappings = function(state) {
   this.seen = [new TrackedRecord(null, null, state)]
+  // Kludge to listen to state changes globally in order to be able
+  // to find mappings from a given state to another.
+  EditorState.addApplyListener(this.track = this.track.bind(this))
 };
 
-TrackMappings.prototype.find = function find (state) {
+TrackMappings.prototype.destroy = function () {
+  EditorState.removeApplyListener(this.track)
+};
+
+TrackMappings.prototype.find = function (state) {
     var this$1 = this;
 
   for (var i = this.seen.length - 1; i >= 0; i--) {
@@ -12112,13 +12400,13 @@ TrackMappings.prototype.find = function find (state) {
   }
 };
 
-TrackMappings.prototype.track = function track (old, action, state) {
+TrackMappings.prototype.track = function (old, tr, state) {
   var found = this.seen.length < 200 ? this.find(old) : null
   if (found)
-    { this.seen.push(new TrackedRecord(found, action.type == "transform" ? action.transform.mapping : null, state)) }
+    { this.seen.push(new TrackedRecord(found, tr.docChanged ? tr.mapping : null, state)) }
 };
 
-TrackMappings.prototype.getMapping = function getMapping (state) {
+TrackMappings.prototype.getMapping = function (state) {
   var found = this.find(state)
   if (!found) { return null }
   var mappings = []
@@ -12131,7 +12419,7 @@ TrackMappings.prototype.getMapping = function getMapping (state) {
 };
 exports.TrackMappings = TrackMappings
 
-},{"prosemirror-transform":39}],58:[function(require,module,exports){
+},{"prosemirror-state":34,"prosemirror-transform":39}],58:[function(require,module,exports){
 var ref = require("prosemirror-model");
 var DOMSerializer = ref.DOMSerializer;
 
@@ -12158,14 +12446,15 @@ var browser = require("./browser")
 //   is not present, the node view itself is responsible for rendering
 //   (or deciding not to render) its child nodes.
 //
-//   update:: ?(node: Node, deco: DecorationSet) → bool
+//   update:: ?(node: Node, decorations: [Decoration]) → bool
 //   When given, this will be called when the view is updating itself.
-//   It will be given a node (possibly of a different type), and a
-//   decoration set (which it may ignore, if it chooses not to support
-//   decorations), and should return true if it was able to update to
-//   that node, and false otherwise. If the node view has a
-//   `contentDOM` property (or no `dom` property), updating its child
-//   nodes will be handled by ProseMirror.
+//   It will be given a node (possibly of a different type), and an
+//   array of active decorations (which are automatically drawn, and
+//   the node view may ignore if it isn't interested in them), and
+//   should return true if it was able to update to that node, and
+//   false otherwise. If the node view has a `contentDOM` property (or
+//   no `dom` property), updating its child nodes will be handled by
+//   ProseMirror.
 //
 //   selectNode:: ?()
 //   Can be used to override the way the node's selected status (as a
@@ -12213,7 +12502,7 @@ var NOT_DIRTY = 0, CHILD_DIRTY = 1, CONTENT_DIRTY = 2, NODE_DIRTY = 3
 
 // Superclass for the various kinds of descriptions. Defines their
 // basic structure and shared methods.
-var ViewDesc = function ViewDesc(parent, children, dom, contentDOM) {
+var ViewDesc = function(parent, children, dom, contentDOM) {
   this.parent = parent
   this.children = children
   this.dom = dom
@@ -12226,25 +12515,25 @@ var ViewDesc = function ViewDesc(parent, children, dom, contentDOM) {
   this.dirty = NOT_DIRTY
 };
 
-var prototypeAccessors = { size: {},border: {},posAtStart: {},posAtEnd: {} };
+var prototypeAccessors = { size: {},border: {},posAtStart: {},posAtEnd: {},contentLost: {} };
 
 // Used to check whether a given description corresponds to a
 // widget/mark/node.
-ViewDesc.prototype.matchesWidget = function matchesWidget () { return false };
-ViewDesc.prototype.matchesMark = function matchesMark () { return false };
-ViewDesc.prototype.matchesNode = function matchesNode () { return false };
-ViewDesc.prototype.matchesHack = function matchesHack () { return false };
+ViewDesc.prototype.matchesWidget = function () { return false };
+ViewDesc.prototype.matchesMark = function () { return false };
+ViewDesc.prototype.matchesNode = function () { return false };
+ViewDesc.prototype.matchesHack = function () { return false };
 
 // : () → ?ParseRule
 // When parsing in-editor content (in domchange.js), we allow
 // descriptions to determine the parse rules that should be used to
 // parse them.
-ViewDesc.prototype.parseRule = function parseRule () { return null };
+ViewDesc.prototype.parseRule = function () { return null };
 
 // : (dom.Event) → bool
 // Used by the editor's event handler to ignore events that come
 // from certain descs.
-ViewDesc.prototype.stopEvent = function stopEvent () { return false };
+ViewDesc.prototype.stopEvent = function () { return false };
 
 // The size of the content represented by this desc.
 prototypeAccessors.size.get = function () {
@@ -12259,7 +12548,7 @@ prototypeAccessors.size.get = function () {
 // start/end tokens.
 prototypeAccessors.border.get = function () { return 0 };
 
-ViewDesc.prototype.destroy = function destroy () {
+ViewDesc.prototype.destroy = function () {
     var this$1 = this;
 
   this.parent = this.dom.pmViewDesc = null
@@ -12267,7 +12556,7 @@ ViewDesc.prototype.destroy = function destroy () {
     { this$1.children[i].destroy() }
 };
 
-ViewDesc.prototype.posBeforeChild = function posBeforeChild (child) {
+ViewDesc.prototype.posBeforeChild = function (child) {
     var this$1 = this;
 
   for (var i = 0, pos = this.posAtStart; i < this.children.length; i++) {
@@ -12286,7 +12575,7 @@ prototypeAccessors.posAtEnd.get = function () {
 };
 
 // : (dom.Node, number, ?number) → number
-ViewDesc.prototype.localPosFromDOM = function localPosFromDOM (dom, offset, bias) {
+ViewDesc.prototype.localPosFromDOM = function (dom, offset, bias) {
     var this$1 = this;
 
   // If the DOM position is in the content, use the child desc after
@@ -12318,7 +12607,7 @@ ViewDesc.prototype.localPosFromDOM = function localPosFromDOM (dom, offset, bias
   // parameter, to determine whether to return the position at the
   // start or at the end of this view desc.
   var atEnd
-  if (this.contentDOM) {
+  if (this.contentDOM && this.contentDOM != this.dom && this.dom.contains(this.contentDOM)) {
     atEnd = dom.compareDocumentPosition(this.contentDOM) & 2
   } else if (this.dom.firstChild) {
     if (offset == 0) { for (var search = dom;; search = search.parentNode) {
@@ -12335,23 +12624,26 @@ ViewDesc.prototype.localPosFromDOM = function localPosFromDOM (dom, offset, bias
 
 // Scan up the dom finding the first desc that is a descendant of
 // this one.
-ViewDesc.prototype.nearestDesc = function nearestDesc (dom) {
+ViewDesc.prototype.nearestDesc = function (dom, onlyNodes) {
     var this$1 = this;
 
-  for (; dom; dom = dom.parentNode) {
-    var desc = this$1.getDesc(dom)
-    if (desc) { return desc }
+  for (var first = true, cur = dom; cur; cur = cur.parentNode) {
+    var desc = this$1.getDesc(cur)
+    if (desc && (!onlyNodes || desc.node)) {
+      if (first && desc.nodeDOM && !desc.nodeDOM.contains(dom)) { first = false }
+      else { return desc }
+    }
   }
 };
 
-ViewDesc.prototype.getDesc = function getDesc (dom) {
+ViewDesc.prototype.getDesc = function (dom) {
     var this$1 = this;
 
   var desc = dom.pmViewDesc
   for (var cur = desc; cur; cur = cur.parent) { if (cur == this$1) { return desc } }
 };
 
-ViewDesc.prototype.posFromDOM = function posFromDOM (dom, offset, bias) {
+ViewDesc.prototype.posFromDOM = function (dom, offset, bias) {
     var this$1 = this;
 
   for (var scan = dom;; scan = scan.parentNode) {
@@ -12363,7 +12655,7 @@ ViewDesc.prototype.posFromDOM = function posFromDOM (dom, offset, bias) {
 // : (number) → ?NodeViewDesc
 // Find the desc for the node after the given pos, if any. (When a
 // parent node overrode rendering, there might not be one.)
-ViewDesc.prototype.descAt = function descAt (pos) {
+ViewDesc.prototype.descAt = function (pos) {
     var this$1 = this;
 
   for (var i = 0, offset = 0; i < this.children.length; i++) {
@@ -12378,7 +12670,7 @@ ViewDesc.prototype.descAt = function descAt (pos) {
 };
 
 // : (number, ?bool) → {node: dom.Node, offset: number}
-ViewDesc.prototype.domFromPos = function domFromPos (pos, searchDOM) {
+ViewDesc.prototype.domFromPos = function (pos, searchDOM) {
     var this$1 = this;
 
   if (!this.contentDOM) { return {node: this.dom, offset: 0} }
@@ -12396,19 +12688,23 @@ ViewDesc.prototype.domFromPos = function domFromPos (pos, searchDOM) {
 // If the DOM was directly edited, we can't trust the child view
 // desc offsets anymore, so we search the actual DOM to figure out
 // the offset that corresponds to a given child.
-ViewDesc.prototype.findDOMOffset = function findDOMOffset (i, searchDOM) {
+ViewDesc.prototype.findDOMOffset = function (i, searchDOM) {
     var this$1 = this;
 
   var content = this.contentDOM
   if (searchDOM < 0) {
     for (var j = i - 1; j >= 0; j--) {
-      var found = Array.prototype.indexOf.call(content.childNodes, this$1.children[j].dom)
+      var child = this$1.children[j]
+      if (!child.size) { continue }
+      var found = Array.prototype.indexOf.call(content.childNodes, child.dom)
       if (found > -1) { return found + 1 }
     }
     return 0
   } else {
     for (var j$1 = i; j$1 < this.children.length; j$1++) {
-      var found$1 = Array.prototype.indexOf.call(content.childNodes, this$1.children[j$1].dom)
+      var child$1 = this$1.children[j$1]
+      if (!child$1.size) { continue }
+      var found$1 = Array.prototype.indexOf.call(content.childNodes, child$1.dom)
       if (found$1 > -1) { return found$1 }
     }
     return content.childNodes.length
@@ -12416,7 +12712,7 @@ ViewDesc.prototype.findDOMOffset = function findDOMOffset (i, searchDOM) {
 };
 
 // : (number) → dom.Node
-ViewDesc.prototype.domAfterPos = function domAfterPos (pos) {
+ViewDesc.prototype.domAfterPos = function (pos) {
   var ref = this.domFromPos(pos);
     var node = ref.node;
     var offset = ref.offset;
@@ -12431,7 +12727,7 @@ ViewDesc.prototype.domAfterPos = function domAfterPos (pos) {
 // custom things with the selection. Note that this falls apart when
 // a selection starts in such a node and ends in another, in which
 // case we just use whatever domFromPos produces as a best effort.
-ViewDesc.prototype.setSelection = function setSelection (anchor, head, root) {
+ViewDesc.prototype.setSelection = function (anchor, head, root) {
     var this$1 = this;
 
   // If the selection falls entirely in a child, give it to that child
@@ -12464,22 +12760,27 @@ ViewDesc.prototype.setSelection = function setSelection (anchor, head, root) {
 };
 
 // : (dom.MutationRecord) → bool
-ViewDesc.prototype.ignoreMutation = function ignoreMutation (_mutation) {
+ViewDesc.prototype.ignoreMutation = function (_mutation) {
   return !this.contentDOM
+};
+
+prototypeAccessors.contentLost.get = function () {
+  return this.contentDOM && this.contentDOM != this.dom && !this.dom.contains(this.contentDOM)
 };
 
 // Remove a subtree of the element tree that has been touched
 // by a DOM change, so that the next update will redraw it.
-ViewDesc.prototype.markDirty = function markDirty (from, to) {
+ViewDesc.prototype.markDirty = function (from, to) {
     var this$1 = this;
 
   for (var offset = 0, i = 0; i < this.children.length; i++) {
     var child = this$1.children[i], end = offset + child.size
-    if (from < end && to > offset) {
+    if (offset == end ? from <= end && to >= offset : from < end && to > offset) {
       var startInside = offset + child.border, endInside = end - child.border
       if (from >= startInside && to <= endInside) {
         this$1.dirty = from == offset || to == end ? CONTENT_DIRTY : CHILD_DIRTY
-        child.markDirty(from - startInside, to - startInside)
+        if (from == startInside && to == endInside && child.contentLost) { child.dirty = NODE_DIRTY }
+        else { child.markDirty(from - startInside, to - startInside) }
         return
       } else {
         child.dirty = NODE_DIRTY
@@ -12508,11 +12809,11 @@ var WidgetViewDesc = (function (ViewDesc) {
   WidgetViewDesc.prototype = Object.create( ViewDesc && ViewDesc.prototype );
   WidgetViewDesc.prototype.constructor = WidgetViewDesc;
 
-  WidgetViewDesc.prototype.matchesWidget = function matchesWidget (widget) { return this.dirty == NOT_DIRTY && widget.type == this.widget.type };
+  WidgetViewDesc.prototype.matchesWidget = function (widget) { return this.dirty == NOT_DIRTY && widget.type == this.widget.type };
 
-  WidgetViewDesc.prototype.parseRule = function parseRule () { return {ignore: true} };
+  WidgetViewDesc.prototype.parseRule = function () { return {ignore: true} };
 
-  WidgetViewDesc.prototype.stopEvent = function stopEvent (event) {
+  WidgetViewDesc.prototype.stopEvent = function (event) {
     var stop = this.widget.type.options.stopEvent
     return stop ? stop(event) : false
   };
@@ -12535,16 +12836,16 @@ var MarkViewDesc = (function (ViewDesc) {
   MarkViewDesc.prototype = Object.create( ViewDesc && ViewDesc.prototype );
   MarkViewDesc.prototype.constructor = MarkViewDesc;
 
-  MarkViewDesc.create = function create (parent, mark, view) {
+  MarkViewDesc.create = function (parent, mark, view) {
     var custom = customNodeViews(view)[mark.type.name]
     var spec = custom && custom(mark, view)
     var dom = spec && spec.dom || DOMSerializer.renderSpec(document, mark.type.spec.toDOM(mark)).dom
     return new MarkViewDesc(parent, mark, dom)
   };
 
-  MarkViewDesc.prototype.parseRule = function parseRule () { return {mark: this.mark.type.name, attrs: this.mark.attrs, contentElement: this.contentDOM} };
+  MarkViewDesc.prototype.parseRule = function () { return {mark: this.mark.type.name, attrs: this.mark.attrs, contentElement: this.contentDOM} };
 
-  MarkViewDesc.prototype.matchesMark = function matchesMark (mark) { return this.dirty != NODE_DIRTY && this.mark.eq(mark) };
+  MarkViewDesc.prototype.matchesMark = function (mark) { return this.dirty != NODE_DIRTY && this.mark.eq(mark) };
 
   return MarkViewDesc;
 }(ViewDesc));
@@ -12553,8 +12854,9 @@ var MarkViewDesc = (function (ViewDesc) {
 // correspond to an actual node in the document. Unlike mark descs,
 // they populate their child array themselves.
 var NodeViewDesc = (function (ViewDesc) {
-  function NodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, view) {
+  function NodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, nodeDOM, view) {
     ViewDesc.call(this, parent, node.isLeaf ? nothing : [], dom, contentDOM)
+    this.nodeDOM = nodeDOM
     this.node = node
     this.outerDeco = outerDeco
     this.innerDeco = innerDeco
@@ -12576,33 +12878,35 @@ var NodeViewDesc = (function (ViewDesc) {
   // since it'd require exposing a whole slew of finnicky
   // implementation details to the user code that they probably will
   // never need.)
-  NodeViewDesc.create = function create (parent, node, outerDeco, innerDeco, view) {
+  NodeViewDesc.create = function (parent, node, outerDeco, innerDeco, view) {
     var custom = customNodeViews(view)[node.type.name], descObj
     var spec = custom && custom(node, view, function () {
       // (This is a function that allows the custom view to find its
       // own position)
-      if (!descObj) { return parent.posAtStart + parent.size }
-      if (descObj.parent) { return descObj.parent.posBeforeChild(descObj) }
-    })
+      if (descObj && descObj.parent) { return descObj.parent.posBeforeChild(descObj) }
+    }, outerDeco)
 
     var dom = spec && spec.dom, contentDOM = spec && spec.contentDOM
     if (!dom) { var assign;
       ((assign = DOMSerializer.renderSpec(document, node.type.spec.toDOM(node)), dom = assign.dom, contentDOM = assign.contentDOM)) }
-    var startDOM = dom
-    for (var i = 0; i < outerDeco.length; i++)
-      { dom = applyOuterDeco(dom, outerDeco[i].type.attrs, node) }
+    if (!contentDOM && !node.isText) { dom.contentEditable = false }
+
+    var nodeDOM = dom
+    dom = applyOuterDeco(dom, outerDeco, node)
 
     if (spec)
-      { return descObj = new CustomNodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, spec, view) }
+      { return descObj = new CustomNodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, nodeDOM, spec, view) }
     else if (node.isText)
-      { return new TextViewDesc(parent, node, outerDeco, innerDeco, dom, startDOM, view) }
+      { return new TextViewDesc(parent, node, outerDeco, innerDeco, dom, nodeDOM, view) }
     else
-      { return new NodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, view) }
+      { return new NodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, nodeDOM, view) }
   };
 
-  NodeViewDesc.prototype.parseRule = function parseRule () { return {node: this.node.type.name, attrs: this.node.attrs, contentElement: this.contentDOM} };
+  NodeViewDesc.prototype.parseRule = function () {
+    return {node: this.node.type.name, attrs: this.node.attrs, contentElement: this.contentLost ? null : this.contentDOM}
+  };
 
-  NodeViewDesc.prototype.matchesNode = function matchesNode (node, outerDeco, innerDeco) {
+  NodeViewDesc.prototype.matchesNode = function (node, outerDeco, innerDeco) {
     return this.dirty == NOT_DIRTY && node.eq(this.node) &&
       sameOuterDeco(outerDeco, this.outerDeco) && innerDeco.eq(this.innerDeco)
   };
@@ -12615,20 +12919,22 @@ var NodeViewDesc = (function (ViewDesc) {
   // decorations, possibly introducing nesting for marks. Then, in a
   // separate step, syncs the DOM inside `this.contentDOM` to
   // `this.children`.
-  NodeViewDesc.prototype.updateChildren = function updateChildren (view) {
+  NodeViewDesc.prototype.updateChildren = function (view) {
+    var this$1 = this;
+
     var updater = new ViewTreeUpdater(this)
     iterDeco(this.node, this.innerDeco, function (widget) {
       // If the next node is a desc matching this widget, reuse it,
       // otherwise insert the widget as a new view desc.
       updater.placeWidget(widget)
-    }, function (child, outerDeco, innerDeco) {
+    }, function (child, outerDeco, innerDeco, i) {
       // Make sure the wrapping mark descs match the node's marks.
       updater.syncToMarks(child.marks, view)
       // Either find an existing desc that exactly matches this node,
       // and drop the descs before it.
       updater.findNodeMatch(child, outerDeco, innerDeco) ||
         // Or try updating the next desc to reflect this node.
-        updater.updateNode(child, outerDeco, innerDeco, view) ||
+        updater.updateNextNode(child, outerDeco, innerDeco, view, this$1.node.content, i) ||
         // Or just add it as a new desc.
         updater.addNode(child, outerDeco, innerDeco, view)
     })
@@ -12641,7 +12947,7 @@ var NodeViewDesc = (function (ViewDesc) {
     if (updater.changed || this.dirty == CONTENT_DIRTY) { this.renderChildren() }
   };
 
-  NodeViewDesc.prototype.renderChildren = function renderChildren () {
+  NodeViewDesc.prototype.renderChildren = function () {
     renderDescs(this.contentDOM, this.children, NodeViewDesc.is)
     if (browser.ios) { iosHacks(this.dom) }
   };
@@ -12649,10 +12955,10 @@ var NodeViewDesc = (function (ViewDesc) {
   // : (Node, [Decoration], DecorationSet, EditorView) → bool
   // If this desc be updated to match the given node decoration,
   // do so and return true.
-  NodeViewDesc.prototype.update = function update (node, outerDeco, innerDeco, view) {
+  NodeViewDesc.prototype.update = function (node, outerDeco, innerDeco, view) {
     if (this.dirty == NODE_DIRTY ||
-        !node.sameMarkup(this.node) ||
-        !sameOuterDeco(outerDeco, this.outerDeco)) { return false }
+        !node.sameMarkup(this.node)) { return false }
+    this.updateOuterDeco(outerDeco)
     this.node = node
     this.innerDeco = innerDeco
     if (!node.isLeaf) { this.updateChildren(view) }
@@ -12660,14 +12966,23 @@ var NodeViewDesc = (function (ViewDesc) {
     return true
   };
 
+  NodeViewDesc.prototype.updateOuterDeco = function (outerDeco) {
+    if (sameOuterDeco(outerDeco, this.outerDeco)) { return }
+    var needsWrap = this.nodeDOM.nodeType != 1
+    this.dom = patchOuterDeco(this.dom, this.nodeDOM,
+                              computeOuterDeco(this.outerDeco, this.node, needsWrap),
+                              computeOuterDeco(outerDeco, this.node, needsWrap))
+    this.outerDeco = outerDeco
+  };
+
   // Mark this node as being the selected node.
-  NodeViewDesc.prototype.selectNode = function selectNode () {
-    this.dom.classList.add("ProseMirror-selectednode")
+  NodeViewDesc.prototype.selectNode = function () {
+    this.nodeDOM.classList.add("ProseMirror-selectednode")
   };
 
   // Remove selected node marking from this node.
-  NodeViewDesc.prototype.deselectNode = function deselectNode () {
-    this.dom.classList.remove("ProseMirror-selectednode")
+  NodeViewDesc.prototype.deselectNode = function () {
+    this.nodeDOM.classList.remove("ProseMirror-selectednode")
   };
 
   Object.defineProperties( NodeViewDesc.prototype, prototypeAccessors$1 );
@@ -12677,52 +12992,52 @@ var NodeViewDesc = (function (ViewDesc) {
 
 // Create a view desc for the top-level document node, to be exported
 // and used by the view class.
-function docViewDesc(doc, deco, dom, view) {
-  return new NodeViewDesc(null, doc, nothing, deco, dom, dom, view)
+function docViewDesc(doc, outerDeco, innerDeco, dom, view) {
+  applyOuterDeco(dom, outerDeco, doc, true)
+  return new NodeViewDesc(null, doc, outerDeco, innerDeco, dom, dom, dom, view)
 }
 exports.docViewDesc = docViewDesc
 
 var TextViewDesc = (function (NodeViewDesc) {
-  function TextViewDesc(parent, node, outerDeco, innerDeco, dom, textDOM, view) {
-    NodeViewDesc.call(this, parent, node, outerDeco, innerDeco, dom, null, view)
-    this.textDOM = textDOM
+  function TextViewDesc(parent, node, outerDeco, innerDeco, dom, nodeDOM, view) {
+    NodeViewDesc.call(this, parent, node, outerDeco, innerDeco, dom, null, nodeDOM, view)
   }
 
   if ( NodeViewDesc ) TextViewDesc.__proto__ = NodeViewDesc;
   TextViewDesc.prototype = Object.create( NodeViewDesc && NodeViewDesc.prototype );
   TextViewDesc.prototype.constructor = TextViewDesc;
 
-  TextViewDesc.prototype.parseRule = function parseRule () {
-    return {skip: this.textDOM.parentNode}
+  TextViewDesc.prototype.parseRule = function () {
+    return {skip: this.nodeDOM.parentNode}
   };
 
-  TextViewDesc.prototype.update = function update (node, outerDeco) {
-    if (this.dirty == NODE_DIRTY || (this.dirty != NOT_DIRTY && !this.inParent) ||
-        !node.sameMarkup(this.node) ||
-        !sameOuterDeco(outerDeco, this.outerDeco)) { return false }
-    if ((this.dirty != NOT_DIRTY || node.text != this.node.text) && node.text != this.textDOM.nodeValue)
-      { this.textDOM.nodeValue = node.text }
+  TextViewDesc.prototype.update = function (node, outerDeco) {
+    if (this.dirty == NODE_DIRTY || (this.dirty != NOT_DIRTY && !this.inParent()) ||
+        !node.sameMarkup(this.node)) { return false }
+    this.updateOuterDeco(outerDeco)
+    if ((this.dirty != NOT_DIRTY || node.text != this.node.text) && node.text != this.nodeDOM.nodeValue)
+      { this.nodeDOM.nodeValue = node.text }
     this.node = node
     this.dirty = NOT_DIRTY
     return true
   };
 
-  TextViewDesc.prototype.inParent = function inParent () {
+  TextViewDesc.prototype.inParent = function () {
     var parentDOM = this.parent.contentDOM
-    for (var n = this.textDOM; n; n = n.parentNode) { if (n == parentDOM) { return true } }
+    for (var n = this.nodeDOM; n; n = n.parentNode) { if (n == parentDOM) { return true } }
     return false
   };
 
-  TextViewDesc.prototype.domFromPos = function domFromPos (pos, searchDOM) {
-    return {node: this.textDOM, offset: searchDOM ? Math.max(pos, this.textDOM.nodeValue.length) : pos}
+  TextViewDesc.prototype.domFromPos = function (pos, searchDOM) {
+    return {node: this.nodeDOM, offset: searchDOM ? Math.max(pos, this.nodeDOM.nodeValue.length) : pos}
   };
 
-  TextViewDesc.prototype.localPosFromDOM = function localPosFromDOM (dom, offset, bias) {
-    if (dom == this.textDOM) { return this.posAtStart + Math.min(offset, this.node.text.length) }
+  TextViewDesc.prototype.localPosFromDOM = function (dom, offset, bias) {
+    if (dom == this.nodeDOM) { return this.posAtStart + Math.min(offset, this.node.text.length) }
     return NodeViewDesc.prototype.localPosFromDOM.call(this, dom, offset, bias)
   };
 
-  TextViewDesc.prototype.ignoreMutation = function ignoreMutation (mutation) {
+  TextViewDesc.prototype.ignoreMutation = function (mutation) {
     return mutation.type != "characterData"
   };
 
@@ -12731,27 +13046,27 @@ var TextViewDesc = (function (NodeViewDesc) {
 
 // A dummy desc used to tag trailing BR or span nodes created to work
 // around contentEditable terribleness.
-var HackViewDesc = (function (ViewDesc) {
-  function HackViewDesc(parent, type, dom) {
-    ViewDesc.call(this, parent, nothing, dom, null)
-    this.type = type
+var BRHackViewDesc = (function (ViewDesc) {
+  function BRHackViewDesc () {
+    ViewDesc.apply(this, arguments);
   }
 
-  if ( ViewDesc ) HackViewDesc.__proto__ = ViewDesc;
-  HackViewDesc.prototype = Object.create( ViewDesc && ViewDesc.prototype );
-  HackViewDesc.prototype.constructor = HackViewDesc;
-  HackViewDesc.prototype.parseRule = function parseRule () { return {ignore: true} };
-  HackViewDesc.prototype.matchesHack = function matchesHack (type) { return this.dirty == NOT_DIRTY && this.type == type };
+  if ( ViewDesc ) BRHackViewDesc.__proto__ = ViewDesc;
+  BRHackViewDesc.prototype = Object.create( ViewDesc && ViewDesc.prototype );
+  BRHackViewDesc.prototype.constructor = BRHackViewDesc;
 
-  return HackViewDesc;
+  BRHackViewDesc.prototype.parseRule = function () { return {ignore: true} };
+  BRHackViewDesc.prototype.matchesHack = function () { return this.dirty == NOT_DIRTY };
+
+  return BRHackViewDesc;
 }(ViewDesc));
 
 // A separate subclass is used for customized node views, so that the
 // extra checks only have to be made for nodes that are actually
 // customized.
 var CustomNodeViewDesc = (function (NodeViewDesc) {
-  function CustomNodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, spec, view) {
-    NodeViewDesc.call(this, parent, node, outerDeco, innerDeco, dom, contentDOM, view)
+  function CustomNodeViewDesc(parent, node, outerDeco, innerDeco, dom, contentDOM, nodeDOM, spec, view) {
+    NodeViewDesc.call(this, parent, node, outerDeco, innerDeco, dom, contentDOM, nodeDOM, view)
     this.spec = spec
   }
 
@@ -12762,41 +13077,44 @@ var CustomNodeViewDesc = (function (NodeViewDesc) {
   // A custom `update` method gets to decide whether the update goes
   // through. If it does, and there's a `contentDOM` node, our logic
   // updates the children.
-  CustomNodeViewDesc.prototype.update = function update (node, outerDeco, innerDeco, view) {
+  CustomNodeViewDesc.prototype.update = function (node, outerDeco, innerDeco, view) {
+    if (this.dirty == NODE_DIRTY) { return false }
     if (this.spec.update) {
-      var result = this.spec.update(node, innerDeco)
+      var result = this.spec.update(node, outerDeco)
       if (result) {
         this.node = node
         if (this.contentDOM) { this.updateChildren(view) }
       }
       return result
+    } else if (!this.contentDOM && !node.isLeaf) {
+      return false
     } else {
-      return NodeViewDesc.prototype.update.call(this, node, outerDeco, innerDeco, view)
+      return NodeViewDesc.prototype.update.call(this, node, outerDeco, this.contentDOM ? this.innerDeco : innerDeco, view)
     }
   };
 
-  CustomNodeViewDesc.prototype.selectNode = function selectNode () {
+  CustomNodeViewDesc.prototype.selectNode = function () {
     this.spec.selectNode ? this.spec.selectNode() : NodeViewDesc.prototype.selectNode.call(this)
   };
 
-  CustomNodeViewDesc.prototype.deselectNode = function deselectNode () {
+  CustomNodeViewDesc.prototype.deselectNode = function () {
     this.spec.deselectNode ? this.spec.deselectNode() : NodeViewDesc.prototype.deselectNode.call(this)
   };
 
-  CustomNodeViewDesc.prototype.setSelection = function setSelection (anchor, head, root) {
+  CustomNodeViewDesc.prototype.setSelection = function (anchor, head, root) {
     this.spec.setSelection ? this.spec.setSelection(anchor, head, root) : NodeViewDesc.prototype.setSelection.call(this, anchor, head, root)
   };
 
-  CustomNodeViewDesc.prototype.destroy = function destroy () {
+  CustomNodeViewDesc.prototype.destroy = function () {
     if (this.spec.destroy) { this.spec.destroy() }
     NodeViewDesc.prototype.destroy.call(this)
   };
 
-  CustomNodeViewDesc.prototype.stopEvent = function stopEvent (event) {
+  CustomNodeViewDesc.prototype.stopEvent = function (event) {
     return this.spec.stopEvent ? this.spec.stopEvent(event) : false
   };
 
-  CustomNodeViewDesc.prototype.ignoreMutation = function ignoreMutation (mutation) {
+  CustomNodeViewDesc.prototype.ignoreMutation = function (mutation) {
     return this.spec.ignoreMutation ? this.spec.ignoreMutation(mutation) : NodeViewDesc.prototype.ignoreMutation.call(this, mutation)
   };
 
@@ -12823,23 +13141,86 @@ function renderDescs(parentDOM, descs) {
   while (dom) { dom = rm(dom) }
 }
 
-// : (dom.Node, Object, Node) → dom.Node
-// Apply the extra attributes and potentially add a wrapper for a
-// decoration.
-function applyOuterDeco(dom, attrs, node) {
-  if (attrs.nodeName || dom.nodeType != 1) {
-    var wrap = document.createElement(attrs.nodeName || (node.isInline ? "span" : "div"))
-    wrap.appendChild(dom)
-    dom = wrap
+var OuterDecoLevel = function(nodeName) {
+  if (nodeName) { this.nodeName = nodeName }
+};
+OuterDecoLevel.prototype = Object.create(null)
+
+var noDeco = [new OuterDecoLevel]
+
+function computeOuterDeco(outerDeco, node, needsWrap) {
+  if (outerDeco.length == 0) { return noDeco }
+
+  var top = needsWrap ? noDeco[0] : new OuterDecoLevel, result = [top]
+
+  for (var i = 0; i < outerDeco.length; i++) {
+    var attrs = outerDeco[i].type.attrs, cur = top
+    if (!attrs) { continue }
+    if (attrs.nodeName)
+      { result.push(cur = new OuterDecoLevel(attrs.nodeName)) }
+
+    for (var name in attrs) {
+      var val = attrs[name]
+      if (val == null) { continue }
+      if (needsWrap && result.length == 1)
+        { result.push(cur = top = new OuterDecoLevel(node.isInline ? "span" : "div")) }
+      if (name == "class") { cur.class = (cur.class ? cur.class + " " : "") + val }
+      else if (name == "style") { cur.style = (cur.style ? cur.style + ";" : "") + val }
+      else if (name != "nodeName") { cur[name] = val }
+    }
   }
-  for (var name in attrs) {
-    var val = attrs[name]
-    if (name == "class") { (ref = dom.classList).add.apply(ref, val.split(" ")) }
-    else if (name == "style") { dom.style.cssText += ";" + val }
-    else if (name != "nodeName") { dom.setAttribute(name, val) }
+
+  return result
+}
+
+function patchOuterDeco(outerDOM, nodeDOM, prevComputed, curComputed) {
+  // Shortcut for trivial case
+  if (prevComputed == noDeco && curComputed == noDeco) { return nodeDOM }
+
+  var curDOM = nodeDOM
+  for (var i = 0; i < curComputed.length; i++) {
+    var deco = curComputed[i], prev = prevComputed[i]
+    if (i) {
+      var parent = (void 0)
+      if (prev && prev.nodeName == deco.nodeName && curDOM != outerDOM &&
+          (parent = nodeDOM.parentNode) && parent.tagName.toLowerCase() == deco.nodeName) {
+        curDOM = parent
+      } else {
+        parent = document.createElement(deco.nodeName)
+        parent.appendChild(curDOM)
+        curDOM = parent
+      }
+    }
+    patchAttributes(curDOM, prev || noDeco[0], deco)
   }
-  return dom
-  var ref;
+  return curDOM
+}
+
+function patchAttributes(dom, prev, cur) {
+  for (var name in prev)
+    { if (name != "class" && name != "style" && name != "nodeName" && !(name in cur))
+      { dom.removeAttribute(name) } }
+  for (var name$1 in cur)
+    { if (name$1 != "class" && name$1 != "style" && name$1 != "nodeName" && cur[name$1] != prev[name$1])
+      { dom.setAttribute(name$1, cur[name$1]) } }
+  if (prev.class != cur.class) {
+    var prevList = prev.class ? prev.class.split(" ") : nothing
+    var curList = cur.class ? cur.class.split(" ") : nothing
+    for (var i = 0; i < prevList.length; i++) { if (curList.indexOf(prevList[i]) == -1)
+      { dom.classList.remove(prevList[i]) } }
+    for (var i$1 = 0; i$1 < curList.length; i$1++) { if (prevList.indexOf(curList[i$1]) == -1)
+      { dom.classList.add(curList[i$1]) } }
+  }
+  if (prev.style != cur.style) {
+    var text = dom.style.cssText, found
+    if (prev.style && (found = text.indexOf(prev.style)) > -1)
+      { text = text.slice(0, found) + text.slice(found + prev.style.length) }
+    dom.style.cssText = text + (cur.style || "")
+  }
+}
+
+function applyOuterDeco(dom, deco, node) {
+  return patchOuterDeco(dom, dom, noDeco, computeOuterDeco(deco, node, dom.nodeType != 1))
 }
 
 // : ([Decoration], [Decoration]) → bool
@@ -12858,7 +13239,7 @@ function rm(dom) {
 
 // Helper class for incrementally updating a tree of mark descs and
 // the widget and node descs inside of them.
-var ViewTreeUpdater = function ViewTreeUpdater(top) {
+var ViewTreeUpdater = function(top) {
   this.top = top
   // Index into `this.top`'s child array, represents the current
   // update position.
@@ -12872,7 +13253,7 @@ var ViewTreeUpdater = function ViewTreeUpdater(top) {
 
 // Destroy and remove the children between the given indices in
 // `this.top`.
-ViewTreeUpdater.prototype.destroyBetween = function destroyBetween (start, end) {
+ViewTreeUpdater.prototype.destroyBetween = function (start, end) {
     var this$1 = this;
 
   if (start == end) { return }
@@ -12882,14 +13263,14 @@ ViewTreeUpdater.prototype.destroyBetween = function destroyBetween (start, end) 
 };
 
 // Destroy all remaining children in `this.top`.
-ViewTreeUpdater.prototype.destroyRest = function destroyRest () {
+ViewTreeUpdater.prototype.destroyRest = function () {
   this.destroyBetween(this.index, this.top.children.length)
 };
 
 // : ([Mark], EditorView)
 // Sync the current stack of mark descs with the given array of
 // marks, reusing existing mark descs when possible.
-ViewTreeUpdater.prototype.syncToMarks = function syncToMarks (marks, view) {
+ViewTreeUpdater.prototype.syncToMarks = function (marks, view) {
     var this$1 = this;
 
   var keep = 0, depth = this.stack.length >> 1
@@ -12924,10 +13305,9 @@ ViewTreeUpdater.prototype.syncToMarks = function syncToMarks (marks, view) {
 // : (Node, [Decoration], DecorationSet) → bool
 // Try to find a node desc matching the given data. Skip over it and
 // return true when successful.
-ViewTreeUpdater.prototype.findNodeMatch = function findNodeMatch (node, outerDeco, innerDeco) {
+ViewTreeUpdater.prototype.findNodeMatch = function (node, outerDeco, innerDeco) {
     var this$1 = this;
 
-  // FIXME think about failure cases where updates will redraw too much
   for (var i = this.index, children = this.top.children, e = Math.min(children.length, i + 5); i < e; i++) {
     if (children[i].matchesNode(node, outerDeco, innerDeco)) {
       this$1.destroyBetween(this$1.index, i)
@@ -12938,24 +13318,35 @@ ViewTreeUpdater.prototype.findNodeMatch = function findNodeMatch (node, outerDec
   return false
 };
 
-// : (Node, [Decoration], DecorationSet, EditorView) → bool
-// Try to update the next node, if any, to the given data.
-ViewTreeUpdater.prototype.updateNode = function updateNode (node, outerDeco, innerDeco, view) {
+// : (Node, [Decoration], DecorationSet, EditorView, Fragment, number) → bool
+// Try to update the next node, if any, to the given data. First
+// tries scanning ahead in the siblings fragment to see if the next
+// node matches any of those, and if so, doesn't touch it, to avoid
+// overwriting nodes that could still be used.
+ViewTreeUpdater.prototype.updateNextNode = function (node, outerDeco, innerDeco, view, siblings, index) {
   if (this.index == this.top.children.length) { return false }
   var next = this.top.children[this.index]
-  if (!(next instanceof NodeViewDesc && next.update(node, outerDeco, innerDeco, view))) { return false }
-  this.index++
-  return true
+  if (next instanceof NodeViewDesc) {
+    for (var i = index + 1, e = Math.min(siblings.childCount, i + 5); i < e; i++)
+      { if (next.node == siblings.child(i)) { return false } }
+    var nextDOM = next.dom
+    if (next.update(node, outerDeco, innerDeco, view)) {
+      if (next.dom != nextDOM) { this.changed = true }
+      this.index++
+      return true
+    }
+  }
+  return false
 };
 
 // : (Node, [Decoration], DecorationSet, EditorView)
 // Insert the node as a newly created node desc.
-ViewTreeUpdater.prototype.addNode = function addNode (node, outerDeco, innerDeco, view) {
+ViewTreeUpdater.prototype.addNode = function (node, outerDeco, innerDeco, view) {
   this.top.children.splice(this.index++, 0, NodeViewDesc.create(this.top, node, outerDeco, innerDeco, view))
   this.changed = true
 };
 
-ViewTreeUpdater.prototype.placeWidget = function placeWidget (widget) {
+ViewTreeUpdater.prototype.placeWidget = function (widget) {
   if (this.index < this.top.children.length && this.top.children[this.index].matchesWidget(widget)) {
     this.index++
   } else {
@@ -12966,33 +13357,20 @@ ViewTreeUpdater.prototype.placeWidget = function placeWidget (widget) {
 
 // Make sure a textblock looks and behaves correctly in
 // contentEditable.
-ViewTreeUpdater.prototype.addTextblockHacks = function addTextblockHacks () {
-  var lastChild = this.top.children[this.index - 1], hack
+ViewTreeUpdater.prototype.addTextblockHacks = function () {
+  var lastChild = this.top.children[this.index - 1]
   while (lastChild instanceof MarkViewDesc) { lastChild = lastChild.children[lastChild.children.length - 1] }
-  if (!lastChild || lastChild.dom.nodeName == "BR")
-    { hack = "br" }
-  else if (this.wrapsInPRE())
-    { hack = "newline" }
-  else if (!(lastChild instanceof TextViewDesc))
-    { hack = "text" }
 
-  if (hack) {
-    if (this.index < this.top.children.length && this.top.children[this.index].matchesHack(hack)) {
+  if (!lastChild || // Empty textblock
+      !(lastChild instanceof TextViewDesc) ||
+      /\n$/.test(lastChild.node.text)) {
+    if (this.index < this.top.children.length && this.top.children[this.index].matchesHack()) {
       this.index++
     } else {
-      var dom = document.createElement(hack == "br" ? "br" : "span")
-      if (hack == "newline") { dom.textContent = "\n" }
-      this.top.children.splice(this.index++, 0, new HackViewDesc(this.top, hack, dom))
+      var dom = document.createElement("br")
+      this.top.children.splice(this.index++, 0, new BRHackViewDesc(this.top, nothing, dom, null))
       this.changed = true
     }
-  }
-};
-
-ViewTreeUpdater.prototype.wrapsInPRE = function wrapsInPRE () {
-  var top = this.top
-  for (var dom = top.contentDOM;; dom = dom.parentNode) {
-    if (dom.nodeName == "PRE") { return true }
-    if (dom == top.dom) { return false }
   }
 };
 
@@ -13007,7 +13385,7 @@ function iterDeco(parent, deco, onWidget, onNode) {
   if (locals.length == 0) {
     for (var i = 0; i < parent.childCount; i++) {
       var child = parent.child(i)
-      onNode(child, locals, deco.forChild(offset, child))
+      onNode(child, locals, deco.forChild(offset, child), i)
       offset += child.nodeSize
     }
     return
@@ -13043,7 +13421,7 @@ function iterDeco(parent, deco, onWidget, onNode) {
       }
     }
 
-    onNode(child$1, active.length ? active.slice() : nothing, deco.forChild(offset, child$1))
+    onNode(child$1, active.length ? active.slice() : nothing, deco.forChild(offset, child$1), parentIndex - 1)
     offset = end
   }
 }
@@ -13076,7 +13454,7 @@ function iosHacks(dom) {
   }
 }
 
-},{"./browser":48,"prosemirror-model":23}],59:[function(require,module,exports){
+},{"./browser":48,"prosemirror-model":24}],59:[function(require,module,exports){
 var GOOD_LEAF_SIZE = 200
 
 // :: class<T> A rope sequence is a persistent sequence data structure
@@ -13373,7 +13751,8 @@ var shift = {
   229: "Q"
 }
 
-var chrome = typeof navigator != "undefined" && /Chrome\//.test(navigator.userAgent)
+var chrome = typeof navigator != "undefined" && /Chrome\/(\d+)/.exec(navigator.userAgent)
+var brokenModifierNames = chrome && +chrome[1] < 57
 
 // Fill in the digit keys
 for (var i = 0; i < 10; i++) base[48 + i] = base[96 + i] = String(i)
@@ -13393,7 +13772,7 @@ for (var code in base) if (!shift.hasOwnProperty(code)) shift[code] = base[code]
 function keyName(event) {
   // Don't trust event.key in Chrome when there are modifiers until
   // they fix https://bugs.chromium.org/p/chromium/issues/detail?id=633838
-  var name = ((!chrome || !event.ctrlKey && !event.altKey && !event.metaKey) && event.key) ||
+  var name = ((!brokenModifierNames || !event.ctrlKey && !event.altKey && !event.metaKey) && event.key) ||
     (event.shiftKey ? shift : base)[event.keyCode] ||
     event.key || "Unidentified"
   // Edge sometimes produces wrong names (Issue #3)
@@ -13452,4 +13831,4 @@ window.view = view.editor;
 
 
 
-},{"prosemirror-example-setup":4,"prosemirror-menu":15,"prosemirror-model":23,"prosemirror-schema-basic":31,"prosemirror-schema-list":32,"prosemirror-state":34}]},{},[61]);
+},{"prosemirror-example-setup":5,"prosemirror-menu":16,"prosemirror-model":24,"prosemirror-schema-basic":31,"prosemirror-schema-list":32,"prosemirror-state":34}]},{},[61]);
