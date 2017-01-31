@@ -13788,28 +13788,10 @@ keyName.shift = shift
 },{}],61:[function(require,module,exports){
 const {EditorState} = require("prosemirror-state");
 const {MenuBarEditorView} = require("prosemirror-menu");
-const {DOMParser, Schema, Node} = require("prosemirror-model");
-const {schema: baseSchema} = require("prosemirror-schema-basic");
-const {addListNodes} = require("prosemirror-schema-list");
+const {Node} = require("prosemirror-model");
 const {exampleSetup} = require("prosemirror-example-setup");
 
-// default schema
-const nodes = addListNodes(baseSchema.nodeSpec, "paragraph block*", "block");
-
-// heading shall only contain unmarked text
-const heading = nodes.get('heading');
-heading.content = 'text*';
-heading.defining = false; // unsure if this does anything
-
-
-const schema = new Schema({
-    nodes: nodes,
-    marks: baseSchema.markSpec
-});
-
-
-
-
+const {schema} = require("./schema");
 
 // textarea holds our intial data and will be updated on editor changes
 const json = document.getElementById('json');
@@ -13831,4 +13813,26 @@ window.view = view.editor;
 
 
 
-},{"prosemirror-example-setup":5,"prosemirror-menu":16,"prosemirror-model":24,"prosemirror-schema-basic":31,"prosemirror-schema-list":32,"prosemirror-state":34}]},{},[61]);
+},{"./schema":62,"prosemirror-example-setup":5,"prosemirror-menu":16,"prosemirror-model":24,"prosemirror-state":34}],62:[function(require,module,exports){
+/**
+ * Defines a custom Schema for DokuWiki
+ *
+ * extends the basic schemas provided by ProseMirror
+ */
+
+// load default schema definitions
+const {Schema} = require("prosemirror-model");
+const {nodes, marks} = require("prosemirror-schema-basic");
+//const {addListNodes} = require("prosemirror-schema-list");
+
+// heading shall only contain unmarked text
+nodes.heading.content = 'text*';
+nodes.heading.defining = false; // unsure if this does anything
+
+
+exports.schema = new Schema({
+    nodes: nodes,
+    marks: marks
+});
+
+},{"prosemirror-model":24,"prosemirror-schema-basic":31}]},{},[61]);
