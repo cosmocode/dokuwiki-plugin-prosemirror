@@ -66,7 +66,6 @@ class Node implements \JsonSerializable {
      * @param string $text
      */
     public function setText($text) {
-        if($this->type != 'text') throw new \RuntimeException('text can only be set on text nodes');
         $this->text = $text;
     }
 
@@ -99,10 +98,10 @@ class Node implements \JsonSerializable {
         $json = array(
             'type' => $this->type
         );
-        if($this->type == 'text') {
-            $json['text'] = $this->text;
-        } else {
+        if($this->content) {
             $json['content'] = $this->content;
+        } else {
+            $json['text'] = $this->text;
         }
         if($this->marks) {
             $json['marks'] = $this->marks;

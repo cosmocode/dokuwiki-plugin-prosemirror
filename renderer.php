@@ -62,7 +62,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $node = new Node('heading');
         $node->attr('level', $level);
 
-        // FIXME we do not want a text node here, because we do not accept stuff within a headline
         $tnode = new Node('text');
         $tnode->setText($text);
         $node->addChild($tnode);

@@ -13414,11 +13414,22 @@ const {schema: baseSchema} = require("prosemirror-schema-basic");
 const {addListNodes} = require("prosemirror-schema-list");
 const {exampleSetup} = require("prosemirror-example-setup");
 
+// default schema
+const nodes = addListNodes(baseSchema.nodeSpec, "paragraph block*", "block");
+
+// heading shall only contain unmarked text
+const heading = nodes.get('heading');
+heading.content = 'text{0,1}'; // needed to set something as heading before writing the text
+heading.defining = false; // unsure if this does anything
+nodes.update('heading', heading);
 
 const schema = new Schema({
-    nodes: addListNodes(baseSchema.nodeSpec, "paragraph block*", "block"),
+    nodes: nodes,
     marks: baseSchema.markSpec
 });
+
+
+
 
 
 // initial data
