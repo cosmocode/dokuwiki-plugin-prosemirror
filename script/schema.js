@@ -11,10 +11,8 @@ const {nodes, marks} = require("prosemirror-schema-basic");
 
 // heading shall only contain unmarked text
 nodes.heading.content = 'text*';
-nodes.heading.defining = false; // unsure if this does anything
-
 
 exports.schema = new Schema({
-    nodes: nodes,
-    marks: marks
+    nodes,
+    marks
 });

@@ -14,13 +14,16 @@ let view = new MenuBarEditorView(document.querySelector("#editor"), {
         schema: schema,
         plugins: exampleSetup({schema})
     }),
-    onAction(action) {
-        view.updateState(view.editor.state.applyAction(action));
+    dispatchTransaction(tr) {
+
+        console.log('run');
+
+        view.updateState(view.editor.state.apply(tr));
 
         //current state as json in text area
         json.value =  JSON.stringify(view.editor.state.doc.toJSON(), null, 4);
     }
+
 });
 window.view = view.editor;
-
 
