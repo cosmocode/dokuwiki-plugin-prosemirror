@@ -58,6 +58,34 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     /** @inheritDoc */
+    function listu_open() {
+        $node = new Node('bulletList');
+        $this->docnode->addChild($node);
+        $this->current = $node;
+    }
+
+    /** @inheritDoc */
+    function listu_close() {
+        $this->current = $this->docnode;
+    }
+
+    /** @inheritDoc */
+    function listitem_open($level, $node = false) {
+        $node = new Node('listItem');
+        $this->docnode->addChild($node);
+        $this->current = $node;
+
+        // FIXME we need to add a paragraph or something like that to fix improper block/inline
+        // content. $node should help with that? This is equivalent to our <div class="li"> element
+        // we use in XHTML. This will be filtered out in the reverse renderer
+    }
+
+    /** @inheritDoc */
+    function listitem_close() {
+        $this->current = $this->docnode;
+    }
+
+    /** @inheritDoc */
     function header($text, $level, $pos) {
         $node = new Node('heading');
         $node->attr('level', $level);

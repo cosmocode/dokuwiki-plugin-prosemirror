@@ -4,6 +4,7 @@ const {Node} = require("prosemirror-model");
 const {exampleSetup} = require("prosemirror-example-setup");
 
 const {schema} = require("./schema");
+console.log(schema);
 
 // textarea holds our intial data and will be updated on editor changes
 const json = document.getElementById('json');
