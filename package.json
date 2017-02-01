@@ -4,7 +4,6 @@
   "description": "prosemirror Plugin for DokuWiki",
   "main": "index.js",
   "dependencies": {
-    "browserify": "^14.0.0",
     "prosemirror-example-setup": "^0.17.0",
     "prosemirror-history": "^0.17.0",
     "prosemirror-keymap": "^0.17.0",
@@ -13,12 +12,26 @@
     "prosemirror-schema-basic": "^0.17.0",
     "prosemirror-schema-list": "^0.17.0",
     "prosemirror-state": "^0.17.0",
-    "prosemirror-view": "^0.17.3",
-    "watchify": "^3.7.0"
+    "prosemirror-view": "^0.17.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-env": "^1.1.8",
+    "browserify": "^14.0.0",
+    "eslint": "^3.14.1",
+    "watch": "^1.0.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev_browserify": "browserify -v --debug script/main.js -o load.js",
+    "dev_lint": "eslint script/main.js --rule 'no-console: 0'",
+    "dev": "yarn run dev_lint && yarn run dev_browserify && yarn run babel",
+    "watch": "watch 'yarn run dev' script/",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "yarn run eslint",
+    "build": "yarn run browserify && yarn run babel",
+    "babel": "babel load.js -d lib",
+    "browserify": "browserify script/main.js -o load.js",
+    "eslint": "eslint script/main.js"
   },
   "author": "",
   "license": "GPL-2.0"

@@ -1,0 +1,45 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "commonjs": true
+    },
+    "extends": "eslint:recommended",
+    "globals": {
+        "JSINFO": false,
+        "LANG": false,
+        "jQuery": false,
+        "createPicker": false,
+        "DOKU_BASE": false
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-unsafe-negation": ["error"],
+        "curly": ["error", "all"],
+        "dot-notation": ["warn"],
+        "eqeqeq": ["error", "smart"],
+        "no-caller": "error",
+        "no-implicit-globals": "error",
+        "no-new-func": "error",
+        "no-new": "error",
+        "no-return-assign": "error",
+        "no-self-compare": "error",
+        "no-throw-literal": "error",
+        "no-console": ["error", {"allow": ["warn", "error"]}]
+    }
+}
