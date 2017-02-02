@@ -48,7 +48,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     /** @inheritDoc */
     function p_open() {
         $node = new Node('paragraph');
-        $this->docnode->addChild($node);
+        $this->current->addChild($node);
         $this->current = $node;
     }
 
@@ -59,8 +59,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function listu_open() {
-        $node = new Node('bulletList');
-        $this->docnode->addChild($node);
+        $node = new Node('bullet_list');
+        $this->current->addChild($node);
         $this->current = $node;
     }
 
@@ -71,13 +71,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function listitem_open($level, $node = false) {
-        $node = new Node('listItem');
-        $this->docnode->addChild($node);
+        $node = new Node('list_item');
+        $this->current->addChild($node);
         $this->current = $node;
-
-        // FIXME we need to add a paragraph or something like that to fix improper block/inline
-        // content. $node should help with that? This is equivalent to our <div class="li"> element
-        // we use in XHTML. This will be filtered out in the reverse renderer
     }
 
     /** @inheritDoc */
@@ -120,6 +116,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     /** @inheritDoc */
     function cdata($text) {
         if($text === '') return;
+
+        // list items need a paragraph before adding text
+        if($this->current->getType() == 'list_item') {
+            $node = new Node('paragraph');
+            $this->current->addChild($node);
+            $this->current = $node;
+        }
 
         $node = new Node('text');
         $node->setText($text);
