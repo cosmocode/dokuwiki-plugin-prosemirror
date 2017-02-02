@@ -25,15 +25,15 @@
   },
   "scripts": {
     "dev_browserify": "browserify -v --debug script/main.js -o load.js",
-    "dev_lint": "eslint script/main.js --fix --rule 'no-console: 0'",
+    "dev_lint": "eslint script/main.js --fix",
     "dev": "yarn run dev_lint && yarn run dev_browserify && yarn run babel",
     "watch": "watch 'yarn run dev' script/",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prebuild": "yarn run eslint",
+    "prebuild": "ENV=prod yarn run eslint",
     "build": "yarn run browserify && yarn run babel",
     "babel": "babel load.js -d lib",
     "browserify": "browserify script/main.js -o load.js",
-    "eslint": "eslint script/main.js"
+    "eslint": "ENV=prod eslint script/main.js"
   },
   "author": "",
   "license": "GPL-2.0"
