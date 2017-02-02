@@ -15,24 +15,24 @@
     "prosemirror-view": "^0.17.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.22.2",
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
     "babel-preset-env": "^1.1.8",
-    "browserify": "^14.0.0",
     "eslint": "^3.14.1",
     "eslint-config-airbnb-base": "^11.0.1",
     "eslint-plugin-import": "^2.2.0",
-    "watch": "^1.0.1"
+    "watch": "^1.0.1",
+    "webpack": "^2.2.1"
   },
   "scripts": {
-    "dev_browserify": "browserify -v --debug script/main.js -o load.js",
+    "dev_webpack": "webpack",
     "dev_lint": "eslint script/main.js --fix",
-    "dev": "$npm_execpath run dev_lint && $npm_execpath run dev_browserify && $npm_execpath run babel",
+    "dev": "$npm_execpath run dev_lint && $npm_execpath run dev_webpack",
     "watch": "watch \"$npm_execpath run dev\" script/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prebuild": "ENV=prod $npm_execpath run eslint",
-    "build": "$npm_execpath run browserify && $npm_execpath run babel",
-    "babel": "babel load.js -d lib",
-    "browserify": "browserify script/main.js -o load.js",
+    "build": "$npm_execpath run webpack",
+    "webpack": "ENV=prod webpack",
     "eslint": "ENV=prod eslint script/main.js"
   },
   "author": "",
