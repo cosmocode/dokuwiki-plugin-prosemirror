@@ -26,7 +26,7 @@
   "scripts": {
     "dev_browserify": "browserify -v --debug script/main.js -o load.js",
     "dev_lint": "eslint script/main.js --fix",
-    "dev": "$npm_execpath run dev_lint && yarn run dev_browserify && yarn run babel",
+    "dev": "$npm_execpath run dev_lint && $npm_execpath run dev_browserify && $npm_execpath run babel",
     "watch": "watch \"$npm_execpath run dev\" script/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prebuild": "ENV=prod $npm_execpath run eslint",
