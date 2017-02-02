@@ -14,18 +14,23 @@ on how to install plugins in DokuWiki.
 
 ## Development Setup
 
-Use npm to install the dependecies
+Use yarn to install the dependecies
 
-    npm install
+    yarn
 
-Create a new loader script:
+Create a develoment bundle:
 
-    ./node_modules/.bin/browserify script/main.js -o load.js -d
+    yarn run dev
 
-Automatically recreate the loader during development:
+Automatically recreate the bundle during development:
 
+    yarn run watch
 
-    ./node_modules/.bin/watchify script/main.js -o load.js -v -d
+Build a release
+
+    yarn run build
+
+We really recommend yarn, but npm should work, too.
 
 ## Copyright
 Copyright (C) Andreas Gohr <gohr@cosmocode.de>
