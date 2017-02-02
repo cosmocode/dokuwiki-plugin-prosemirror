@@ -9,6 +9,7 @@
 // must be run within Dokuwiki
 use dokuwiki\plugin\prosemirror\schema\Mark;
 use dokuwiki\plugin\prosemirror\schema\Node;
+use dokuwiki\plugin\prosemirror\schema\NodeStack;
 
 if (!defined('DOKU_INC')) die();
 
@@ -16,11 +17,8 @@ require_once DOKU_INC.'inc/parser/renderer.php';
 
 class renderer_plugin_prosemirror extends Doku_Renderer {
 
-    /** @var Node the document node,*/
-    public $docnode;
-
-    /** @var  Node the node we're currently appending to */
-    protected $current;
+    /** @var  NodeStack */
+    protected $nodestack;
 
     /** @var array list of currently active formatting marks */
     protected $marks = array();
@@ -36,49 +34,45 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function document_start() {
-        $this->docnode = new Node('doc');
-        $this->current = $this->docnode;
+        $this->nodestack = new NodeStack();
     }
 
     /** @inheritDoc */
     function document_end() {
-        $this->doc = json_encode($this->docnode, JSON_PRETTY_PRINT);
+        $this->doc = json_encode($this->nodestack->doc(), JSON_PRETTY_PRINT);
     }
 
     /** @inheritDoc */
     function p_open() {
-        $node = new Node('paragraph');
-        $this->current->addChild($node);
-        $this->current = $node;
+        $this->nodestack->addTop(new Node('paragraph'));
     }
 
     /** @inheritdoc */
     function p_close() {
-        $this->current = $this->docnode;
+        $this->nodestack->drop('paragraph');
     }
 
     /** @inheritDoc */
     function listu_open() {
-        $node = new Node('bullet_list');
-        $this->current->addChild($node);
-        $this->current = $node;
+        $this->nodestack->addTop(new Node('bullet_list'));
     }
 
     /** @inheritDoc */
     function listu_close() {
-        $this->current = $this->docnode;
+        $this->nodestack->drop('bullet_list');
     }
 
     /** @inheritDoc */
     function listitem_open($level, $node = false) {
-        $node = new Node('list_item');
-        $this->current->addChild($node);
-        $this->current = $node;
+        $this->nodestack->addTop(new Node('list_item'));
     }
 
     /** @inheritDoc */
     function listitem_close() {
-        $this->current = $this->docnode;
+        if($this->nodestack->current()->getType() == 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+        $this->nodestack->drop('list_item');
     }
 
     /** @inheritDoc */
@@ -90,7 +84,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $tnode->setText($text);
         $node->addChild($tnode);
 
-        $this->docnode->addChild($node);
+        $this->nodestack->add($node);
     }
 
     /** @inheritDoc */
@@ -118,10 +112,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         if($text === '') return;
 
         // list items need a paragraph before adding text
-        if($this->current->getType() == 'list_item') {
-            $node = new Node('paragraph');
-            $this->current->addChild($node);
-            $this->current = $node;
+        if($this->nodestack->current()->getType() == 'list_item') {
+            $node = new Node('paragraph'); // FIXME we probably want a special list item wrapper here instead
+            $this->nodestack->addTop($node);
         }
 
         $node = new Node('text');
@@ -129,7 +122,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         foreach(array_keys($this->marks) as $mark) {
             $node->addMark(new Mark($mark));
         }
-        $this->current->addChild($node);
+        $this->nodestack->add($node);
     }
 
     /**
@@ -148,7 +141,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
         $node->addMark($mark);
 
-        $this->current->addChild($node);
+        $this->nodestack->add($node);
     }
 
 }
