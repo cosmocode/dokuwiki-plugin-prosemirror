@@ -3,7 +3,7 @@
 // production rules
 const prod = {
     "indent": ["error", 4],
-    "no-magic-numbers": ["warn", { "ignore": [0, 1]}],
+    "no-magic-numbers": ["warn", { "ignore": [0, 1, -1]}],
 };
 
 // dev rules extend production rules
