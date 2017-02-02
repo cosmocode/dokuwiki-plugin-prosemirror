@@ -16,7 +16,7 @@ const dev = Object.assign(
 
 // decide which rules to use -- default to dev
 let rules = dev;
-if(process.env.ENV === 'prod') {
+if(process.env.NODE_ENV === 'production') {
     rules = prod;
 }
 

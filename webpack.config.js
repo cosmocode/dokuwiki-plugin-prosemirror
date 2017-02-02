@@ -1,21 +1,25 @@
-const common = {
+const webpack = require('webpack');
+
+module.exports = {
     entry: './script/main.js',
     output: {
         filename: 'lib/bundle.js',
     },
-    devtool: 'source-map',
     module: {
         rules: [
+            {
+                loader: 'eslint-loader',
+                enforce: 'pre',
+                options: {
+                    fix: true,
+                },
+            },
             {
                 loader: 'babel-loader',
             },
         ],
     },
-};
-
-module.exports = function () {
-    if (process.env.ENV === 'prod') {
-        common.devtool = false;
-    }
-    return common;
+    plugins: [
+        new webpack.NoEmitOnErrorsPlugin(),
+    ],
 };

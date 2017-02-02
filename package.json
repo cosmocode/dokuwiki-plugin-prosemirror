@@ -20,20 +20,16 @@
     "babel-preset-env": "^1.1.8",
     "eslint": "^3.14.1",
     "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-loader": "^1.6.1",
     "eslint-plugin-import": "^2.2.0",
-    "watch": "^1.0.1",
     "webpack": "^2.2.1"
   },
   "scripts": {
-    "dev_webpack": "webpack",
-    "dev_lint": "eslint script/main.js --fix",
-    "dev": "$npm_execpath run dev_lint && $npm_execpath run dev_webpack",
-    "watch": "watch \"$npm_execpath run dev\" script/",
+    "dev": "webpack -d",
+    "watch": "webpack -dw",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prebuild": "ENV=prod $npm_execpath run eslint",
-    "build": "$npm_execpath run webpack",
-    "webpack": "ENV=prod webpack",
-    "eslint": "ENV=prod eslint script/main.js"
+    "build": "NODE_ENV=production webpack -p",
+    "eslint": "NODE_ENV=production eslint script/main.js"
   },
   "author": "",
   "license": "GPL-2.0"
