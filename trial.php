@@ -19,5 +19,5 @@
     echo $doc;
     ?></textarea>
 
-<script src="load.js"></script>
+<script src="lib/bundle.js"></script>
 </body>

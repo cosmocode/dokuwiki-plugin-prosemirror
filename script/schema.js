@@ -5,9 +5,9 @@
  */
 
 // load default schema definitions
-const {Schema} = require("prosemirror-model");
-const {nodes, marks} = require("prosemirror-schema-basic");
-const {bulletList, orderedList, listItem} = require("prosemirror-schema-list");
+const { Schema } = require('prosemirror-model');
+const { nodes, marks } = require('prosemirror-schema-basic');
+const { bulletList, orderedList, listItem } = require('prosemirror-schema-list');
 
 // heading shall only contain unmarked text
 nodes.heading.content = 'text*';
@@ -28,5 +28,5 @@ nodes.list_item.content = '(paragraph | listblock)';
 
 exports.schema = new Schema({
     nodes,
-    marks
+    marks,
 });
