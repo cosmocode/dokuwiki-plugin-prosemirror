@@ -1,15 +1,14 @@
-const {EditorState} = require("prosemirror-state");
-const {MenuBarEditorView} = require("prosemirror-menu");
-const {Node} = require("prosemirror-model");
-const {exampleSetup} = require("prosemirror-example-setup");
+const {EditorState} = require('prosemirror-state');
+const {MenuBarEditorView} = require('prosemirror-menu');
+const {Node} = require('prosemirror-model');
+const {exampleSetup} = require('prosemirror-example-setup');
 
-const {schema} = require("./schema");
+const {schema} = require('./schema');
 console.log(schema);
 
 // textarea holds our intial data and will be updated on editor changes
 const json = document.getElementById('json');
-
-let view = new MenuBarEditorView(document.querySelector("#editor"), {
+let view = new MenuBarEditorView(document.querySelector('#editor'), {
     state: EditorState.create({
         doc: Node.fromJSON(schema, JSON.parse(json.value)),
         schema: schema,

@@ -4,7 +4,6 @@
   "description": "prosemirror Plugin for DokuWiki",
   "main": "index.js",
   "dependencies": {
-    "browserify": "^14.0.0",
     "prosemirror-example-setup": "^0.17.0",
     "prosemirror-history": "^0.17.0",
     "prosemirror-keymap": "^0.17.0",
@@ -13,12 +12,24 @@
     "prosemirror-schema-basic": "^0.17.0",
     "prosemirror-schema-list": "^0.17.0",
     "prosemirror-state": "^0.17.0",
-    "prosemirror-view": "^0.17.3",
-    "watchify": "^3.7.0"
+    "prosemirror-view": "^0.17.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-env": "^1.1.8",
+    "eslint": "^3.14.1",
+    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-loader": "^1.6.1",
+    "eslint-plugin-import": "^2.2.0",
+    "webpack": "^2.2.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack -d",
+    "watch": "webpack -dw",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -p",
+    "eslint": "NODE_ENV=production eslint script/main.js"
   },
   "author": "",
   "license": "GPL-2.0"
