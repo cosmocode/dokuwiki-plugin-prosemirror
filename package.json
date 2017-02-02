@@ -19,6 +19,7 @@
     "babel-preset-env": "^1.1.8",
     "browserify": "^14.0.0",
     "eslint": "^3.14.1",
+    "eslint-config-airbnb-base": "^11.0.1",
     "watch": "^1.0.1"
   },
   "scripts": {
