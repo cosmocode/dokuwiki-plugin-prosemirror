@@ -42,6 +42,21 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
                 '{"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" single list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" another first lvl li"},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" second level li"}]}]}]}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" again first level li"}]}]}]}]}',
                 'test_stack'
             ),
+            array(
+                '[[name:space:page]]',
+                '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"page","marks":[{"type":"link","attrs":{"href":"/./doku.php?id=name:space:page","title":"name:space:page"}}]}]}]}',
+                'test_internallink'
+            ),
+            array(
+                '[[name:space:page|linktext]]',
+                '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"linktext","marks":[{"type":"link","attrs":{"href":"/./doku.php?id=name:space:page","title":"name:space:page"}}]}]}]}',
+                'test_internallink_with_title'
+            ),
+            array(
+                '[[name:space:page?foo=bar]]',
+                '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"page","marks":[{"type":"link","attrs":{"href":"/./doku.php?id=name:space:page&amp;foo=bar","title":"name:space:page"}}]}]}]}',
+                'test_internallink_with_query'
+            ),
         );
 
     }
