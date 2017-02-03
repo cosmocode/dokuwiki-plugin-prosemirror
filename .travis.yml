@@ -2,6 +2,7 @@
 
 language: php
 php:
+  - "7.1"
   - "7.0"
   - "5.6"
   - "5.5"
@@ -10,6 +11,10 @@ php:
 env:
   - DOKUWIKI=master
   - DOKUWIKI=stable
-before_install: wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
+before_install:
+  - wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
+  - npm install
 install: sh travis.sh
-script: cd _test && phpunit --stderr --group plugin_prosemirror
+script:
+  - cd _test && phpunit --stderr --group plugin_prosemirror
+  - cd ../lib/plugins/prosemirror && npm run eslint
