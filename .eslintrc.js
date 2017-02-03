@@ -1,4 +1,5 @@
 /* globals process */
+'use strict';
 
 // production rules
 const prod = {
