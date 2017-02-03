@@ -9,12 +9,41 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
 
     protected $pluginsEnabled = array('prosemirror');
 
-    public function test_marks() {
-        $instructions = p_get_instructions('**bold**');
+    /**
+     * @dataProvider rendererProvider
+     *
+     * @param string $dokuwikiMarkup
+     * @param string $expectedJSON
+     * @param string $msg
+     */
+    public function test_renderer($dokuwikiMarkup, $expectedJSON, $msg) {
+        $instructions = p_get_instructions($dokuwikiMarkup);
         $doc = p_render('prosemirror', $instructions, $info);
+        $this->assertJsonStringEqualsJsonString($expectedJSON, $doc, $msg);
+    }
 
-        $expect = '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"bold","marks":[{"type":"strong"}]}]}]}';
-        $this->assertJsonStringEqualsJsonString($expect, $doc);
+    /**
+     * @return array
+     */
+    public function rendererProvider() {
+        return array(
+            array(
+                '**bold**',
+                '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"bold","marks":[{"type":"strong"}]}]}]}',
+                'test_marks'
+            ),
+            array(
+                '
+  * single list item
+  * another first lvl li
+    * second level li
+  * again first level li
+        ',
+                '{"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" single list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" another first lvl li"},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" second level li"}]}]}]}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":" again first level li"}]}]}]}]}',
+                'test_stack'
+            ),
+        );
+
     }
 
 }
