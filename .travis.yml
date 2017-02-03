@@ -1,5 +1,5 @@
 # Config file for travis-ci.org
-
+sudo: required
 language: php
 php:
   - "7.1"
@@ -13,6 +13,8 @@ env:
   - DOKUWIKI=stable
 before_install:
   - wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
+  - sudo apt-get update
+  - sudo apt-get upgrade node
   - npm install
 install: sh travis.sh
 script:
