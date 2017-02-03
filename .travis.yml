@@ -1,5 +1,6 @@
 # Config file for travis-ci.org
 sudo: required
+dist: trusty
 language: php
 php:
   - "7.1"
