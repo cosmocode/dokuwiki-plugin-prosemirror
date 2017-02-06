@@ -8,16 +8,15 @@ php:
   - "5.6"
   - "5.5"
   - "5.4"
-  - "5.3"
 env:
   - DOKUWIKI=master
   - DOKUWIKI=stable
 before_install:
   - wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
-  - npm install
+  - sudo apt-get install -y nodejs yarn
+  - yarn install
 install: sh travis.sh
 script:
   - cd _test && phpunit --stderr --group plugin_prosemirror
-  - cd ../lib/plugins/prosemirror && npm run eslint
+  - cd ../lib/plugins/prosemirror && yarn run eslint
