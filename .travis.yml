@@ -1,15 +1,25 @@
 # Config file for travis-ci.org
-
+sudo: required
+dist: trusty
 language: php
 php:
+  - "7.1"
   - "7.0"
   - "5.6"
   - "5.5"
   - "5.4"
-  - "5.3"
 env:
   - DOKUWIKI=master
   - DOKUWIKI=stable
-before_install: wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
+before_install:
+  - wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
+  - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+  - sudo apt-get install -y nodejs
+  - mkdir ~/bin && ln -s `which nodejs` ~/bin/node && export PATH="~/bin/:$PATH"
+  - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - yarn install
 install: sh travis.sh
-script: cd _test && phpunit --stderr --group plugin_prosemirror
+script:
+  - cd _test && phpunit --stderr --group plugin_prosemirror
+  - cd ../lib/plugins/prosemirror && yarn run eslint

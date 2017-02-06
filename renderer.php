@@ -130,13 +130,22 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
      * @fixme this implementation is much too naive. we'll probably need our own node types for internal/external/interwiki and have more attributes
      */
     function internallink($link, $title = null) {
-        $title = $this->_simpleTitle($link);
+        $params = '';
+        $parts  = explode('?', $link, 2);
+        if(count($parts) === 2) {
+            $link   = $parts[0];
+            $params = $parts[1];
+        }
+
+        if (!$title) {
+            $title = $this->_simpleTitle($link);
+        }
 
         $node = new Node('text');
         $node->setText($title);
 
         $mark = new Mark('link');
-        $mark->attr('href', $link);
+        $mark->attr('href', wl($link, $params));
         $mark->attr('title', $link);
 
         $node->addMark($mark);
