@@ -15,11 +15,7 @@ before_install:
   - wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
   - sudo apt-get install -y nodejs
-  - ls ~
-  - mkdir ~/bin || echo "~/bin already exists"
-  - ln -s `which nodejs` ~/bin/node
-  - export PATH="~/bin/:$PATH"
-  - node --version
+  - mkdir ~/bin && ln -s `which nodejs` ~/bin/node && export PATH="~/bin/:$PATH"
   - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
   - yarn install
