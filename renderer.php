@@ -133,6 +133,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
+    /**
+     * @inheritDoc
+     */
+    function linebreak() {
+        $this->nodestack->add(new Node('hard_break'));
+    }
+
     #region formatter marks
 
     /** @inheritDoc */
