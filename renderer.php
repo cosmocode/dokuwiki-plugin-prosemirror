@@ -11,9 +11,9 @@ use dokuwiki\plugin\prosemirror\schema\Mark;
 use dokuwiki\plugin\prosemirror\schema\Node;
 use dokuwiki\plugin\prosemirror\schema\NodeStack;
 
-if (!defined('DOKU_INC')) die();
+if(!defined('DOKU_INC')) die();
 
-require_once DOKU_INC.'inc/parser/renderer.php';
+require_once DOKU_INC . 'inc/parser/renderer.php';
 
 class renderer_plugin_prosemirror extends Doku_Renderer {
 
@@ -26,7 +26,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     /**
      * The format this renderer produces
      */
-    public function getFormat(){
+    public function getFormat() {
         return 'prosemirror';
     }
 
@@ -88,26 +88,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     /** @inheritDoc */
-    function strong_open() {
-        $this->marks['strong'] = 1;
-    }
-
-    /** @inheritDoc */
-    function strong_close() {
-        if(isset($this->marks['strong'])) unset($this->marks['strong']);
-    }
-
-    /** @inheritDoc */
-    function emphasis_open() {
-        $this->marks['em'] = 1;
-    }
-
-    /** @inheritDoc */
-    function emphasis_close() {
-        if(isset($this->marks['em'])) unset($this->marks['em']);
-    }
-
-    /** @inheritDoc */
     function cdata($text) {
         if($text === '') return;
 
@@ -131,13 +111,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
      */
     function internallink($link, $title = null) {
         $params = '';
-        $parts  = explode('?', $link, 2);
+        $parts = explode('?', $link, 2);
         if(count($parts) === 2) {
-            $link   = $parts[0];
+            $link = $parts[0];
             $params = $parts[1];
         }
 
-        if (!$title) {
+        if(!$title) {
             $title = $this->_simpleTitle($link);
         }
 
@@ -152,6 +132,80 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
         $this->nodestack->add($node);
     }
+
+    #region formatter marks
+
+    /** @inheritDoc */
+    function strong_open() {
+        $this->marks['strong'] = 1;
+    }
+
+    /** @inheritDoc */
+    function strong_close() {
+        if(isset($this->marks['strong'])) unset($this->marks['strong']);
+    }
+
+    /** @inheritDoc */
+    function emphasis_open() {
+        $this->marks['em'] = 1;
+    }
+
+    /** @inheritDoc */
+    function emphasis_close() {
+        if(isset($this->marks['em'])) unset($this->marks['em']);
+    }
+
+    /** @inheritdoc */
+    function subscript_open() {
+        $this->marks['subscript'] = 1;
+    }
+
+    /** @inheritDoc */
+    function subscript_close() {
+        if(isset($this->marks['subscript'])) unset($this->marks['subscript']);
+    }
+
+    /** @inheritdoc */
+    function superscript_open() {
+        $this->marks['superscript'] = 1;
+    }
+
+    /** @inheritDoc */
+    function superscript_close() {
+        if(isset($this->marks['superscript'])) unset($this->marks['superscript']);
+    }
+
+    /** @inheritDoc */
+    function monospace_open() {
+        $this->marks['code'] = 1;
+    }
+
+    /** @inheritDoc */
+    function monospace_close() {
+        if(isset($this->marks['code'])) unset($this->marks['code']);
+    }
+
+    /** @inheritDoc */
+    function deleted_open() {
+        $this->marks['deleted'] = 1;
+    }
+
+    /** @inheritDoc */
+    function deleted_close() {
+        if(isset($this->marks['deleted'])) unset($this->marks['deleted']);
+    }
+
+    /** @inheritDoc */
+    function underline_open() {
+        $this->marks['underline'] = 1;
+    }
+
+    /** @inheritDoc */
+    function underline_close() {
+        if(isset($this->marks['underline'])) unset($this->marks['underline']);
+    }
+
+    #endregion formatter marks
 
 }
 
