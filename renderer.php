@@ -133,12 +133,64 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     function linebreak() {
         $this->nodestack->add(new Node('hard_break'));
     }
+
+    /** @inheritDoc */
+    function hr() {
+        $this->nodestack->add(new Node('horizontal_rule'));
+    }
+
+    #region elements with no special WYSIWYG representation
+
+    /** @inheritDoc */
+    function entity($entity) {
+        $this->cdata($entity); // FIXME should we handle them special?
+    }
+
+    /** @inheritDoc */
+    function multiplyentity($x, $y) {
+        $this->cdata($x . 'x' . $y);
+    }
+
+    /** @inheritDoc */
+    function acronym($acronym) {
+        $this->cdata($acronym);
+    }
+
+    /** @inheritDoc */
+    function apostrophe() {
+        $this->cdata("'");
+    }
+
+    /** @inheritDoc */
+    function singlequoteopening() {
+        $this->cdata("'");
+    }
+
+    /** @inheritDoc */
+    function singlequoteclosing() {
+        $this->cdata("'");
+    }
+
+    /** @inheritDoc */
+    function doublequoteopening() {
+        $this->cdata('"');
+    }
+
+    /** @inheritDoc */
+    function doublequoteclosing() {
+        $this->cdata('"');
+    }
+
+    /** @inheritDoc */
+    function camelcaselink($link) {
+        $this->cdata($link); // FIXME should/could we decorate it?
+    }
+
+    #endregion
 
     #region formatter marks
 
