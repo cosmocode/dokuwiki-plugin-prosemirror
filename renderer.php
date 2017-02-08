@@ -23,6 +23,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     /** @var array list of currently active formatting marks */
     protected $marks = array();
 
+    /** @var int column counter for table handling */
+    protected $colcount = 0;
+
     /**
      * The format this renderer produces
      */
@@ -52,6 +55,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('paragraph');
     }
 
+    #region lists
+
     /** @inheritDoc */
     function listu_open() {
         $this->nodestack->addTop(new Node('bullet_list'));
@@ -60,6 +65,16 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     /** @inheritDoc */
     function listu_close() {
         $this->nodestack->drop('bullet_list');
+    }
+
+    /** @inheritDoc */
+    function listo_open() {
+        $this->nodestack->addTop(new Node('ordered_list'));
+    }
+
+    /** @inheritDoc */
+    function listo_close() {
+        $this->nodestack->drop('ordered_list');
     }
 
     /** @inheritDoc */
@@ -74,6 +89,68 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         }
         $this->nodestack->drop('list_item');
     }
+
+    #endregion lists
+
+    #region table
+
+    /** @inheritDoc */
+    function table_open($maxcols = null, $numrows = null, $pos = null) {
+        $this->nodestack->addTop(new Node('table'));
+    }
+
+    /** @inheritDoc */
+    function table_close($pos = null) {
+        $this->nodestack->drop('table');
+    }
+
+    /** @inheritDoc */
+    function tablerow_open() {
+        $this->nodestack->addTop(new Node('table_row'));
+        $this->colcount = 0;
+    }
+
+    /** @inheritDoc */
+    function tablerow_close() {
+        $node = $this->nodestack->drop('table_row');
+        $node->attr('columns', $this->colcount);
+    }
+
+    /** @inheritDoc */
+    function tablecell_open($colspan = 1, $align = null, $rowspan = 1) {
+        $this->colcount += $colspan;
+
+        $node = new Node('table_cell');
+        $node->attr('is_header', false);
+        $node->attr('colspan', $colspan);
+        $node->attr('rowspan', $rowspan);
+        $node->attr('align', $rowspan);
+        $this->nodestack->addTop($node);
+    }
+
+    /** @inheritdoc */
+    function tablecell_close() {
+        $this->nodestack->drop('table_cell');
+    }
+
+    /** @inheritDoc */
+    function tableheader_open($colspan = 1, $align = null, $rowspan = 1) {
+        $this->colcount += $colspan;
+
+        $node = new Node('table_cell');
+        $node->attr('is_header', true);
+        $node->attr('colspan', $colspan);
+        $node->attr('rowspan', $rowspan);
+        $node->attr('align', $rowspan);
+        $this->nodestack->addTop($node);
+    }
+
+    /** @inheritdoc */
+    function tableheader_close() {
+        $this->nodestack->drop('table_cell');
+    }
+
+    #endregion table
 
     /** @inheritDoc */
     function header($text, $level, $pos) {
@@ -102,6 +179,30 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         foreach(array_keys($this->marks) as $mark) {
             $node->addMark(new Mark($mark));
         }
+        $this->nodestack->add($node);
+    }
+
+    /**
+     * @fixme we probably want one function to handle all images
+     * @inheritDoc
+     */
+    function internalmedia($src, $title = null, $align = null, $width = null,
+                           $height = null, $cache = null, $linking = null) {
+
+        // FIXME null values need to be initialized with the correct defaults
+
+        $node = new Node('image');
+        $node->attr('src', ml($src));
+        $node->attr('title', $title);
+
+        // FIXME these need to be implemented in the schema
+        $node->attr('id', $src);
+        $node->attr('align', $align);
+        $node->attr('width', $width);
+        $node->attr('height', $height);
+        $node->attr('cache', $cache);
+        $node->attr('linking', $linking);
+
         $this->nodestack->add($node);
     }
 
