@@ -23,12 +23,13 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-loader": "^1.7.1",
     "eslint-plugin-import": "^2.4.0",
+    "qunit": "^1.0.0",
     "webpack": "^2.6.1"
   },
   "scripts": {
     "dev": "webpack -d",
     "watch": "webpack -dw",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "qunit -c _jstest/testmodule.js -t _jstest/test.js",
     "build": "webpack -p",
     "eslint": "NODE_ENV=production eslint script/main.js"
   },

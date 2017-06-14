@@ -21,4 +21,6 @@ before_install:
 install: sh travis.sh
 script:
   - cd _test && phpunit --stderr --group plugin_prosemirror
-  - cd ../lib/plugins/prosemirror && yarn run eslint
+  - cd ../lib/plugins/prosemirror
+  - yarn run eslint
+  - yarn test

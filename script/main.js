@@ -26,10 +26,3 @@ const view = new EditorView(document.querySelector('#editor'), {
 
 });
 window.view = view.editor;
-
-// used for qunit unittests
-window.testJsonAgainstSchema = function testJsonAgainstSchema(jsonInput) {
-    const node = Node.fromJSON(schema, JSON.parse(jsonInput));
-    node.check();
-};
-
