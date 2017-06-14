@@ -1,5 +1,5 @@
 const { EditorState } = require('prosemirror-state');
-const { MenuBarEditorView } = require('prosemirror-menu');
+const { EditorView } = require('prosemirror-view');
 const { Node } = require('prosemirror-model');
 const { exampleSetup } = require('prosemirror-example-setup');
 const { schema } = require('./schema');
@@ -8,7 +8,7 @@ console.log(schema);
 
 // textarea holds our intial data and will be updated on editor changes
 const json = document.getElementById('json');
-const view = new MenuBarEditorView(document.querySelector('#editor'), {
+const view = new EditorView(document.querySelector('#editor'), {
     state: EditorState.create({
         doc: Node.fromJSON(schema, JSON.parse(json.value)),
         schema,
@@ -17,11 +17,11 @@ const view = new MenuBarEditorView(document.querySelector('#editor'), {
     dispatchTransaction(tr) {
         console.log('run');
 
-        view.updateState(view.editor.state.apply(tr));
+        view.updateState(view.state.apply(tr));
 
         // current state as json in text area
         const spaces = 4;
-        json.value = JSON.stringify(view.editor.state.doc.toJSON(), null, spaces);
+        json.value = JSON.stringify(view.state.doc.toJSON(), null, spaces);
     },
 
 });
