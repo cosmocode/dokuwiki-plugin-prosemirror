@@ -21,7 +21,7 @@ class Node implements \JsonSerializable {
     /** @var Mark[] The marks (things like whether it is emphasized or part of a link) associated with this node */
     protected $marks = [];
 
-    /** @var array list of attributes  */
+    /** @var array list of attributes */
     protected $attrs = [];
 
     /**
@@ -31,6 +31,7 @@ class Node implements \JsonSerializable {
      */
     public function __construct($type) {
         $this->type = $type;
+        if($type == 'text') $this->setText('');
     }
 
     /**
@@ -66,6 +67,7 @@ class Node implements \JsonSerializable {
      * @param string $text
      */
     public function setText($text) {
+        if($this->type != 'text') throw new \RuntimeException('Non-TextNodes may not have text');
         $this->text = $text;
     }
 
@@ -98,11 +100,12 @@ class Node implements \JsonSerializable {
         $json = array(
             'type' => $this->type
         );
-        if($this->content) {
-            $json['content'] = $this->content;
-        } else {
+        if($this->type == 'text') {
             $json['text'] = $this->text;
+        } elseif($this->content) {
+            $json['content'] = $this->content;
         }
+
         if($this->marks) {
             $json['marks'] = $this->marks;
         }
