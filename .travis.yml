@@ -10,7 +10,6 @@ php:
   - "5.4"
 env:
   - DOKUWIKI=master
-  - DOKUWIKI=stable
 before_install:
   - wget https://raw.github.com/splitbrain/dokuwiki-travis/master/travis.sh
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
