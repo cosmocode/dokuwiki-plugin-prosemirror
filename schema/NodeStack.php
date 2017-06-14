@@ -61,8 +61,9 @@ class NodeStack {
     }
 
     /**
-     * Move the current node up one level in the stack
+     * Pop the current node off the stack
      *
+     * @param string $type The type of node that is expected. A RuntimeException is thrown if the current nod does not match
      * @return Node
      */
     public function drop($type) {
