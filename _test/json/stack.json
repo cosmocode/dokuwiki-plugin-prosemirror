@@ -1,0 +1,71 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "bullet_list",
+            "content": [
+                {
+                    "type": "list_item",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " single list item"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "list_item",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " another first lvl li"
+                                },
+                                {
+                                    "type": "bullet_list",
+                                    "content": [
+                                        {
+                                            "type": "list_item",
+                                            "content": [
+                                                {
+                                                    "type": "paragraph",
+                                                    "content": [
+                                                        {
+                                                            "type": "text",
+                                                            "text": " second level li"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "list_item",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " again first level li"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

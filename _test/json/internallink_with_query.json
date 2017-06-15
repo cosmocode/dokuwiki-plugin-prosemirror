@@ -1,0 +1,23 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "page",
+                    "marks": [
+                        {
+                            "type": "link",
+                            "attrs": {
+                                "href": "/./doku.php?id=name:space:page&amp;foo=bar",
+                                "title": "name:space:page"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

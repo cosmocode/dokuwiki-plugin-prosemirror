@@ -1,0 +1,19 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "bold",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

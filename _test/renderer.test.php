@@ -1,4 +1,5 @@
 <?php
+
 /**
  * General tests for the prosemirror plugin
  *
@@ -26,8 +27,16 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
      * @return array
      */
     public function rendererProvider() {
-        $json = file_get_contents(__DIR__ . '/testdata.json');
-        $data = json_decode($json, true);
+        $data = array();
+
+        $files = glob(__DIR__ . '/json/*.json');
+        foreach($files as $file) {
+            $name = basename($file, '.json');
+            $json = file_get_contents(__DIR__ . '/json/' . $name . '.json');
+            $wiki = file_get_contents(__DIR__ . '/json/' . $name . '.txt');
+            $data[] = array($wiki, $json, $name);
+        }
+
         return $data;
     }
 }

@@ -1,17 +1,24 @@
-const { testJsonAgainstSchema } = require('./testmodule.js');
+/* eslint-disable */
+
+const {testJsonAgainstSchema} = require('./testmodule.js');
 const fs = require('fs');
+const path = require('path');
 
 QUnit.module('testing json strings');
 
-const path = __dirname;
-const buffer = fs.readFileSync(`${path}/../_test/testdata.json`);
-const testData = JSON.parse(buffer.toString());
+/**
+ * Tests all json files against the Prosemirror Schema validator
+ */
+const testdata = `${__dirname}/../_test/json/`;
+fs.readdirSync(testdata).forEach( (file) => {
+    if (path.extname(file) !== '.json') return;
+    const json = fs.readFileSync(testdata + file);
+    const name = path.basename(file, '.json');
 
-testData.forEach((data) => {
-    QUnit.test(data.msg, (assert) => {
+    QUnit.test(name, (assert) => {
         let valid = true;
         try {
-            testJsonAgainstSchema(data.json);
+            testJsonAgainstSchema(json);
         } catch (e) {
             if (e instanceof RangeError) {
                 valid = false;
