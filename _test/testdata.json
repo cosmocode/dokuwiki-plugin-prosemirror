@@ -1,0 +1,27 @@
+[
+    {
+        "dwsyntax": "**bold**",
+        "json": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"bold\",\"marks\":[{\"type\":\"strong\"}]}]}]}",
+        "msg": "test_marks"
+    },
+    {
+        "dwsyntax": "  * single list item\n  * another first lvl li\n    * second level li\n  * again first level li\n",
+        "json": "{\"type\":\"doc\",\"content\":[{\"type\":\"bullet_list\",\"content\":[{\"type\":\"list_item\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\" single list item\"}]}]},{\"type\":\"list_item\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\" another first lvl li\"},{\"type\":\"bullet_list\",\"content\":[{\"type\":\"list_item\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\" second level li\"}]}]}]}]}]},{\"type\":\"list_item\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\" again first level li\"}]}]}]}]}",
+        "msg": "test_stack"
+    },
+    {
+        "dwsyntax": "[[name:space:page]]",
+        "json": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"page\",\"marks\":[{\"type\":\"link\",\"attrs\":{\"href\":\"/./doku.php?id=name:space:page\",\"title\":\"name:space:page\"}}]}]}]}",
+        "msg": "test_internallink"
+    },
+    {
+        "dwsyntax": "[[name:space:page|linktext]]",
+        "json": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"linktext\",\"marks\":[{\"type\":\"link\",\"attrs\":{\"href\":\"/./doku.php?id=name:space:page\",\"title\":\"name:space:page\"}}]}]}]}",
+        "msg": "test_internallink_with_title"
+    },
+    {
+        "dwsyntax": "[[name:space:page?foo=bar]]",
+        "json": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"page\",\"marks\":[{\"type\":\"link\",\"attrs\":{\"href\":\"/./doku.php?id=name:space:page&amp;foo=bar\",\"title\":\"name:space:page\"}}]}]}]}",
+        "msg": "test_internallink_with_query"
+    }
+]
