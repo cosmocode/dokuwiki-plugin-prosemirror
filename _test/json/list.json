@@ -27,21 +27,21 @@
                                 {
                                     "type": "text",
                                     "text": " another first lvl li"
-                                },
+                                }
+                            ]
+                        },
+                        {
+                            "type": "bullet_list",
+                            "content": [
                                 {
-                                    "type": "bullet_list",
+                                    "type": "list_item",
                                     "content": [
                                         {
-                                            "type": "list_item",
+                                            "type": "paragraph",
                                             "content": [
                                                 {
-                                                    "type": "paragraph",
-                                                    "content": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": " second level li"
-                                                        }
-                                                    ]
+                                                    "type": "text",
+                                                    "text": " second level li"
                                                 }
                                             ]
                                         }

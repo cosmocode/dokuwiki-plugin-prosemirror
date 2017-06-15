@@ -25,7 +25,7 @@ nodes.bullet_list.content = 'listitem+';
 
 nodes.list_item = listItem;
 nodes.list_item.group = 'listitem';
-nodes.list_item.content = '(paragraph | listblock)';
+nodes.list_item.content = '(paragraph | listblock)+';
 
 nodes.table = table;
 nodes.table.content = 'table_row[columns=.columns]+';

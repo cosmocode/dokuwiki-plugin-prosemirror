@@ -59,6 +59,10 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function listu_open() {
+        if($this->nodestack->current()->getType() == 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+
         $this->nodestack->addTop(new Node('bullet_list'));
     }
 
@@ -69,6 +73,10 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /** @inheritDoc */
     function listo_open() {
+        if($this->nodestack->current()->getType() == 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+
         $this->nodestack->addTop(new Node('ordered_list'));
     }
 
