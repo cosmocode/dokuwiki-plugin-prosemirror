@@ -26,4 +26,3 @@ const view = new EditorView(document.querySelector('#editor'), {
 
 });
 window.view = view.editor;
-
