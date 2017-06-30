@@ -99,7 +99,25 @@ marks.superscript = {
 };
 
 
-console.log(marks);
+const dwplugin = {
+    content: 'inline*',
+    attrs: {
+        class: { default: 'dwplugin' },
+    },
+    draggable: true,
+    inline: true,
+    group: 'inline',
+    defining: true,
+    isolating: true,
+    code: true,
+    toDOM(node) {
+        return ['code', node.attrs, 0];
+    },
+};
+
+nodes.dwplugin = dwplugin;
+
+console.log({ nodes });
 
 exports.schema = new Schema({
     nodes,
