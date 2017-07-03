@@ -17,23 +17,26 @@ const signatureMI = new MenuItem({
         const username = 'Max Müller'; // fixme replace with username
         const usermail = 'mueller@example.com'; // fixme replace with usermail
         const prefix = ' --- ';
+        const timestring = ` ${now}`;
         const usernameFrom = state.selection.$from.pos + prefix.length;
         const usernameTo = usernameFrom + username.length;
+        const signatureEnd = usernameTo + timestring.length;
         dispatch(state.tr
+            .ensureMarks([])
             .insertText(prefix)
             .insertText(username)
-            .addMark(
-                usernameFrom,
-                usernameTo,
-                schema.marks.em.create())
             .addMark(
                 usernameFrom,
                 usernameTo,
                 schema.marks.link.create({
                     href: `mailto:${usermail}`,
                 }))
-            .ensureMarks([])
-            .insertText(` ${now}`));
+            .insertText(timestring)
+            .addMark(
+                usernameFrom,
+                signatureEnd,
+                schema.marks.em.create())
+            .ensureMarks([]));
         return true;
     },
     icon: {
