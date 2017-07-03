@@ -42,11 +42,11 @@ const signatureMI = new MenuItem({
     icon: {
         dom: (() => {
             const sigToolbarIcon = document.createElement('img');
-            sigToolbarIcon.setAttribute('src', '../../images/toolbar/sig.png');
+            sigToolbarIcon.setAttribute('src', '../../images/toolbar/sig.png'); // fixme adjust path/consider svg
             return sigToolbarIcon;
         })(),
     },
-    title: 'Insert Signature', // fixme use icon
+    title: 'Insert Signature', // fixme use translated LANG string
 });
 
 const content = buildMenuItems(schema).fullMenu;
