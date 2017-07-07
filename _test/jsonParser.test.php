@@ -1,4 +1,5 @@
 <?php
+use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
 use dokuwiki\plugin\prosemirror\schema\Node;
 
 /**
@@ -18,9 +19,8 @@ class jsonParser_plugin_prosemirror_test extends DokuWikiTest {
      * @param string $msg
      */
     public function test_parser($json, $expectedDokuWikiMarkup, $msg) {
-        /** @var action_plugin_prosemirror $action */
-        $action = plugin_load('action', 'prosemirror');
-        $actualMarkup = $action->buildTEXTFromJSON($json);
+        $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($json);
+        $actualMarkup = $rootNode->toSyntax();
         $this->assertEquals(rtrim($expectedDokuWikiMarkup), $actualMarkup, $msg);
     }
 
@@ -33,7 +33,7 @@ class jsonParser_plugin_prosemirror_test extends DokuWikiTest {
         $files = glob(__DIR__ . '/json/*.json');
         foreach($files as $file) {
             $name = basename($file, '.json');
-            $json = json_decode(file_get_contents(__DIR__ . '/json/' . $name . '.json'), true);
+            $json = file_get_contents(__DIR__ . '/json/' . $name . '.json');
             $wiki = file_get_contents(__DIR__ . '/json/' . $name . '.txt');
             $data[] = array($json, $wiki, $name);
         }
