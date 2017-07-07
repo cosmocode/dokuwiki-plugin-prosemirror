@@ -39,7 +39,8 @@ class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
     public function handle_preprocess(Doku_Event $event, $param) {
         global $TEXT, $INPUT;
         dbglog($INPUT, __FILE__ . ': ' . __LINE__);
-        if (!$INPUT->post->has('prosemirror_data')) {
+        if ($INPUT->server->str('REQUEST_METHOD') != 'POST' || !$INPUT->post->has('prosemirror_data')) {
+            dbglog('We are only interested in posts from prosemirror', __FILE__ . ': ' . __LINE__);
             return;
         }
         $json = json_decode($INPUT->post->str('prosemirror_data'), true);
@@ -56,24 +57,101 @@ class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
             throw new Exception('root node must be doc');
         }
 
-        return implode("\n", array_reduce($json['content'], [$this, 'buildNodeTree'], []));
+        $json['content'] = array_map([$this, 'parseNode'], $json['content']);
+
+        $doc = $this->parseNodeContents($json['content'], 'doc');
+
+
+        return null;
+//        return implode("\n", array_reduce($json['content'], [$this, 'buildNodeTree'], []));
     }
 
-    public function buildNodeTree($lines, $node) {
+    public function parseNodeContents(array $content, $parentNodeType) {
+        $doc = '';
+        $openMarkStack = [];
+        foreach ($content as $index => &$item) {
+            if ($item['type'] === 'text') {
+                usort($item['dw']['opening marks'], [$this, 'sortMarksCallback']);
+                if (isset($content[$index + 1]) && $content[$index + 1] === 'text') {
+                    foreach ($item['dw']['closing marks'] as $closingIndex => $mark) {
+                        $openingIndex = array_search($mark, $content[$index + 1]['dw']['opening marks']);
+                        if ($openingIndex !== false) {
+                            unset($content[$openingIndex + 1]['dw']['opening marks'][$openingIndex]);
+                            unset($item['dw']['closing marks'][$closingIndex]);
+                        }
+                    }
+                    if (array_intersect($openMarkStack, $item['dw']['opening marks'])) {
+                        // fixme: this sould never happen, we cannot open an already open environment
+                        throw new Exception('we cannot open an already open environment');
+                    }
+
+                    foreach ($item['dw']['opening marks'] as $mark) {
+                        $openMarkStack[] = $mark;
+                        $doc .= $mark;
+                    }
+
+                    $doc .= $item['dw']['inner'];
+
+                    while (count($item['dw']['closing marks']) > 0) {
+                        $innermostClosingMark = $this->closingElement(array_pop($openMarkStack));
+                        if (!in_array($innermostClosingMark, $item['dw']['closing marks'])) {
+                            throw new Exception('We are trying to close a mark that is not the last opened one!');
+                        }
+                        $doc .= $innermostClosingMark;
+                        unset($item['dw']['closing marks'][array_search($innermostClosingMark, $item['dw']['closing marks'])]);
+                    }
+                }
+            }
+        }
+        return $doc;
+    }
+
+    public function closingElement($openingElement) {
+        $closingElement = [
+            '[[' => ']]',
+            '<sup>' => '</sup>',
+            '<sub>' => '</sub>',
+        ];
+        if (isset($closingElement[$openingElement])) {
+            return $closingElement[$openingElement];
+        }
+        return $openingElement;
+    }
+
+
+    public static $markOrder = [
+        '[[' => 0,
+        ']]' => 0,
+        '**' => 1,
+        '__' => 2,
+        '//' => 3,
+        '\'\'' => 4,
+        '<sub>' => 5,
+        '</sub>' => 5,
+        '<sup>' => 6,
+        '</sup>' => 6,
+    ];
+
+    public function sortMarksCallback($a, $b) {
+        return self::$markOrder[$a] - self::$markOrder[$b];
+    }
+
+    public function parseNode($node) {
         switch ($node['type']) {
             case 'paragraph':
-                return array_merge($lines, $this->parseParagraphNode($node));
+                return $this->parseParagraphNode($node);
             case 'bullet_list':
-                return array_merge($lines, $this->parseList($node));
+                return $this->parseList($node);
             case 'text':
-                return array_merge($lines, $this->parseTextNode($node));
+                return $this->parseTextNode($node);
             default:
                 // fixme: trigger plugin event?
         }
-        return $lines;
+        return $node;
     }
 
     public function parseList($node) {
+        return $node;
         if ($node['type'] == 'bullet_list') {
             $prefix = '  * ';
         } else {
@@ -94,54 +172,69 @@ class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
     }
 
     public function parseParagraphNode($node) {
-        return array_reduce($node['content'], [$this, 'buildNodeTree'], []);
+        $node['content'] = array_map([$this, 'parseNode'], $node['content']);
+        return $node;
+//        return array_reduce($node['content'], [$this, 'buildNodeTree'], []);
     }
 
     public function parseTextNode($node) {
-        $prefix = '';
-        $postfix = '';
-        $insertNodeText = true;
+        $node['dw'] = [
+            'opening marks' => [],
+            'closing marks' => [],
+            'inner' => $node['text'],
+        ];
         if (!isset($node['marks'])) {
-            return [trim($node['text'])];
+            return $node;
         }
         foreach ($node['marks'] as $mark) {
             switch ($mark['type']) {
                 case 'strong':
-                    $prefix .= '**';
-                    $postfix .= '**';
+                    $node['dw']['opening marks'][] = '**';
+                    $node['dw']['closing marks'][] = '**';
+                    break;
+                case 'em':
+                    $node['dw']['opening marks'][] = '//';
+                    $node['dw']['closing marks'][] = '//';
+                    break;
+                case 'underline':
+                    $node['dw']['opening marks'][] = '__';
+                    $node['dw']['closing marks'][] = '__';
+                    break;
+                case 'code':
+                    $node['dw']['opening marks'][] = '\'\'';
+                    $node['dw']['closing marks'][] = '\'\'';
                     break;
                 case 'link':
                     $localPrefix = DOKU_REL . DOKU_SCRIPT . '?';
-                    $prefix .= '[[';
-                    $insertNodeText = false;
+                    $node['dw']['opening marks'] .= '[[';
                     if (0 === strpos($mark['attrs']['href'], $localPrefix)) {
                         // fixme: think about relative link handling
-                        $page = $mark['attrs']['title'];
-                        $pageid = array_slice(explode(':', $mark['attrs']['title']), -1)[0];
+                        $node['dw']['inner'] = $mark['attrs']['title'];
                         $components = parse_url($mark['attrs']['href']); // fixme: think about 'useslash' and similar
                         if (!empty($components['query'])) {
                             parse_str(html_entity_decode($components['query']), $query);
                             unset($query['id']);
                             if (!empty($query)) {
-                                $page .= '?' . http_build_query($query);
+                                $node['dw']['inner'] .= '?' . http_build_query($query);
                             }
                         }
-                        $prefix .= $page;
+                        $pageid = array_slice(explode(':', $mark['attrs']['title']), -1)[0];
                         if ($pageid !== $node['text']) {
-                            $prefix .= '|' . $node['text']; // fixme think about how to handle $conf['useheading']
+                            $node['dw']['inner'] .= '|' . $node['text']; // fixme think about how to handle $conf['useheading']
                         }
                         // fixme: handle hash
                     } else {
-                        // external link
+                        // fixme: external link
                     }
-                    $postfix .= ']]';
+                    $node['dw']['closing marks'][] = ']]';
                     break;
                 default:
                     // fixme: event for plugin-marks?
 
             }
         }
-        return [trim($prefix . ($insertNodeText ? $node['text'] : '') . $postfix)];
+//        print_r($node);
+        return $node;
     }
 
 
