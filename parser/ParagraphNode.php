@@ -10,7 +10,7 @@ class ParagraphNode extends Node {
 
     protected $parent;
 
-    public function __construct($data, &$parent) {
+    public function __construct($data, $parent) {
         $this->parent = &$parent;
 
         $previousNode = false;
