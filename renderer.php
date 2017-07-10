@@ -242,6 +242,22 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
+    public function externallink($link, $title = null) {
+        if (null === $title) {
+            $title = $link;
+        }
+        $node = new Node('text');
+        $node->setText($title);
+
+        $mark = new Mark('link');
+        $mark->attr('href', $link);
+        $mark->attr('title', $title);
+
+        $node->addMark($mark);
+
+        $this->nodestack->add($node);
+    }
+
     /** @inheritDoc */
     function linebreak() {
         $this->nodestack->add(new Node('hard_break'));
