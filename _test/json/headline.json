@@ -1,0 +1,26 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "heading",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Headline"
+                }
+            ],
+            "attrs": {
+                "level": 2
+            }
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "some text"
+                }
+            ]
+        }
+    ]
+}

@@ -8,6 +8,7 @@ abstract class Node {
         'text' => TextNode::class,
         'paragraph' => ParagraphNode::class,
         'bullet_list' => ListNode::class,
+        'heading' => HeadingNode::class,
     ];
 
     abstract public function toSyntax();
