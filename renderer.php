@@ -251,7 +251,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
         $mark = new Mark('link');
         $mark->attr('href', $link);
-        $mark->attr('title', $title);
+        $mark->attr('title', $link);
 
         $node->addMark($mark);
 
