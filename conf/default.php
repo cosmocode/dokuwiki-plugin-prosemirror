@@ -5,4 +5,4 @@
  * @author Andreas Gohr <gohr@cosmocode.de>
  */
 
-//$conf['fixme']    = 'FIXME';
+$conf['use_editor']    = 0; // FIXME: this should not be configured here
