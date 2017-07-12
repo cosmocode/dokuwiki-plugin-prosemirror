@@ -98,8 +98,34 @@ marks.superscript = {
     },
 };
 
-
-console.log(marks);
+marks.interwikilink = {
+    attrs: {
+        class: { default: 'interwikilink' },
+        href: {},
+        'data-shortcut': {},
+        'data-reference': {},
+        title: { default: null },
+    },
+    draggable: true,
+    inline: true,
+    group: 'inline',
+    parseDom: [
+        {
+            tag: 'a[href].interwikilink',
+            getAttrs(dom) {
+                return {
+                    href: dom.getAttribute('href'),
+                    title: dom.getAttribute('title'),
+                    'data-shortcut': dom.getAttribute('data-shortcut'),
+                    'data-reference': dom.getAttribute('data-reference'),
+                };
+            },
+        },
+    ],
+    toDOM(node) {
+        return ['a', node.attrs];
+    },
+};
 
 exports.schema = new Schema({
     nodes,

@@ -258,6 +258,29 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
+    public function interwikilink($link, $title = null, $wikiName, $wikiUri) {
+        $isImage = false;
+        if (null === $title) {
+            $title = $wikiUri;
+        } elseif (is_array($title)) {
+            $isImage = true;
+        }
+        $textNode = new Node('text');
+        $textNode->setText($title);
+
+        $url    = $this->_resolveInterWiki($wikiName, $wikiUri, $exists);
+        // fixme: handle internal-link case
+        $mark = new Mark('interwikilink');
+        $mark->attr('href', $url);
+        $mark->attr('data-shortcut', hsc($wikiName));
+        $mark->attr('data-reference', hsc($wikiUri));
+        $mark->attr('title', $url);
+
+        $textNode->addMark($mark);
+
+        $this->nodestack->add($textNode);
+    }
+
     /** @inheritDoc */
     function linebreak() {
         $this->nodestack->add(new Node('hard_break'));
