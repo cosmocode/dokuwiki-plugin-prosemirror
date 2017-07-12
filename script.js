@@ -1,5 +1,9 @@
 jQuery(() => {
-    jQuery('#dw__editform').find('[name=prosemirror_json]').attr('id', 'prosemirror_json');
+    const $jsonField = jQuery('#dw__editform').find('[name=prosemirror_json]');
+    if (!$jsonField.length) {
+        return;
+    }
+    $jsonField.attr('id', 'prosemirror_json');
     /* DOKUWIKI:include lib/bundle.js */
 
     jQuery('#wiki__text').hide();
