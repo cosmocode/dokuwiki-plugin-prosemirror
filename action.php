@@ -7,6 +7,8 @@
  */
 
 // must be run within Dokuwiki
+use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
+
 if (!defined('DOKU_INC')) {
     die();
 }
@@ -49,30 +51,8 @@ class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
             return;
         }
 
-        $TEXT = $this->buildTEXTFromJSON($json);
-    }
-
-    public function buildTEXTFromJSON($json) {
-        if ($json['type'] != 'doc') {
-            throw new Exception('root node must be doc');
-        }
-
-        $json['content'] = array_map([$this, 'parseNode'], $json['content']);
-
-        return null;
-
-    }
-
-    /**
-     * [Custom event handler which performs action]
-     *
-     * @param Doku_Event $event  event object by reference
-     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
-     *                           handler was registered]
-     *
-     * @return void
-     */
-    public function handle_dokuwiki_started(Doku_Event $event, $param) {
+        $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($json);
+        $TEXT = $rootNode->toSyntax();
     }
 
 }
