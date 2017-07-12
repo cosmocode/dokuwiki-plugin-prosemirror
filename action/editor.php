@@ -9,7 +9,7 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
+class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin {
 
     /**
      * Registers a callback function for a given event
@@ -18,7 +18,7 @@ class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
      * @return void
      */
     public function register(Doku_Event_Handler $controller) {
-       $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'output_editor');
+        $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'output_editor');
     }
 
     /**
