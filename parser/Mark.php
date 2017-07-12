@@ -171,6 +171,15 @@ class Mark {
                     // fixme: external link
                 }
                 return $inner;
+            case 'interwikilink':
+                $inner = $this->attrs['data-shortcut'];
+                $inner .= '>';
+                $reference = $this->attrs['data-reference'];
+                $inner .= $reference;
+                if ($text !== $reference) {
+                    $inner .= '|' . $text;
+                }
+                return $inner;
             default:
                 // fixme: event for plugin-marks?
                 return $text;
