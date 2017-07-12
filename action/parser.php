@@ -13,7 +13,7 @@ if (!defined('DOKU_INC')) {
     die();
 }
 
-class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
+class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
 
     /**
      * Registers a callback function for a given event
@@ -54,7 +54,6 @@ class action_plugin_prosemirror extends DokuWiki_Action_Plugin {
         $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($json);
         $TEXT = $rootNode->toSyntax();
     }
-
 }
 
 // vim:ts=4:sw=4:et:
