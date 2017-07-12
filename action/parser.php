@@ -23,8 +23,6 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
      * @return void
      */
     public function register(Doku_Event_Handler $controller) {
-
-        $controller->register_hook('DOKUWIKI_STARTED', 'FIXME', $this, 'handle_dokuwiki_started');
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handle_preprocess');
 
     }
@@ -40,19 +38,19 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
      */
     public function handle_preprocess(Doku_Event $event, $param) {
         global $TEXT, $INPUT;
-        dbglog($INPUT, __FILE__ . ': ' . __LINE__);
-        if ($INPUT->server->str('REQUEST_METHOD') != 'POST' || !$INPUT->post->has('prosemirror_data')) {
-            dbglog('We are only interested in posts from prosemirror', __FILE__ . ': ' . __LINE__);
+        if ($INPUT->server->str('REQUEST_METHOD') != 'POST' || !$INPUT->post->has('prosemirror_json')) {
             return;
         }
-        $json = json_decode($INPUT->post->str('prosemirror_data'), true);
-        if ($json === null) {
+        $unparsedJSON = $INPUT->post->str('prosemirror_json');
+        if (json_decode($unparsedJSON, true) === null) {
             msg('Error decoding prosemirror data' - 1);
             return;
         }
-
-        $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($json);
-        $TEXT = $rootNode->toSyntax();
+        $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($unparsedJSON);
+        $syntax = $rootNode->toSyntax();
+        if (!empty($syntax)) {
+            $TEXT = $syntax;
+        }
     }
 }
 
