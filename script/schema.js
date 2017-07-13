@@ -37,6 +37,8 @@ nodes.table_row.content = 'table_cell{.columns}';
 nodes.table_cell = tableCell;
 nodes.table_cell.content = 'text*';
 
+nodes.code_block.toDOM = function toDOM() { return ['pre', { class: 'preformatted' }, 0]; };
+
 // FIXME we need a table header attribute
 // FIXME what table cells can accept is to be defined
 // FIXME table cells need colspan and rowspan attributes
@@ -98,8 +100,34 @@ marks.superscript = {
     },
 };
 
-
-console.log(marks);
+marks.interwikilink = {
+    attrs: {
+        class: { default: 'interwikilink' },
+        href: {},
+        'data-shortcut': {},
+        'data-reference': {},
+        title: { default: null },
+    },
+    draggable: true,
+    inline: true,
+    group: 'inline',
+    parseDom: [
+        {
+            tag: 'a[href].interwikilink',
+            getAttrs(dom) {
+                return {
+                    href: dom.getAttribute('href'),
+                    title: dom.getAttribute('title'),
+                    'data-shortcut': dom.getAttribute('data-shortcut'),
+                    'data-reference': dom.getAttribute('data-reference'),
+                };
+            },
+        },
+    ],
+    toDOM(node) {
+        return ['a', node.attrs];
+    },
+};
 
 exports.schema = new Schema({
     nodes,

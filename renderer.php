@@ -190,6 +190,15 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
+    public function preformatted($text) {
+        $node = new Node('code_block');
+        $this->nodestack->addTop($node);
+        $textNode = new Node('text');
+        $textNode->setText($text);
+        $this->nodestack->add($textNode);
+        $this->nodestack->drop('code_block');
+    }
+
     /**
      * @fixme we probably want one function to handle all images
      * @inheritDoc
@@ -240,6 +249,45 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $node->addMark($mark);
 
         $this->nodestack->add($node);
+    }
+
+    public function externallink($link, $title = null) {
+        if (null === $title) {
+            $title = $link;
+        }
+        $node = new Node('text');
+        $node->setText($title);
+
+        $mark = new Mark('link');
+        $mark->attr('href', $link);
+        $mark->attr('title', $link);
+
+        $node->addMark($mark);
+
+        $this->nodestack->add($node);
+    }
+
+    public function interwikilink($link, $title = null, $wikiName, $wikiUri) {
+        $isImage = false;
+        if (null === $title) {
+            $title = $wikiUri;
+        } elseif (is_array($title)) {
+            $isImage = true;
+        }
+        $textNode = new Node('text');
+        $textNode->setText($title);
+
+        $url    = $this->_resolveInterWiki($wikiName, $wikiUri, $exists);
+        // fixme: handle internal-link case
+        $mark = new Mark('interwikilink');
+        $mark->attr('href', $url);
+        $mark->attr('data-shortcut', hsc($wikiName));
+        $mark->attr('data-reference', hsc($wikiUri));
+        $mark->attr('title', $url);
+
+        $textNode->addMark($mark);
+
+        $this->nodestack->add($textNode);
     }
 
     /** @inheritDoc */

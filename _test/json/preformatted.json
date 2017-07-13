@@ -1,0 +1,14 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "code_block",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "some preformatted\nblock text\nfoo bar"
+                }
+            ]
+        }
+    ]
+}
