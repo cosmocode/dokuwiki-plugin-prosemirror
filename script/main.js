@@ -53,8 +53,8 @@ const content = buildMenuItems(schema).fullMenu;
 content.push([signatureMI]);
 
 // textarea holds our intial data and will be updated on editor changes
-const json = document.getElementById('json');
-const view = new EditorView(document.querySelector('#editor'), {
+const json = document.getElementById('prosemirror_json');
+const view = new EditorView(document.querySelector('#prosemirror__editor'), {
     state: EditorState.create({
         doc: Node.fromJSON(schema, JSON.parse(json.value)),
         schema,

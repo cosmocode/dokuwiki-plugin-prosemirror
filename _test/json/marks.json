@@ -6,12 +6,59 @@
             "content": [
                 {
                     "type": "text",
+                    "text": "DokuWiki supports "
+                },
+                {
+                    "type": "text",
                     "text": "bold",
                     "marks": [
                         {
                             "type": "strong"
                         }
                     ]
+                },
+                {
+                    "type": "text",
+                    "text": ", "
+                },
+                {
+                    "type": "text",
+                    "text": "italic",
+                    "marks": [
+                        {
+                            "type": "em"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": ", "
+                },
+                {
+                    "type": "text",
+                    "text": "underlined",
+                    "marks": [
+                        {
+                            "type": "underline"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " and "
+                },
+                {
+                    "type": "text",
+                    "text": "monospaced",
+                    "marks": [
+                        {
+                            "type": "code"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " texts."
                 }
             ]
         }
