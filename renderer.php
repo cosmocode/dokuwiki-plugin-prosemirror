@@ -190,6 +190,15 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
+    public function preformatted($text) {
+        $node = new Node('code_block');
+        $this->nodestack->addTop($node);
+        $textNode = new Node('text');
+        $textNode->setText($text);
+        $this->nodestack->add($textNode);
+        $this->nodestack->drop('code_block');
+    }
+
     /**
      * @fixme we probably want one function to handle all images
      * @inheritDoc

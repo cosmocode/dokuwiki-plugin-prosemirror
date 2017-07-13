@@ -37,6 +37,8 @@ nodes.table_row.content = 'table_cell{.columns}';
 nodes.table_cell = tableCell;
 nodes.table_cell.content = 'text*';
 
+nodes.code_block.toDOM = function toDOM() { return ['pre', { class: 'preformatted' }, 0]; };
+
 // FIXME we need a table header attribute
 // FIXME what table cells can accept is to be defined
 // FIXME table cells need colspan and rowspan attributes
