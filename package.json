@@ -13,6 +13,7 @@
     "prosemirror-schema-list": "^0.21.0",
     "prosemirror-schema-table": "^0.21.0",
     "prosemirror-state": "^0.21.0",
+    "prosemirror-transform": "^0.22.1",
     "prosemirror-view": "^0.21.1"
   },
   "devDependencies": {
