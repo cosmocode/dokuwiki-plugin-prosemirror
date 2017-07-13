@@ -6,5 +6,5 @@
  */
 
 
-//$meta['fixme'] = array('string');
+$meta['use_editor'] = array('onoff'); // FIXME: this should not be configured here
 

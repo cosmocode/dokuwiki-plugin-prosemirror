@@ -6,7 +6,7 @@
  */
 
 // keys need to match the config setting name
-// $lang['fixme'] = 'FIXME';
+$lang['use_editor'] = 'Use the prosemirror editor';
 
 
 
