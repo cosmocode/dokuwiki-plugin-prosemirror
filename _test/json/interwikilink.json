@@ -1,0 +1,25 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "plugin:prosemirror",
+                    "marks": [
+                        {
+                            "type": "interwikilink",
+                            "attrs": {
+                                "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                                "data-shortcut": "doku",
+                                "data-reference": "plugin:prosemirror",
+                                "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

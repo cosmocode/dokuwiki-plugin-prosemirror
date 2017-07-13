@@ -1,0 +1,3 @@
+  some preformatted
+  block text
+  foo bar
