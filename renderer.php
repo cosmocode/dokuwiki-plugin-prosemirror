@@ -274,20 +274,21 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         } elseif (is_array($title)) {
             $isImage = true;
         }
+
+        $shortcut = $wikiName;
+        $url    = $this->_resolveInterWiki($shortcut, $wikiUri, $exists);
+        $iwLinkNode = new Node('interwikilink');
+        $iwLinkNode->attr('href', $url);
+        $iwLinkNode->attr('data-shortcut', hsc($wikiName));
+        $iwLinkNode->attr('data-reference', hsc($wikiUri));
+        $iwLinkNode->attr('title', $url);
+        $iwLinkNode->attr('class', 'interwikilink iw iw-' . $shortcut);
+        $this->nodestack->addTop($iwLinkNode);
+
         $textNode = new Node('text');
         $textNode->setText($title);
-
-        $url    = $this->_resolveInterWiki($wikiName, $wikiUri, $exists);
-        // fixme: handle internal-link case
-        $mark = new Mark('interwikilink');
-        $mark->attr('href', $url);
-        $mark->attr('data-shortcut', hsc($wikiName));
-        $mark->attr('data-reference', hsc($wikiUri));
-        $mark->attr('title', $url);
-
-        $textNode->addMark($mark);
-
         $this->nodestack->add($textNode);
+        $this->nodestack->drop('interwikilink');
     }
 
     /** @inheritDoc */
