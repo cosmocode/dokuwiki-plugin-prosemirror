@@ -282,7 +282,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $iwLinkNode->attr('data-shortcut', hsc($wikiName));
         $iwLinkNode->attr('data-reference', hsc($wikiUri));
         $iwLinkNode->attr('title', $url);
-        $iwLinkNode->attr('class', 'interwikilink iw iw-' . $shortcut);
+        $iwLinkNode->attr('class', 'interwikilink interwiki iw_' . $shortcut);
         $this->nodestack->addTop($iwLinkNode);
 
         $textNode = new Node('text');

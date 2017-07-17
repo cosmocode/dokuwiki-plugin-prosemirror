@@ -11,7 +11,7 @@
                         "data-shortcut": "doku",
                         "data-reference": "plugin:prosemirror",
                         "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "interwikilink iw iw-doku"
+                        "class": "interwikilink interwiki iw_doku"
                     },
                     "content": [
                         {
