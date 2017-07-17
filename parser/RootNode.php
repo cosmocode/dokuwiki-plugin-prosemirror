@@ -24,6 +24,7 @@ class RootNode extends Node{
         $doc = '';
         foreach ($this->subnodes as $subnode) {
             $doc .= $subnode->toSyntax();
+            $doc .= "\n\n";
         }
         return $doc;
     }
