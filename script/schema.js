@@ -8,7 +8,7 @@
 const { Schema } = require('prosemirror-model');
 const { nodes, marks } = require('prosemirror-schema-basic');
 const { bulletList, orderedList, listItem } = require('prosemirror-schema-list');
-const { table, tableRow, tableCell } = require('prosemirror-schema-table');
+const { tableNodes } = require('prosemirror-tables');
 
 // heading shall only contain unmarked text
 nodes.heading.content = 'text*';
@@ -27,20 +27,21 @@ nodes.list_item = listItem;
 nodes.list_item.group = 'listitem';
 nodes.list_item.content = 'paragraph listblock?';
 
-nodes.table = table;
-nodes.table.content = 'table_row[columns=.columns]+';
-nodes.table.group = 'tableblock';
+const tableNodesSet = tableNodes({
+    tableGroup: 'tableblock',
+    cellContent: 'text*',
+});
 
-nodes.table_row = tableRow;
-nodes.table_row.content = 'table_cell{.columns}';
-
-nodes.table_cell = tableCell;
-nodes.table_cell.content = 'text*';
+nodes.table = tableNodesSet.table;
+nodes.table_row = tableNodesSet.table_row;
+nodes.table_cell = tableNodesSet.table_cell;
+nodes.table_header = tableNodesSet.table_header;
 
 nodes.code_block.toDOM = function toDOM() { return ['pre', { class: 'preformatted' }, 0]; };
 
 nodes.interwikilink = {
-    content: 'text<_>?',
+    content: 'text',
+    marks: '_',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
     attrs: {
