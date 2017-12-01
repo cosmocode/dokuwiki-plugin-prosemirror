@@ -30,7 +30,7 @@
   "scripts": {
     "dev": "webpack -d",
     "watch": "webpack -dw",
-    "test": "qunit -c _jstest/testmodule.js -t _jstest/test.js",
+    "test": "qunit _jstest/**/*.js",
     "build": "webpack -p",
     "eslint": "NODE_ENV=production eslint script/main.js"
   },
