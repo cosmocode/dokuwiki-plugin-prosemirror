@@ -15,6 +15,7 @@ module.exports = {
         rules: [
             {
                 loader: 'eslint-loader',
+                exclude: /node_modules/,
                 enforce: 'pre',
                 options: {
                     fix: true,
