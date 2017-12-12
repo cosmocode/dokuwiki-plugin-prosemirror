@@ -11,6 +11,7 @@ abstract class Node {
         'heading' => HeadingNode::class,
         'interwikilink' => InterwikiLinkNode::class,
         'internallink' => InternalLinkNode::class,
+        'image' => ImageNode::class,
     ];
 
     abstract public function toSyntax();

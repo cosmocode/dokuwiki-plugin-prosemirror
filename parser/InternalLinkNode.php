@@ -13,7 +13,7 @@ class InternalLinkNode extends Node
 
     protected $attrs = [];
 
-    protected $textNode = null;
+    protected $content = null;
 
     /**
      * @inheritDoc
@@ -29,14 +29,16 @@ class InternalLinkNode extends Node
         if (count($data['content']) !== 1) {
             throw new \InvalidArgumentException('An InternalLinkNode should contain exactly one TextNode');
         }
-
-        $this->textNode = new TextNode($data['content'][0], $this, $previousNode);
+        if ($data['content'][0]['type'] === 'image') {
+            $this->content = new ImageNode($data['content'][0], $this);
+        } else {
+            $this->content = new TextNode($data['content'][0], $this, $previousNode);
+        }
     }
 
 
     public function toSyntax()
     {
-        $prefix = $this->textNode->getPrefixSyntax();
 
         $linkprefix = '[[';
 
@@ -62,16 +64,23 @@ class InternalLinkNode extends Node
 
         $inner = $id . ($queryString ? '?' . $queryString : '') . ($hash ? '#' . $hash : '');
 
-        $text = $this->textNode->getInnerSyntax();
-        $dokuRenderer = new \Doku_Renderer();
-        if ($text !== $title = $dokuRenderer->_simpleTitle($id . ($hash ? '#' . $hash : ''))) {
-            $inner .= '|' . $text;
+        if (is_a($this->content, ImageNode::class)) {
+            $prefix = '';
+            $inner .= '|' . $this->content->toSyntax();
+            $postfix = '';
+        } else {
+            $prefix = $this->content->getPrefixSyntax();
+            $text = $this->content->getInnerSyntax();
+            $dokuRenderer = new \Doku_Renderer();
+            if ($text !== $title = $dokuRenderer->_simpleTitle($id . ($hash ? '#' . $hash : ''))) {
+                $inner .= '|' . $text;
+            }
+            $postfix = $this->content->getPostfixSyntax();
         }
 
 
         $linkpostfix = ']]';
 
-        $postfix = $this->textNode->getPostfixSyntax();
         return $prefix . $linkprefix . $inner . $linkpostfix . $postfix;
     }
 }

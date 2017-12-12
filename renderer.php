@@ -212,11 +212,22 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $node->attr('src', ml($src));
         $node->attr('title', $title);
 
-        // FIXME these need to be implemented in the schema
-        $node->attr('id', $src);
+        $class = 'media';
+        if ($align === 'right') {
+            $class = 'mediaright';
+        } else if ($align === 'left') {
+            $class = 'medialeft';
+        } else if ($align === 'center') {
+            $class = 'mediacenter';
+        }
+
+        $node->attr('class', $class);
         $node->attr('align', $align);
         $node->attr('width', $width);
         $node->attr('height', $height);
+
+        // FIXME these need to be implemented in the schema
+        $node->attr('id', $src);
         $node->attr('cache', $cache);
         $node->attr('linking', $linking);
 
@@ -225,7 +236,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     /**
      * @inheritDoc
-     * @fixme this implementation is much too naive. we'll probably need our own node types for internal/external/interwiki and have more attributes
      */
     public function internallink($id, $name = null) {
         global $conf;
@@ -241,9 +251,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         if($id === '') {
             $id = $ID;
         }
-
-        if(!$name) {
-            $name = $this->_simpleTitle($id);
+        $isImage = false;
+        if (is_array($name)) {
+            $isImage = true;
+        } else {
+            if (!$name) {
+                $name = $this->_simpleTitle($id);
+            }
         }
 
         //keep hash anchor
@@ -258,12 +272,12 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         // now first resolve and clean up the $id
         resolve_pageid(getNS($ID), $id, $exists);
 
-        $link = array();
-        if ($exists) {
+        if ($isImage) {
+            $class = 'media';
+        } else if ($exists) {
             $class = 'wikilink1';
         } else {
             $class = 'wikilink2';
-            $link['rel'] = 'nofollow';
         }
 
         $internalLinkNode = new Node('internallink');
@@ -275,7 +289,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $internalLinkNode->attr('class', $class);
 
         $this->nodestack->addTop($internalLinkNode);
-        $this->cdata($name);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache']
+            );
+        } else {
+            $this->cdata($name);
+        }
         $this->nodestack->drop('internallink');
     }
 

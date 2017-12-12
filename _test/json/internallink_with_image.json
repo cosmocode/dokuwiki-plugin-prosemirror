@@ -1,0 +1,30 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "internallink",
+                    "content": [
+                        {
+                            "type": "image",
+                            "attrs": {
+                                "src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
+                                "class": "media",
+                                "id": "wiki:dokuwiki-128.png",
+                                "cache": "cache"
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "href": "/./doku.php?id=wiki:syntax",
+                        "title": "wiki:syntax",
+                        "data-id": "wiki:syntax",
+                        "class": "media"
+                    }
+                }
+            ]
+        }
+    ]
+}

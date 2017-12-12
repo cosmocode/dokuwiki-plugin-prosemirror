@@ -71,7 +71,7 @@ nodes.interwikilink = {
 };
 
 nodes.internallink = {
-    content: 'text',
+    content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
     attrs: {
@@ -86,6 +86,10 @@ nodes.internallink = {
         return ['a', node.attrs, 0];
     },
 };
+
+nodes.image.attrs.width = { default: null };
+nodes.image.attrs.height = { default: null };
+nodes.image.attrs.class = {};
 
 // FIXME we need a table header attribute
 // FIXME what table cells can accept is to be defined
