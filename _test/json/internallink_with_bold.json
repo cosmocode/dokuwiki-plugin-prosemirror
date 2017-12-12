@@ -1,0 +1,30 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "internallink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "page",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                }
+                            ]
+                        }
+                    ],
+                    "attrs": {
+                        "href": "/./doku.php?id=name:space:page",
+                        "title": "name:space:page",
+                        "data-id": "name:space:page",
+                        "class": "wikilink2"
+                    }
+                }
+            ]
+        }
+    ]
+}
