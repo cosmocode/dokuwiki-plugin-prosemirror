@@ -227,28 +227,56 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
      * @inheritDoc
      * @fixme this implementation is much too naive. we'll probably need our own node types for internal/external/interwiki and have more attributes
      */
-    function internallink($link, $title = null) {
-        $params = '';
-        $parts = explode('?', $link, 2);
-        if(count($parts) === 2) {
-            $link = $parts[0];
-            $params = $parts[1];
+    public function internallink($id, $name = null) {
+        global $conf;
+        global $ID;
+        global $INFO;
+
+        @list($id, $params) = explode('?', $id, 2);
+
+        // For empty $id we need to know the current $ID
+        // We need this check because _simpleTitle needs
+        // correct $id and resolve_pageid() use cleanID($id)
+        // (some things could be lost)
+        if($id === '') {
+            $id = $ID;
         }
 
-        if(!$title) {
-            $title = $this->_simpleTitle($link);
+        if(!$name) {
+            $name = $this->_simpleTitle($id);
         }
 
-        $node = new Node('text');
-        $node->setText($title);
+        //keep hash anchor
+        @list($id, $originalHash) = explode('#', $id, 2);
+        if(!empty($originalHash)) {
+            $check = false;
+            $hash = sectionID($originalHash, $check);
+        } else {
+            $hash = '';
+        }
 
-        $mark = new Mark('link');
-        $mark->attr('href', wl($link, $params));
-        $mark->attr('title', $link);
+        // now first resolve and clean up the $id
+        resolve_pageid(getNS($ID), $id, $exists);
 
-        $node->addMark($mark);
+        $link = array();
+        if ($exists) {
+            $class = 'wikilink1';
+        } else {
+            $class = 'wikilink2';
+            $link['rel'] = 'nofollow';
+        }
 
-        $this->nodestack->add($node);
+        $internalLinkNode = new Node('internallink');
+        $internalLinkNode->attr('href', wl($id, $params) . ($hash ? '#' . $hash : ''));
+        $internalLinkNode->attr('title', $id);
+        $internalLinkNode->attr('data-id', $id);
+        $internalLinkNode->attr('data-query', $params);
+        $internalLinkNode->attr('data-hash', $originalHash);
+        $internalLinkNode->attr('class', $class);
+
+        $this->nodestack->addTop($internalLinkNode);
+        $this->cdata($name);
+        $this->nodestack->drop('internallink');
     }
 
     public function externallink($link, $title = null) {

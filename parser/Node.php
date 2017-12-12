@@ -10,6 +10,7 @@ abstract class Node {
         'bullet_list' => ListNode::class,
         'heading' => HeadingNode::class,
         'interwikilink' => InterwikiLinkNode::class,
+        'internallink' => InternalLinkNode::class,
     ];
 
     abstract public function toSyntax();

@@ -70,6 +70,23 @@ nodes.interwikilink = {
     ],
 };
 
+nodes.internallink = {
+    content: 'text',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        'data-id': {},
+        'data-query': { default: null },
+        'data-hash': { default: null },
+        title: { default: null },
+    },
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+};
+
 // FIXME we need a table header attribute
 // FIXME what table cells can accept is to be defined
 // FIXME table cells need colspan and rowspan attributes

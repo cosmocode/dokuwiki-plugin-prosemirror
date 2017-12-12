@@ -9,14 +9,14 @@
                     "content": [
                         {
                             "type": "text",
-                            "text": "page"
+                            "text": "syntax"
                         }
                     ],
                     "attrs": {
-                        "href": "/./doku.php?id=name:space:page",
-                        "title": "name:space:page",
-                        "data-id": "name:space:page",
-                        "class": "wikilink2"
+                        "href": "/./doku.php?id=wiki:syntax",
+                        "title": "wiki:syntax",
+                        "data-id": "wiki:syntax",
+                        "class": "wikilink1"
                     }
                 }
             ]
