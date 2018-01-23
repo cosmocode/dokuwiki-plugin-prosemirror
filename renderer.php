@@ -191,11 +191,16 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     public function preformatted($text) {
+        $node = new Node('preformatted');
+        $this->nodestack->addTop($node);
+        $this->cdata($text);
+        $this->nodestack->drop('preformatted');
+    }
+
+    public function code($text, $lang = null, $file = null) { // FIXME add support for file and lang
         $node = new Node('code_block');
         $this->nodestack->addTop($node);
-        $textNode = new Node('text');
-        $textNode->setText($text);
-        $this->nodestack->add($textNode);
+        $this->cdata(trim($text));
         $this->nodestack->drop('code_block');
     }
 

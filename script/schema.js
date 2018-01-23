@@ -38,9 +38,19 @@ nodes = nodes.append(tableNodes({
     cellContent: 'text*',
 }));
 
+
+nodes = nodes.addToEnd('preformatted', {
+    content: 'text',
+    marks: '_',
+    group: 'block',
+    toDOM() {
+        return ['pre', { class: 'code' }, 0];
+    },
+});
+
 // fixme we may want an explizit preformatted node so can tell preformatted and <code> apart
 const codeBlock = nodes.get('code_block');
-codeBlock.toDOM = function toDOM() { return ['pre', { class: 'preformatted' }, 0]; };
+codeBlock.toDOM = function toDOM() { return ['pre', { class: 'code' }, 0]; };
 nodes = nodes.update('code_block', codeBlock);
 
 nodes = nodes.addToEnd('interwikilink', {

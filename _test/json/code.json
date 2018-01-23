@@ -2,11 +2,11 @@
     "type": "doc",
     "content": [
         {
-            "type": "preformatted",
+            "type": "code_block",
             "content": [
                 {
                     "type": "text",
-                    "text": "some preformatted\nblock text\nfoo bar"
+                    "text": "a block of code\nblock text\nfoo bar"
                 }
             ]
         }

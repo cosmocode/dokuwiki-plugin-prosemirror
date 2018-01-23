@@ -13,6 +13,8 @@ abstract class Node {
         'internallink' => InternalLinkNode::class,
         'externallink' => ExternalLinkNode::class,
         'locallink' => LocalLinkNode::class,
+        'preformatted' => PreformattedNode::class,
+        'code_block' => CodeBlockNode::class,
         'image' => ImageNode::class,
     ];
 
