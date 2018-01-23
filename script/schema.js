@@ -105,6 +105,20 @@ nodes = nodes.addToEnd('externallink', {
     },
 });
 
+nodes = nodes.addToEnd('locallink', {
+    content: 'text|image',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        title: {},
+    },
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+});
+
 const imageNode = nodes.get('image');
 imageNode.attrs.width = { default: null };
 imageNode.attrs.height = { default: null };

@@ -18,6 +18,8 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
      * @param string $msg
      */
     public function test_renderer($dokuwikiMarkup, $expectedJSON, $msg) {
+        global $ID;
+        $ID = 'wiki:syntax';
         $instructions = p_get_instructions($dokuwikiMarkup);
         $doc = p_render('prosemirror', $instructions, $info);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $doc, $msg);

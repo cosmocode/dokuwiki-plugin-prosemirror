@@ -234,6 +234,20 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add($node);
     }
 
+    public function locallink($hash, $name = null) {
+        if (null === $name) {
+            $name = $hash;
+        }
+        global $ID;
+        $localLinkNode = new Node('locallink');
+        $localLinkNode->attr('href', '#' . $hash);
+        $localLinkNode->attr('title', $ID.' ↵');
+        $localLinkNode->attr('class', 'wikilink1');
+        $this->nodestack->addTop($localLinkNode);
+        $this->cdata($name);
+        $this->nodestack->drop('locallink');
+    }
+
     /**
      * @inheritDoc
      */

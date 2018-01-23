@@ -12,6 +12,7 @@ abstract class Node {
         'interwikilink' => InterwikiLinkNode::class,
         'internallink' => InternalLinkNode::class,
         'externallink' => ExternalLinkNode::class,
+        'locallink' => LocalLinkNode::class,
         'image' => ImageNode::class,
     ];
 

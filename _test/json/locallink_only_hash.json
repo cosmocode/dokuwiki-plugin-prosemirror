@@ -1,1 +1,24 @@
-{}
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "locallink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "images_and_other_files"
+                        }
+                    ],
+                    "attrs": {
+                        "href": "#images_and_other_files",
+                        "title": "wiki:syntax \u21b5",
+                        "class": "wikilink1"
+                    }
+                }
+            ]
+        }
+    ]
+}
