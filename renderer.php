@@ -309,16 +309,14 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         if (null === $title) {
             $title = $link;
         }
-        $node = new Node('text');
-        $node->setText($title);
+        $externalLinkNode = new Node('externallink');
+        $externalLinkNode->attr('href', $link);
+        $externalLinkNode->attr('title', $link);
+        $externalLinkNode->attr('class', 'urlextern');
 
-        $mark = new Mark('link');
-        $mark->attr('href', $link);
-        $mark->attr('title', $link);
-
-        $node->addMark($mark);
-
-        $this->nodestack->add($node);
+        $this->nodestack->addTop($externalLinkNode);
+        $this->cdata($title);
+        $this->nodestack->drop('externallink');
     }
 
     public function interwikilink($link, $title = null, $wikiName, $wikiUri) {

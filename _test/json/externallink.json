@@ -5,17 +5,18 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "text",
-                    "text": "https:\/\/www.google.com",
-                    "marks": [
+                    "type": "externallink",
+                    "content": [
                         {
-                            "type": "link",
-                            "attrs": {
-                                "href": "https:\/\/www.google.com",
-                                "title": "https:\/\/www.google.com"
-                            }
+                            "type": "text",
+                            "text": "https:\/\/www.google.com"
                         }
-                    ]
+                    ],
+                    "attrs": {
+                        "href": "https://www.google.com",
+                        "title": "https://www.google.com",
+                        "class": "urlextern"
+                    }
                 }
             ]
         }
