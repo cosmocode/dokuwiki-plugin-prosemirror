@@ -142,22 +142,19 @@ nodes = nodes.update('image', imageNode);
 // FIXME we don't allow stuff in links
 // FIXME extend image node with additional attributes
 
-marks = marks.addToEnd(
-    'deleted',
-    {
-        parseDOM: [
-            { tag: 'del' },
-            {
-                style: 'text-decoration',
-                // https://discuss.prosemirror.net/t/dom-parsing-and-getattrs/612
-                getAttrs: value => value === 'strikethrough' && null,
-            },
-        ],
-        toDOM() {
-            return ['del'];
+marks = marks.addToEnd('deleted', {
+    parseDOM: [
+        { tag: 'del' },
+        {
+            style: 'text-decoration',
+            // https://discuss.prosemirror.net/t/dom-parsing-and-getattrs/612
+            getAttrs: value => value === 'strikethrough' && null,
         },
+    ],
+    toDOM() {
+        return ['del'];
     },
-);
+});
 
 marks = marks.addToEnd('underline', {
     parseDOM: [
