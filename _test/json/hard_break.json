@@ -1,0 +1,35 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "This is some text with some linebreaks"
+                },
+                {
+                    "type": "hard_break"
+                },
+                {
+                    "type": "text",
+                    "text": "Note that the two backslashes are only recognized at the end of a line"
+                },
+                {
+                    "type": "hard_break"
+                },
+                {
+                    "type": "text",
+                    "text": "or followed by"
+                },
+                {
+                    "type": "hard_break"
+                },
+                {
+                    "type": "text",
+                    "text": "a whitespace \\\\this happens without it."
+                }
+            ]
+        }
+    ]
+}

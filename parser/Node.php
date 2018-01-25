@@ -16,6 +16,7 @@ abstract class Node {
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,
         'image' => ImageNode::class,
+        'hard_break' => HardBreakNode::class,
     ];
 
     abstract public function toSyntax();

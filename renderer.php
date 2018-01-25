@@ -176,6 +176,10 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     function cdata($text) {
         if($text === '') return;
 
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $text = str_replace("\n", ' ', $text);
+        }
+
         // list items need a paragraph before adding text
         if($this->nodestack->current()->getType() == 'list_item') {
             $node = new Node('paragraph'); // FIXME we probably want a special list item wrapper here instead
