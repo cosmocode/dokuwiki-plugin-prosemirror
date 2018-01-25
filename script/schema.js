@@ -132,7 +132,9 @@ nodes = nodes.addToEnd('locallink', {
 const imageNode = nodes.get('image');
 imageNode.attrs.width = { default: null };
 imageNode.attrs.height = { default: null };
+imageNode.attrs.align = { default: null };
 imageNode.attrs.class = {};
+imageNode.attrs.id = {};
 nodes = nodes.update('image', imageNode);
 
 // FIXME we need a table header attribute
