@@ -19,6 +19,9 @@ abstract class Node {
         'hard_break' => HardBreakNode::class,
         'horizontal_rule' => HruleNode::class,
         'footnote' => FootnoteNode::class,
+        'table' => TableNode::class,
+        'table_row' => TableRowNode::class,
+        'table_cell' => TableCellNode::class,
     ];
 
     abstract public function toSyntax();

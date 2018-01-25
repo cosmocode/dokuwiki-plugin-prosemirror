@@ -1,0 +1,192 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "table",
+            "content": [
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "           Table with alignment           "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": true,
+                                "colspan": 3,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 3
+                    }
+                },
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "         right"
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "    center    "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "left          "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 3
+                    }
+                },
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "left          "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "         right"
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "    center    "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 3
+                    }
+                },
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " xxxxxxxxxxxx "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " xxxxxxxxxxxx "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " xxxxxxxxxxxx "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 3
+                    }
+                }
+            ]
+        }
+    ]
+}

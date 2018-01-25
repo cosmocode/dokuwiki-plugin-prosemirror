@@ -35,7 +35,10 @@ nodes = nodes.update('list_item', listItem);
 
 nodes = nodes.append(tableNodes({
     tableGroup: 'tableblock',
-    cellContent: 'text*',
+    cellContent: 'inline',
+    cellAttributes: {
+        is_header: {},
+    },
 }));
 
 
