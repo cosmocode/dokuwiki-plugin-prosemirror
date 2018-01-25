@@ -332,13 +332,31 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         if (null === $title) {
             $title = $link;
         }
+        $isImage = is_array($title);
+        if ($isImage) {
+            $class = 'media';
+        } else {
+            $class = 'urlextern';
+        }
         $externalLinkNode = new Node('externallink');
         $externalLinkNode->attr('href', $link);
         $externalLinkNode->attr('title', $link);
-        $externalLinkNode->attr('class', 'urlextern');
+        $externalLinkNode->attr('class', $class);
 
         $this->nodestack->addTop($externalLinkNode);
-        $this->cdata($title);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $title['src'],
+                $title['title'],
+                $title['align'],
+                $title['width'],
+                $title['height'],
+                $title['cache']
+            );
+        } else {
+            $this->cdata($title);
+        }
         $this->nodestack->drop('externallink');
     }
 
