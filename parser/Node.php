@@ -17,6 +17,7 @@ abstract class Node {
         'code_block' => CodeBlockNode::class,
         'image' => ImageNode::class,
         'hard_break' => HardBreakNode::class,
+        'horizontal_rule' => HruleNode::class,
     ];
 
     abstract public function toSyntax();
