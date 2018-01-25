@@ -129,6 +129,15 @@ nodes = nodes.addToEnd('locallink', {
     },
 });
 
+nodes = nodes.addToEnd('footnote', {
+    content: 'inline',
+    group: 'inline',
+    inline: true,
+    toDOM() {
+        return ['footnote', { class: 'footnote' }, 0];
+    },
+});
+
 const imageNode = nodes.get('image');
 imageNode.attrs.width = { default: null };
 imageNode.attrs.height = { default: null };

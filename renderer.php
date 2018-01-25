@@ -176,12 +176,14 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     function cdata($text) {
         if($text === '') return;
 
-        if ($this->nodestack->current()->getType() === 'paragraph') {
+        $parentNode = $this->nodestack->current()->getType();
+
+        if (in_array($parentNode, ['paragraph', 'footnote'])) {
             $text = str_replace("\n", ' ', $text);
         }
 
         // list items need a paragraph before adding text
-        if($this->nodestack->current()->getType() == 'list_item') {
+        if($parentNode === 'list_item') {
             $node = new Node('paragraph'); // FIXME we probably want a special list item wrapper here instead
             $this->nodestack->addTop($node);
         }
@@ -206,6 +208,15 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->addTop($node);
         $this->cdata(trim($text));
         $this->nodestack->drop('code_block');
+    }
+
+    function footnote_open() {
+        $footnoteNode = new Node('footnote');
+        $this->nodestack->addTop($footnoteNode);
+    }
+
+    function footnote_close() {
+        $this->nodestack->drop('footnote');
     }
 
     /**

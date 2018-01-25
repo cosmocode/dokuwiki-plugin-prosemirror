@@ -18,6 +18,7 @@ abstract class Node {
         'image' => ImageNode::class,
         'hard_break' => HardBreakNode::class,
         'horizontal_rule' => HruleNode::class,
+        'footnote' => FootnoteNode::class,
     ];
 
     abstract public function toSyntax();
