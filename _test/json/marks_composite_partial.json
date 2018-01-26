@@ -25,7 +25,22 @@
                             "type": "strong"
                         },
                         {
+                            "type": "underline"
+                        },
+                        {
                             "type": "em"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " (trailing)",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        },
+                        {
+                            "type": "underline"
                         }
                     ]
                 },

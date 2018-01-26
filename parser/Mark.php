@@ -31,7 +31,6 @@ class Mark {
     protected $parent;
 
     public function __construct($data, &$parent) {
-//        print_r($type);
         $this->type = $data['type'];
         if (isset($data['attrs'])) {
             $this->attrs = $data['attrs'];
@@ -73,10 +72,18 @@ class Mark {
         return $this->type;
     }
 
-    public function switchPlaces(&$newPrevious, &$newNext) {
+    /**
+     * @param Mark $newPrevious
+     * @param null|Mark $newNext
+     * @return Mark
+     */
+    public function switchPlaces(Mark $newPrevious, $newNext) {
         $oldPrevious = $this->previousMark;
         $this->previousMark = &$newPrevious;
         $this->nextMark = &$newNext;
+        if (null !== $newNext) {
+            $newNext->setPrevious($this);
+        }
         return $oldPrevious;
     }
 
@@ -84,7 +91,8 @@ class Mark {
         if ($this->previousMark === null) {
             return true;
         }
-        if ($this->previousMark->getTailLength() < $this->tailLength) {
+        if ($this->previousMark->getTailLength() > $this->tailLength) {
+            // the marks that ends later must be printed in front of those that end earlier
             return true;
         }
         if ($this->previousMark->getTailLength() === $this->tailLength) {
@@ -96,6 +104,9 @@ class Mark {
         $newPrevious = $this->previousMark->switchPlaces($this, $this->nextMark);
         $this->nextMark = &$this->previousMark;
         $this->previousMark = &$newPrevious;
+        if (null !== $newPrevious) {
+            $newPrevious->setNext($this);
+        }
 
         return false;
     }
