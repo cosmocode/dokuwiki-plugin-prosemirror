@@ -13,6 +13,7 @@ abstract class Node {
         'interwikilink' => InterwikiLinkNode::class,
         'internallink' => InternalLinkNode::class,
         'externallink' => ExternalLinkNode::class,
+        'emaillink' => EmailLinkNode::class,
         'locallink' => LocalLinkNode::class,
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,

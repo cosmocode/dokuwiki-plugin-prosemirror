@@ -393,6 +393,26 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('interwikilink');
     }
 
+    public function emaillink($address, $name = null)
+    {
+        if (null === $name) {
+            $name = $address;
+        }
+        $isImage = is_array($name);
+        if ($isImage) {
+            $class = 'media';
+        } else {
+            $class = 'mail';
+        }
+        $emailLink = new Node('emaillink');
+        $emailLink->attr('href', 'mailto:' . $address);
+        $emailLink->attr('class', $class);
+        $emailLink->attr('title', $address);
+        $this->nodestack->addTop($emailLink);
+        $this->cdata($name ?: $address);
+        $this->nodestack->drop('emaillink');
+    }
+
     /** @inheritDoc */
     function linebreak() {
         $this->nodestack->add(new Node('hard_break'));

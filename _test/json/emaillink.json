@@ -1,0 +1,50 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Email addresses like this one: "
+                },
+                {
+                    "type": "emaillink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "andi@splitbrain.org"
+                        }
+                    ],
+                    "attrs": {
+                        "href": "mailto:andi@splitbrain.org",
+                        "class": "mail",
+                        "title": "andi@splitbrain.org"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " or "
+                },
+                {
+                    "type": "emaillink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "write me!"
+                        }
+                    ],
+                    "attrs": {
+                        "href": "mailto:andi@splitbrain.org",
+                        "class": "mail",
+                        "title": "andi@splitbrain.org"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " are recognized, too."
+                }
+            ]
+        }
+    ]
+}
