@@ -100,12 +100,7 @@ class TextNode extends Node implements InlineNodeInterface {
     }
 
     public function getInnerSyntax() {
-        // fixme: could there be other marks besides 'link' that change the inner text?
-        $inner = $this->text;
-        foreach ($this->marks as $mark) {
-            $inner = $mark->transformInner($inner);
-        }
-        return $inner;
+        return $this->text;
     }
 
 

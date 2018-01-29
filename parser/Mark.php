@@ -5,7 +5,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 class Mark {
 
     public static $markOrder = [
-        'link' => 0,
         'strong' => 1,
         'underline' => 2,
         'em' => 3,
@@ -47,16 +46,10 @@ class Mark {
     }
 
     public function isOpeningMark() {
-        if ($this->type === 'link') {
-            return true;
-        }
         return $this->parent->getStartingNodeMarkScore($this->type) === $this->getTailLength();
     }
 
     public function isClosingMark() {
-        if ($this->type === 'link') {
-            return true;
-        }
         return $this->tailLength === 0;
     }
 
@@ -138,7 +131,6 @@ class Mark {
         'em' => '//',
         'underline' => '__',
         'code' => '\'\'',
-        'link' => '[[',
     ];
 
     protected static $closingMarks = [
@@ -146,7 +138,6 @@ class Mark {
         'em' => '//',
         'underline' => '__',
         'code' => '\'\'',
-        'link' => ']]',
     ];
 
     public function getOpeningSyntax() {
@@ -156,38 +147,4 @@ class Mark {
     public function getClosingSyntax() {
         return self::$closingMarks[$this->type];
     }
-
-    public function transformInner($text) {
-        switch ($this->type) {
-            case 'link':
-                $localPrefix = DOKU_REL . DOKU_SCRIPT . '?';
-                if (0 === strpos($this->attrs['href'], $localPrefix)) {
-                    // fixme: think about relative link handling
-                    $inner = $this->attrs['title'];
-                    $components = parse_url($this->attrs['href']); // fixme: think about 'useslash' and similar
-                    if (!empty($components['query'])) {
-                        parse_str(html_entity_decode($components['query']), $query);
-                        unset($query['id']);
-                        if (!empty($query)) {
-                            $inner .= '?' . http_build_query($query);
-                        }
-                    }
-                    $pageid = array_slice(explode(':', $this->attrs['title']), -1)[0];
-                    if ($pageid !== $text) {
-                        $inner .= '|' . $text; // fixme think about how to handle $conf['useheading']
-                    }
-                    // fixme: handle hash
-                } else {
-                    $inner = $text;
-                    // fixme: external link
-                }
-                return $inner;
-            default:
-                // fixme: event for plugin-marks?
-                return $text;
-
-        }
-    }
-
-
 }
