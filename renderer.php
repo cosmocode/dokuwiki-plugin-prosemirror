@@ -64,6 +64,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     /** @inheritDoc */
     function quote_close()
     {
+        if($this->nodestack->current()->getType() === 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
         $this->nodestack->drop('quote');
     }
 
@@ -195,7 +198,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         }
 
         // list items need a paragraph before adding text
-        if($parentNode === 'list_item') {
+        if (in_array($parentNode, ['list_item', 'quote'])) {
             $node = new Node('paragraph'); // FIXME we probably want a special list item wrapper here instead
             $this->nodestack->addTop($node);
         }

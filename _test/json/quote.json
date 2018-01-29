@@ -14,20 +14,11 @@
             "type": "quote",
             "content": [
                 {
-                    "type": "text",
-                    "text": " No we shouldn't"
-                }
-            ]
-        },
-        {
-            "type": "quote",
-            "content": [
-                {
-                    "type": "quote",
+                    "type": "paragraph",
                     "content": [
                         {
                             "type": "text",
-                            "text": " Well, I say we should"
+                            "text": " No we shouldn't"
                         }
                     ]
                 }
@@ -37,8 +28,32 @@
             "type": "quote",
             "content": [
                 {
-                    "type": "text",
-                    "text": " Really?"
+                    "type": "quote",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " Well, I say we should"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "quote",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": " Really?"
+                        }
+                    ]
                 }
             ]
         },
@@ -49,8 +64,13 @@
                     "type": "quote",
                     "content": [
                         {
-                            "type": "text",
-                            "text": " Yes!"
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " Yes!"
+                                }
+                            ]
                         }
                     ]
                 }
@@ -66,8 +86,13 @@
                             "type": "quote",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Then lets do it!"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": " Then lets do it!"
+                                        }
+                                    ]
                                 }
                             ]
                         }
