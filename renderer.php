@@ -437,14 +437,10 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     function plugin($name, $data, $state = '', $match = '') {
         $node = new Node('dwplugin');
+        $node->attr('class', 'dwplugin');
         $this->nodestack->addTop($node);
-
-        $content = new Node('text');
-        $content->setText($match);
-        $this->nodestack->add($content);
-
+        $this->cdata($match);
         $this->nodestack->drop('dwplugin');
-
     }
 
     #region elements with no special WYSIWYG representation
