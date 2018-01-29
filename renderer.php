@@ -304,7 +304,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         }
 
         // now first resolve and clean up the $id
-        resolve_pageid(getNS($ID), $id, $exists);
+        $resolvedId = $id;
+        resolve_pageid(getNS($ID), $resolvedId, $exists);
 
         if ($isImage) {
             $class = 'media';
@@ -315,8 +316,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         }
 
         $internalLinkNode = new Node('internallink');
-        $internalLinkNode->attr('href', wl($id, $params) . ($hash ? '#' . $hash : ''));
-        $internalLinkNode->attr('title', $id);
+        $internalLinkNode->attr('href', wl($resolvedId, $params) . ($hash ? '#' . $hash : ''));
+        $internalLinkNode->attr('title', $resolvedId);
         $internalLinkNode->attr('data-id', $id);
         $internalLinkNode->attr('data-query', $params);
         $internalLinkNode->attr('data-hash', $originalHash);
