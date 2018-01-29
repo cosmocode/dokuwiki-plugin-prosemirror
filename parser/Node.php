@@ -8,6 +8,7 @@ abstract class Node {
         'text' => TextNode::class,
         'paragraph' => ParagraphNode::class,
         'bullet_list' => ListNode::class,
+        'ordered_list' => ListNode::class,
         'heading' => HeadingNode::class,
         'interwikilink' => InterwikiLinkNode::class,
         'internallink' => InternalLinkNode::class,
