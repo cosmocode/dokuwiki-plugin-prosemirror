@@ -22,6 +22,7 @@ if(process.env.NODE_ENV === 'production') {
 }
 
 module.exports = {
+    "root": true,
     "extends": "airbnb-base",
     "plugins": [
         "import"

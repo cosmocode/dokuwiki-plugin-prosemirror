@@ -1,0 +1,26 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "internallink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "windows shares"
+                        }
+                    ],
+                    "attrs": {
+                        "href": "/./doku.php?id=wiki:syntax#windows_shares",
+                        "title": "wiki:syntax",
+                        "class": "wikilink1",
+                        "data-id": "wiki:syntax",
+                        "data-hash": "windows shares"
+                    }
+                }
+            ]
+        }
+    ]
+}

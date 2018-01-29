@@ -1,0 +1,36 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Of course you can "
+                },
+                {
+                    "type": "text",
+                    "text": "combine",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        },
+                        {
+                            "type": "underline"
+                        },
+                        {
+                            "type": "em"
+                        },
+                        {
+                            "type": "code"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " all these."
+                }
+            ]
+        }
+    ]
+}

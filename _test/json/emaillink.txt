@@ -1,0 +1,1 @@
+Email addresses like this one: [[andi@splitbrain.org]] or [[andi@splitbrain.org|write me!]] are recognized, too.

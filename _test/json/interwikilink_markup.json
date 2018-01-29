@@ -1,0 +1,57 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Not bold, "
+                },
+                {
+                    "type": "text",
+                    "text": "bold, ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "interwikilink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "bold",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                }
+                            ]
+                        }
+                    ],
+                    "attrs": {
+                        "href": "https:\/\/en.wikipedia.org\/wiki\/bold",
+                        "data-shortcut": "wp",
+                        "data-reference": "bold",
+                        "title": "https:\/\/en.wikipedia.org\/wiki\/bold",
+                        "class": "interwikilink interwiki iw_wp"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": ", still bold",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": ", not bold anymore"
+                }
+            ]
+        }
+    ]
+}

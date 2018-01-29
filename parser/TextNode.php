@@ -2,7 +2,7 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class TextNode extends Node {
+class TextNode extends Node implements InlineNodeInterface {
 
     /** @var  TextNode */
     public $previous = null;
@@ -15,7 +15,7 @@ class TextNode extends Node {
 
     protected $text = '';
 
-    public function __construct($data, &$parent, $previous = false) {
+    public function __construct($data, $parent, $previous = false) {
         $this->parent = &$parent;
         if ($previous !== false) {
             $this->previous = &$previous;
@@ -27,8 +27,7 @@ class TextNode extends Node {
         }
     }
 
-
-    public function toSyntax() {
+    public function getPrefixSyntax() {
         $doc = '';
 
         /** @var Mark[] $openingMarks */
@@ -61,15 +60,11 @@ class TextNode extends Node {
                 $mark->setPrevious(null);
             }
         }
+        return $doc;
+    }
 
-        // fixme: could there be other marks besides 'link' that change the inner text?
-        $inner = $this->text;
-        foreach ($this->marks as $mark) {
-            $inner = $mark->transformInner($inner);
-        }
-
-        $doc .= $inner;
-
+    public function getPostfixSyntax() {
+        $doc = '';
         /** @var Mark[] $closingMarks */
         $closingMarks = [];
         foreach ($this->marks as $mark) {
@@ -101,8 +96,19 @@ class TextNode extends Node {
             }
         }
 
-
         return $doc;
+    }
+
+    public function getInnerSyntax() {
+        return $this->text;
+    }
+
+
+    public function toSyntax() {
+        $prefix = $this->getPrefixSyntax();
+        $inner = $this->getInnerSyntax();
+        $postfix = $this->getPostfixSyntax();
+        return $prefix . $inner . $postfix;
     }
 
     /**

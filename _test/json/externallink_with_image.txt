@@ -1,0 +1,1 @@
+[[https://www.php.net|{{wiki:dokuwiki-128.png}}]]

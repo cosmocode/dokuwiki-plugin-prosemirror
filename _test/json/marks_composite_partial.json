@@ -1,0 +1,54 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Of course you can "
+                },
+                {
+                    "type": "text",
+                    "text": "(partially) ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": "combine",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        },
+                        {
+                            "type": "underline"
+                        },
+                        {
+                            "type": "em"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " (trailing)",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        },
+                        {
+                            "type": "underline"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " all these."
+                }
+            ]
+        }
+    ]
+}

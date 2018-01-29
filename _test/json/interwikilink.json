@@ -5,17 +5,18 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "text",
-                    "text": "plugin:prosemirror",
-                    "marks": [
+                    "type": "interwikilink",
+                    "attrs": {
+                        "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "data-shortcut": "doku",
+                        "data-reference": "plugin:prosemirror",
+                        "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "class": "interwikilink interwiki iw_doku"
+                    },
+                    "content": [
                         {
-                            "type": "interwikilink",
-                            "attrs": {
-                                "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                                "data-shortcut": "doku",
-                                "data-reference": "plugin:prosemirror",
-                                "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror"
-                            }
+                            "type": "text",
+                            "text": "plugin:prosemirror"
                         }
                     ]
                 }

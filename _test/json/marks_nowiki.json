@@ -6,32 +6,33 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Of course you can "
+                    "text": "foo "
                 },
                 {
                     "type": "text",
-                    "text": "(partially) ",
+                    "text": "nowiki",
                     "marks": [
                         {
-                            "type": "strong"
+                            "type": "unformatted"
                         }
                     ]
                 },
                 {
                     "type": "text",
-                    "text": "combine",
+                    "text": " bar but "
+                },
+                {
+                    "type": "text",
+                    "text": "%%",
                     "marks": [
                         {
-                            "type": "strong"
-                        },
-                        {
-                            "type": "em"
+                            "type": "unformatted"
                         }
                     ]
                 },
                 {
                     "type": "text",
-                    "text": " all these."
+                    "text": " baz"
                 }
             ]
         }

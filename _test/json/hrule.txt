@@ -1,0 +1,5 @@
+By using four or more dashes, you can make a horizontal line:
+
+----
+
+A paragraph below the line.

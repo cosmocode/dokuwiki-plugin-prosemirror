@@ -30,6 +30,6 @@ class HeadingNode extends Node {
             5 => '==',
         ];
 
-        return $wrapper[$this->level] . ' ' . $this->text .  ' ' . $wrapper[$this->level] . "\n\n";
+        return $wrapper[$this->level] . ' ' . $this->text .  ' ' . $wrapper[$this->level];
     }
 }

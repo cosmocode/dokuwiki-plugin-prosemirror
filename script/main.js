@@ -30,12 +30,14 @@ const signatureMI = new MenuItem({
                 usernameTo,
                 schema.marks.link.create({
                     href: `mailto:${usermail}`,
-                }))
+                }),
+            )
             .insertText(timestring)
             .addMark(
                 usernameFrom,
                 signatureEnd,
-                schema.marks.em.create())
+                schema.marks.em.create(),
+            )
             .ensureMarks([]));
         return true;
     },

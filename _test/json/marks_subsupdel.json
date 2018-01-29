@@ -1,0 +1,53 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "You can use "
+                },
+                {
+                    "type": "text",
+                    "text": "subscript",
+                    "marks": [
+                        {
+                            "type": "subscript"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " and "
+                },
+                {
+                    "type": "text",
+                    "text": "superscript",
+                    "marks": [
+                        {
+                            "type": "superscript"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": ", too. You can mark something as "
+                },
+                {
+                    "type": "text",
+                    "text": "deleted",
+                    "marks": [
+                        {
+                            "type": "deleted"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " as well."
+                }
+            ]
+        }
+    ]
+}

@@ -55,6 +55,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('paragraph');
     }
 
+    /** @inheritDoc */
+    function quote_open()
+    {
+        $this->nodestack->addTop(new Node('quote'));
+    }
+
+    /** @inheritDoc */
+    function quote_close()
+    {
+        $this->nodestack->drop('quote');
+    }
+
     #region lists
 
     /** @inheritDoc */
@@ -176,8 +188,14 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     function cdata($text) {
         if($text === '') return;
 
+        $parentNode = $this->nodestack->current()->getType();
+
+        if (in_array($parentNode, ['paragraph', 'footnote'])) {
+            $text = str_replace("\n", ' ', $text);
+        }
+
         // list items need a paragraph before adding text
-        if($this->nodestack->current()->getType() == 'list_item') {
+        if($parentNode === 'list_item') {
             $node = new Node('paragraph'); // FIXME we probably want a special list item wrapper here instead
             $this->nodestack->addTop($node);
         }
@@ -191,12 +209,26 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     public function preformatted($text) {
+        $node = new Node('preformatted');
+        $this->nodestack->addTop($node);
+        $this->cdata($text);
+        $this->nodestack->drop('preformatted');
+    }
+
+    public function code($text, $lang = null, $file = null) { // FIXME add support for file and lang
         $node = new Node('code_block');
         $this->nodestack->addTop($node);
-        $textNode = new Node('text');
-        $textNode->setText($text);
-        $this->nodestack->add($textNode);
+        $this->cdata(trim($text));
         $this->nodestack->drop('code_block');
+    }
+
+    function footnote_open() {
+        $footnoteNode = new Node('footnote');
+        $this->nodestack->addTop($footnoteNode);
+    }
+
+    function footnote_close() {
+        $this->nodestack->drop('footnote');
     }
 
     /**
@@ -212,59 +244,144 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $node->attr('src', ml($src));
         $node->attr('title', $title);
 
-        // FIXME these need to be implemented in the schema
-        $node->attr('id', $src);
+        $class = 'media';
+        if ($align === 'right') {
+            $class = 'mediaright';
+        } else if ($align === 'left') {
+            $class = 'medialeft';
+        } else if ($align === 'center') {
+            $class = 'mediacenter';
+        }
+
+        $node->attr('class', $class);
         $node->attr('align', $align);
         $node->attr('width', $width);
         $node->attr('height', $height);
+
+        // FIXME these need to be implemented in the schema
+        $node->attr('id', $src);
         $node->attr('cache', $cache);
         $node->attr('linking', $linking);
 
         $this->nodestack->add($node);
     }
 
+    public function locallink($hash, $name = null) {
+        if (null === $name) {
+            $name = $hash;
+        }
+        global $ID;
+        $localLinkNode = new Node('locallink');
+        $localLinkNode->attr('href', '#' . $hash);
+        $localLinkNode->attr('title', $ID.' ↵');
+        $localLinkNode->attr('class', 'wikilink1');
+        $this->nodestack->addTop($localLinkNode);
+        $this->cdata($name);
+        $this->nodestack->drop('locallink');
+    }
+
     /**
      * @inheritDoc
-     * @fixme this implementation is much too naive. we'll probably need our own node types for internal/external/interwiki and have more attributes
      */
-    function internallink($link, $title = null) {
-        $params = '';
-        $parts = explode('?', $link, 2);
-        if(count($parts) === 2) {
-            $link = $parts[0];
-            $params = $parts[1];
+    public function internallink($id, $name = null) {
+        global $conf;
+        global $ID;
+        global $INFO;
+
+        @list($id, $params) = explode('?', $id, 2);
+
+        // For empty $id we need to know the current $ID
+        // We need this check because _simpleTitle needs
+        // correct $id and resolve_pageid() use cleanID($id)
+        // (some things could be lost)
+        if($id === '') {
+            $id = $ID;
+        }
+        $isImage = false;
+        if (is_array($name)) {
+            $isImage = true;
+        } else {
+            if (!$name) {
+                $name = $this->_simpleTitle($id);
+            }
         }
 
-        if(!$title) {
-            $title = $this->_simpleTitle($link);
+        //keep hash anchor
+        @list($id, $originalHash) = explode('#', $id, 2);
+        if(!empty($originalHash)) {
+            $check = false;
+            $hash = sectionID($originalHash, $check);
+        } else {
+            $hash = '';
         }
 
-        $node = new Node('text');
-        $node->setText($title);
+        // now first resolve and clean up the $id
+        $resolvedId = $id;
+        resolve_pageid(getNS($ID), $resolvedId, $exists);
 
-        $mark = new Mark('link');
-        $mark->attr('href', wl($link, $params));
-        $mark->attr('title', $link);
+        if ($isImage) {
+            $class = 'media';
+        } else if ($exists) {
+            $class = 'wikilink1';
+        } else {
+            $class = 'wikilink2';
+        }
 
-        $node->addMark($mark);
+        $internalLinkNode = new Node('internallink');
+        $internalLinkNode->attr('href', wl($resolvedId, $params) . ($hash ? '#' . $hash : ''));
+        $internalLinkNode->attr('title', $resolvedId);
+        $internalLinkNode->attr('data-id', $id);
+        $internalLinkNode->attr('data-query', $params);
+        $internalLinkNode->attr('data-hash', $originalHash);
+        $internalLinkNode->attr('class', $class);
 
-        $this->nodestack->add($node);
+        $this->nodestack->addTop($internalLinkNode);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache']
+            );
+        } else {
+            $this->cdata($name);
+        }
+        $this->nodestack->drop('internallink');
     }
 
     public function externallink($link, $title = null) {
         if (null === $title) {
             $title = $link;
         }
-        $node = new Node('text');
-        $node->setText($title);
+        $isImage = is_array($title);
+        if ($isImage) {
+            $class = 'media';
+        } else {
+            $class = 'urlextern';
+        }
+        $externalLinkNode = new Node('externallink');
+        $externalLinkNode->attr('href', $link);
+        $externalLinkNode->attr('title', $link);
+        $externalLinkNode->attr('class', $class);
 
-        $mark = new Mark('link');
-        $mark->attr('href', $link);
-        $mark->attr('title', $link);
-
-        $node->addMark($mark);
-
-        $this->nodestack->add($node);
+        $this->nodestack->addTop($externalLinkNode);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $title['src'],
+                $title['title'],
+                $title['align'],
+                $title['width'],
+                $title['height'],
+                $title['cache']
+            );
+        } else {
+            $this->cdata($title);
+        }
+        $this->nodestack->drop('externallink');
     }
 
     public function interwikilink($link, $title = null, $wikiName, $wikiUri) {
@@ -274,20 +391,38 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         } elseif (is_array($title)) {
             $isImage = true;
         }
-        $textNode = new Node('text');
-        $textNode->setText($title);
 
-        $url    = $this->_resolveInterWiki($wikiName, $wikiUri, $exists);
-        // fixme: handle internal-link case
-        $mark = new Mark('interwikilink');
-        $mark->attr('href', $url);
-        $mark->attr('data-shortcut', hsc($wikiName));
-        $mark->attr('data-reference', hsc($wikiUri));
-        $mark->attr('title', $url);
+        $shortcut = $wikiName;
+        $url    = $this->_resolveInterWiki($shortcut, $wikiUri, $exists);
+        $iwLinkNode = new Node('interwikilink');
+        $iwLinkNode->attr('href', $url);
+        $iwLinkNode->attr('data-shortcut', hsc($wikiName));
+        $iwLinkNode->attr('data-reference', hsc($wikiUri));
+        $iwLinkNode->attr('title', $url);
+        $iwLinkNode->attr('class', 'interwikilink interwiki iw_' . $shortcut);
+        $this->nodestack->addTop($iwLinkNode);
+        $this->cdata($title);
+        $this->nodestack->drop('interwikilink');
+    }
 
-        $textNode->addMark($mark);
-
-        $this->nodestack->add($textNode);
+    public function emaillink($address, $name = null)
+    {
+        if (null === $name) {
+            $name = $address;
+        }
+        $isImage = is_array($name);
+        if ($isImage) {
+            $class = 'media';
+        } else {
+            $class = 'mail';
+        }
+        $emailLink = new Node('emaillink');
+        $emailLink->attr('href', 'mailto:' . $address);
+        $emailLink->attr('class', $class);
+        $emailLink->attr('title', $address);
+        $this->nodestack->addTop($emailLink);
+        $this->cdata($name ?: $address);
+        $this->nodestack->drop('emaillink');
     }
 
     /** @inheritDoc */
@@ -432,6 +567,16 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     function underline_close() {
         if(isset($this->marks['underline'])) unset($this->marks['underline']);
     }
+
+
+    /** @inheritDoc */
+    function unformatted($text)
+    {
+        $this->marks['unformatted'] = 1;
+        parent::unformatted($text);
+        unset($this->marks['unformatted']);
+    }
+
 
     #endregion formatter marks
 

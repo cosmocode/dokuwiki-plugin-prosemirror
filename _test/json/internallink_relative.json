@@ -1,0 +1,25 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "internallink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "syntax"
+                        }
+                    ],
+                    "attrs": {
+                        "href": "/./doku.php?id=wiki:syntax",
+                        "title": "wiki:syntax",
+                        "data-id": "syntax",
+                        "class": "wikilink1"
+                    }
+                }
+            ]
+        }
+    ]
+}

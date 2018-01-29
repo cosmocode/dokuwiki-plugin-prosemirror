@@ -6,101 +6,166 @@
 
 // load default schema definitions
 const { Schema } = require('prosemirror-model');
-const { nodes, marks } = require('prosemirror-schema-basic');
+const { schema } = require('prosemirror-schema-basic');
 const { bulletList, orderedList, listItem } = require('prosemirror-schema-list');
-const { table, tableRow, tableCell } = require('prosemirror-schema-table');
+const { tableNodes } = require('prosemirror-tables');
+
+let { nodes, marks } = schema.spec;
+
+const doc = nodes.get('doc');
+doc.content = '(block | listblock | tableblock)+';
+nodes = nodes.update('doc', doc);
 
 // heading shall only contain unmarked text
-nodes.heading.content = 'text*';
+const heading = nodes.get('heading');
+heading.content = 'text*';
+nodes.update('heading', heading);
 
-nodes.doc.content = '(block | listblock | tableblock)+';
+orderedList.group = 'listblock';
+orderedList.content = 'listitem+';
+nodes = nodes.update('ordered_list', orderedList);
 
-nodes.ordered_list = orderedList;
-nodes.ordered_list.group = 'listblock';
-nodes.ordered_list.content = 'listitem+';
+bulletList.group = 'listblock';
+bulletList.content = 'listitem+';
+nodes = nodes.update('bullet_list', bulletList);
 
-nodes.bullet_list = bulletList;
-nodes.bullet_list.group = 'listblock';
-nodes.bullet_list.content = 'listitem+';
+listItem.group = 'listitem';
+listItem.content = 'paragraph listblock?';
+nodes = nodes.update('list_item', listItem);
 
-nodes.list_item = listItem;
-nodes.list_item.group = 'listitem';
-nodes.list_item.content = 'paragraph listblock?';
-
-nodes.table = table;
-nodes.table.content = 'table_row[columns=.columns]+';
-nodes.table.group = 'tableblock';
-
-nodes.table_row = tableRow;
-nodes.table_row.content = 'table_cell{.columns}';
-
-nodes.table_cell = tableCell;
-nodes.table_cell.content = 'text*';
-
-nodes.code_block.toDOM = function toDOM() { return ['pre', { class: 'preformatted' }, 0]; };
-
-// FIXME we need a table header attribute
-// FIXME what table cells can accept is to be defined
-// FIXME table cells need colspan and rowspan attributes
-// FIXME table cells need alignment attributes
-// FIXME we don't allow stuff in links
-// FIXME extend image node with additional attributes
+nodes = nodes.append(tableNodes({
+    tableGroup: 'tableblock',
+    cellContent: 'inline',
+    cellAttributes: {
+        is_header: {},
+    },
+}));
 
 
-marks.deleted = {
-    parseDOM: [
-        { tag: 'del' },
+nodes = nodes.addToEnd('preformatted', {
+    content: 'text',
+    marks: '_',
+    group: 'block',
+    toDOM() {
+        return ['pre', { class: 'code' }, 0];
+    },
+});
+
+// fixme we may want an explizit preformatted node so can tell preformatted and <code> apart
+const codeBlock = nodes.get('code_block');
+codeBlock.toDOM = function toDOM() { return ['pre', { class: 'code' }, 0]; };
+nodes = nodes.update('code_block', codeBlock);
+
+nodes = nodes.addToEnd('quote', {
+    content: 'block',
+    group: 'block',
+    inline: false,
+    toDOM() {
+        return ['blockquote', {}, ['div', { class: 'no' }, 0]];
+    },
+});
+
+nodes = nodes.addToEnd('interwikilink', {
+    content: 'text',
+    marks: '_',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        'data-shortcut': {},
+        'data-reference': {},
+        title: { default: null },
+    },
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+    parseDom: [
         {
-            style: 'text-decoration',
-            // https://discuss.prosemirror.net/t/dom-parsing-and-getattrs/612
-            getAttrs: value => value === 'strikethrough' && null,
+            tag: 'a[href].interwikilink',
+            getAttrs(dom) {
+                return {
+                    href: dom.getAttribute('href'),
+                    title: dom.getAttribute('title'),
+                    'data-shortcut': dom.getAttribute('data-shortcut'),
+                    'data-reference': dom.getAttribute('data-reference'),
+                    class: dom.getAttribute('class'),
+                };
+            },
         },
     ],
-    toDOM() {
-        return ['del'];
-    },
-};
+});
 
-marks.underline = {
-    parseDOM: [
-        { tag: 'u' },
-        {
-            style: 'text-decoration',
-            getAttrs: value => value === 'underline' && null,
-        },
-    ],
-    toDOM() {
-        return ['u'];
+nodes = nodes.addToEnd('internallink', {
+    content: 'text|image',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        'data-id': {},
+        'data-query': { default: null },
+        'data-hash': { default: null },
+        title: { default: null },
     },
-};
-
-marks.subscript = {
-    parseDOM: [
-        { tag: 'sub' },
-        {
-            style: 'vertical-align',
-            getAttrs: value => value === 'sub' && null,
-        },
-    ],
-    toDOM() {
-        return ['sub'];
+    toDOM(node) {
+        return ['a', node.attrs, 0];
     },
-};
+});
 
-marks.superscript = {
-    parseDOM: [
-        { tag: 'sup' },
-        {
-            style: 'vertical-align',
-            getAttrs: value => value === 'super' && null,
-        },
-    ],
-    toDOM() {
-        return ['sup'];
+nodes = nodes.addToEnd('externallink', {
+    content: 'text|image',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        title: {},
     },
-};
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+});
 
-nodes.dwplugin = {
+nodes = nodes.addToEnd('locallink', {
+    content: 'text|image',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        title: {},
+    },
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+});
+
+
+nodes = nodes.addToEnd('emaillink', {
+    content: 'text|image',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        title: {},
+    },
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+});
+
+nodes = nodes.addToEnd('footnote', {
+    content: 'inline',
+    group: 'inline',
+    inline: true,
+    toDOM() {
+        return ['footnote', { class: 'footnote' }, 0];
+    },
+});
+
+nodes = nodes.addToEnd('dwplugin', {
     content: 'inline*',
     attrs: {
         class: { default: 'dwplugin' },
@@ -114,36 +179,84 @@ nodes.dwplugin = {
     toDOM(node) {
         return ['code', node.attrs, 0];
     },
-};
+});
 
-marks.interwikilink = {
-    attrs: {
-        class: { default: 'interwikilink' },
-        href: {},
-        'data-shortcut': {},
-        'data-reference': {},
-        title: { default: null },
-    },
-    draggable: true,
-    inline: true,
-    group: 'inline',
-    parseDom: [
+const imageNode = nodes.get('image');
+imageNode.attrs.width = { default: null };
+imageNode.attrs.height = { default: null };
+imageNode.attrs.align = { default: null };
+imageNode.attrs.class = {};
+imageNode.attrs.id = {};
+nodes = nodes.update('image', imageNode);
+
+// FIXME we need a table header attribute
+// FIXME what table cells can accept is to be defined
+// FIXME table cells need colspan and rowspan attributes
+// FIXME table cells need alignment attributes
+// FIXME we don't allow stuff in links
+// FIXME extend image node with additional attributes
+
+marks = marks.addToEnd('deleted', {
+    parseDOM: [
+        { tag: 'del' },
         {
-            tag: 'a[href].interwikilink',
-            getAttrs(dom) {
-                return {
-                    href: dom.getAttribute('href'),
-                    title: dom.getAttribute('title'),
-                    'data-shortcut': dom.getAttribute('data-shortcut'),
-                    'data-reference': dom.getAttribute('data-reference'),
-                };
-            },
+            style: 'text-decoration',
+            // https://discuss.prosemirror.net/t/dom-parsing-and-getattrs/612
+            getAttrs: value => value === 'strikethrough' && null,
         },
     ],
-    toDOM(node) {
-        return ['a', node.attrs];
+    toDOM() {
+        return ['del'];
     },
-};
+});
+
+marks = marks.addToEnd('underline', {
+    parseDOM: [
+        { tag: 'u' },
+        {
+            style: 'text-decoration',
+            getAttrs: value => value === 'underline' && null,
+        },
+    ],
+    toDOM() {
+        return ['u'];
+    },
+});
+
+marks = marks.addToEnd('subscript', {
+    parseDOM: [
+        { tag: 'sub' },
+        {
+            style: 'vertical-align',
+            getAttrs: value => value === 'sub' && null,
+        },
+    ],
+    toDOM() {
+        return ['sub'];
+    },
+});
+
+marks = marks.addToEnd('superscript', {
+    parseDOM: [
+        { tag: 'sup' },
+        {
+            style: 'vertical-align',
+            getAttrs: value => value === 'super' && null,
+        },
+    ],
+    toDOM() {
+        return ['sup'];
+    },
+});
+
+marks = marks.addToEnd('unformatted', {
+    parseDOM: [
+        { tag: 'span', class: 'unformatted' },
+    ],
+    toDOM() {
+        return ['span', { class: 'unformatted' }];
+    },
+});
 
 exports.schema = new Schema({
     nodes,

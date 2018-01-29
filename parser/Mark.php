@@ -5,15 +5,14 @@ namespace dokuwiki\plugin\prosemirror\parser;
 class Mark {
 
     public static $markOrder = [
-        'link' => 0,
         'strong' => 1,
         'underline' => 2,
         'em' => 3,
         'code' => 4,
-//        '<sub>' => 5,
-//        '</sub>' => 5,
-//        '<sup>' => 6,
-//        '</sup>' => 6,
+        'subscript' => 5,
+        'superscript' => 6,
+        'deleted' => 7,
+        'unformatted' => 99,
     ];
 
     protected $type;
@@ -31,7 +30,6 @@ class Mark {
     protected $parent;
 
     public function __construct($data, &$parent) {
-//        print_r($type);
         $this->type = $data['type'];
         if (isset($data['attrs'])) {
             $this->attrs = $data['attrs'];
@@ -48,16 +46,10 @@ class Mark {
     }
 
     public function isOpeningMark() {
-        if ($this->type === 'link') {
-            return true;
-        }
         return $this->parent->getStartingNodeMarkScore($this->type) === $this->getTailLength();
     }
 
     public function isClosingMark() {
-        if ($this->type === 'link') {
-            return true;
-        }
         return $this->tailLength === 0;
     }
 
@@ -73,10 +65,18 @@ class Mark {
         return $this->type;
     }
 
-    public function switchPlaces(&$newPrevious, &$newNext) {
+    /**
+     * @param Mark $newPrevious
+     * @param null|Mark $newNext
+     * @return Mark
+     */
+    public function switchPlaces(Mark $newPrevious, $newNext) {
         $oldPrevious = $this->previousMark;
         $this->previousMark = &$newPrevious;
         $this->nextMark = &$newNext;
+        if (null !== $newNext) {
+            $newNext->setPrevious($this);
+        }
         return $oldPrevious;
     }
 
@@ -84,7 +84,8 @@ class Mark {
         if ($this->previousMark === null) {
             return true;
         }
-        if ($this->previousMark->getTailLength() < $this->tailLength) {
+        if ($this->previousMark->getTailLength() > $this->tailLength) {
+            // the marks that ends later must be printed in front of those that end earlier
             return true;
         }
         if ($this->previousMark->getTailLength() === $this->tailLength) {
@@ -96,6 +97,9 @@ class Mark {
         $newPrevious = $this->previousMark->switchPlaces($this, $this->nextMark);
         $this->nextMark = &$this->previousMark;
         $this->previousMark = &$newPrevious;
+        if (null !== $newPrevious) {
+            $newPrevious->setNext($this);
+        }
 
         return false;
     }
@@ -127,7 +131,9 @@ class Mark {
         'em' => '//',
         'underline' => '__',
         'code' => '\'\'',
-        'link' => '[[',
+        'subscript' => '<sub>',
+        'superscript' => '<sup>',
+        'deleted' => '<del>',
     ];
 
     protected static $closingMarks = [
@@ -135,57 +141,39 @@ class Mark {
         'em' => '//',
         'underline' => '__',
         'code' => '\'\'',
-        'link' => ']]',
+        'subscript' => '</sub>',
+        'superscript' => '</sup>',
+        'deleted' => '</del>',
     ];
 
     public function getOpeningSyntax() {
-        return self::$openingMarks[$this->type];
+        if ($this->type !== 'unformatted') {
+            return self::$openingMarks[$this->type];
+        }
+        return $this->getUnformattedSyntax('opening');
     }
 
     public function getClosingSyntax() {
-        return self::$closingMarks[$this->type];
-    }
-
-    public function transformInner($text) {
-        switch ($this->type) {
-            case 'link':
-                $localPrefix = DOKU_REL . DOKU_SCRIPT . '?';
-                if (0 === strpos($this->attrs['href'], $localPrefix)) {
-                    // fixme: think about relative link handling
-                    $inner = $this->attrs['title'];
-                    $components = parse_url($this->attrs['href']); // fixme: think about 'useslash' and similar
-                    if (!empty($components['query'])) {
-                        parse_str(html_entity_decode($components['query']), $query);
-                        unset($query['id']);
-                        if (!empty($query)) {
-                            $inner .= '?' . http_build_query($query);
-                        }
-                    }
-                    $pageid = array_slice(explode(':', $this->attrs['title']), -1)[0];
-                    if ($pageid !== $text) {
-                        $inner .= '|' . $text; // fixme think about how to handle $conf['useheading']
-                    }
-                    // fixme: handle hash
-                } else {
-                    $inner = $text;
-                    // fixme: external link
-                }
-                return $inner;
-            case 'interwikilink':
-                $inner = $this->attrs['data-shortcut'];
-                $inner .= '>';
-                $reference = $this->attrs['data-reference'];
-                $inner .= $reference;
-                if ($text !== $reference) {
-                    $inner .= '|' . $text;
-                }
-                return $inner;
-            default:
-                // fixme: event for plugin-marks?
-                return $text;
-
+        if ($this->type !== 'unformatted') {
+            return self::$closingMarks[$this->type];
         }
+
+        return $this->getUnformattedSyntax('closing');
     }
 
-
+    /**
+     * Handle the edge case that %% is wrapped in nowiki syntax
+     *
+     * @param string $type
+     * @return string
+     */
+    protected function getUnformattedSyntax($type) {
+        if (strpos($this->parent->getInnerSyntax(),'%%') === false) {
+            return '%%';
+        }
+        if ($type === 'opening') {
+            return '<nowiki>';
+        }
+        return '</nowiki>';
+    }
 }
