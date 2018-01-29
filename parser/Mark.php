@@ -9,10 +9,9 @@ class Mark {
         'underline' => 2,
         'em' => 3,
         'code' => 4,
-//        '<sub>' => 5,
-//        '</sub>' => 5,
-//        '<sup>' => 6,
-//        '</sup>' => 6,
+        'subscript' => 5,
+        'superscript' => 6,
+        'deleted' => 7,
         'unformatted' => 99,
     ];
 
@@ -132,6 +131,9 @@ class Mark {
         'em' => '//',
         'underline' => '__',
         'code' => '\'\'',
+        'subscript' => '<sub>',
+        'superscript' => '<sup>',
+        'deleted' => '<del>',
     ];
 
     protected static $closingMarks = [
@@ -139,6 +141,9 @@ class Mark {
         'em' => '//',
         'underline' => '__',
         'code' => '\'\'',
+        'subscript' => '</sub>',
+        'superscript' => '</sup>',
+        'deleted' => '</del>',
     ];
 
     public function getOpeningSyntax() {
