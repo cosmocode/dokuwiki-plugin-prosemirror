@@ -209,6 +209,14 @@ marks = marks.addToEnd('superscript', {
     },
 });
 
+marks = marks.addToEnd('unformatted', {
+    parseDOM: [
+        { tag: 'span', class: 'unformatted' },
+    ],
+    toDOM() {
+        return ['span', { class: 'unformatted' }];
+    },
+});
 
 exports.schema = new Schema({
     nodes,

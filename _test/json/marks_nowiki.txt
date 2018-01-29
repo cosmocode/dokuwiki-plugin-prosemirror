@@ -1,0 +1,1 @@
+foo %%nowiki%% bar but <nowiki>%%</nowiki> baz

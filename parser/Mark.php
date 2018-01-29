@@ -13,6 +13,7 @@ class Mark {
 //        '</sub>' => 5,
 //        '<sup>' => 6,
 //        '</sup>' => 6,
+        'unformatted' => 99,
     ];
 
     protected $type;
@@ -141,10 +142,33 @@ class Mark {
     ];
 
     public function getOpeningSyntax() {
-        return self::$openingMarks[$this->type];
+        if ($this->type !== 'unformatted') {
+            return self::$openingMarks[$this->type];
+        }
+        return $this->getUnformattedSyntax('opening');
     }
 
     public function getClosingSyntax() {
-        return self::$closingMarks[$this->type];
+        if ($this->type !== 'unformatted') {
+            return self::$closingMarks[$this->type];
+        }
+
+        return $this->getUnformattedSyntax('closing');
+    }
+
+    /**
+     * Handle the edge case that %% is wrapped in nowiki syntax
+     *
+     * @param string $type
+     * @return string
+     */
+    protected function getUnformattedSyntax($type) {
+        if (strpos($this->parent->getInnerSyntax(),'%%') === false) {
+            return '%%';
+        }
+        if ($type === 'opening') {
+            return '<nowiki>';
+        }
+        return '</nowiki>';
     }
 }

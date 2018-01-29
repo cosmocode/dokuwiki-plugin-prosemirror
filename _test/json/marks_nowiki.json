@@ -1,0 +1,40 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "foo "
+                },
+                {
+                    "type": "text",
+                    "text": "nowiki",
+                    "marks": [
+                        {
+                            "type": "unformatted"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " bar but "
+                },
+                {
+                    "type": "text",
+                    "text": "%%",
+                    "marks": [
+                        {
+                            "type": "unformatted"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " baz"
+                }
+            ]
+        }
+    ]
+}

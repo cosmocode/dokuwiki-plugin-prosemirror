@@ -524,6 +524,16 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         if(isset($this->marks['underline'])) unset($this->marks['underline']);
     }
 
+
+    /** @inheritDoc */
+    function unformatted($text)
+    {
+        $this->marks['unformatted'] = 1;
+        parent::unformatted($text);
+        unset($this->marks['unformatted']);
+    }
+
+
     #endregion formatter marks
 
 }
