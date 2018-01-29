@@ -17,6 +17,7 @@ abstract class Node {
         'locallink' => LocalLinkNode::class,
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,
+        'quote' => QuoteNode::class,
         'image' => ImageNode::class,
         'hard_break' => HardBreakNode::class,
         'horizontal_rule' => HruleNode::class,

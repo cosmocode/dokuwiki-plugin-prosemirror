@@ -55,6 +55,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('paragraph');
     }
 
+    /** @inheritDoc */
+    function quote_open()
+    {
+        $this->nodestack->addTop(new Node('quote'));
+    }
+
+    /** @inheritDoc */
+    function quote_close()
+    {
+        $this->nodestack->drop('quote');
+    }
+
     #region lists
 
     /** @inheritDoc */

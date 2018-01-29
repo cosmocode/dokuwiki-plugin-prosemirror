@@ -56,6 +56,15 @@ const codeBlock = nodes.get('code_block');
 codeBlock.toDOM = function toDOM() { return ['pre', { class: 'code' }, 0]; };
 nodes = nodes.update('code_block', codeBlock);
 
+nodes = nodes.addToEnd('quote', {
+    content: 'block',
+    group: 'block',
+    inline: false,
+    toDOM() {
+        return ['blockquote', {}, ['div', { class: 'no' }, 0]];
+    },
+});
+
 nodes = nodes.addToEnd('interwikilink', {
     content: 'text',
     marks: '_',
