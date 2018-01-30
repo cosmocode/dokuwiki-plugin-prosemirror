@@ -1,0 +1,1 @@
+**External Links like [[https://dokuwiki.org/|this]] and with images [[https://dokuwiki.org/|{{wiki:dokuwiki-128.png?20}}]] are recognized, too.**

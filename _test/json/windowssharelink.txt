@@ -1,1 +1,1 @@
-Windows Shares like [[\\server\share|this]] are recognized, too.
+**Windows Shares like this one: [[\\server\share]] or //[[\\server\share|foo bar]]// or [[\\server\share|{{wiki:dokuwiki-128.png?20}}]] are recognized, too.**

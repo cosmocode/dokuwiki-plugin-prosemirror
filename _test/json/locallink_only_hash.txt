@@ -1,1 +1,1 @@
-[[#images_and_other_files]]
+**Local links like this one: [[#images_and_other_files]] or //[[#images_and_other_files|click me!]]// or [[#images_and_other_files|{{wiki:dokuwiki-128.png?20}}]] are recognized, too.**

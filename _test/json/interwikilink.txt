@@ -1,1 +1,1 @@
-[[doku>plugin:prosemirror]]
+**Interwiki links like this one: [[doku>plugin:prosemirror]] or //[[doku>plugin:prosemirror|click me!]]// or [[doku>plugin:prosemirror|{{wiki:dokuwiki-128.png?20}}]] are recognized, too.**

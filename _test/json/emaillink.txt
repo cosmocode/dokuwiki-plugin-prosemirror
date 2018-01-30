@@ -1,1 +1,1 @@
-Email addresses like this one: [[andi@splitbrain.org]] or [[andi@splitbrain.org|write me!]] are recognized, too.
+**Email addresses like this one: [[andi@splitbrain.org]] or //[[andi@splitbrain.org|write me!]]// or [[dokuwiki@freelists.org|{{wiki:dokuwiki-128.png?20}}]] are recognized, too.**

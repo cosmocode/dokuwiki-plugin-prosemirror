@@ -48,6 +48,11 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop($nodeType);
     }
 
+    public function getCurrentMarks()
+    {
+        return $this->marks;
+    }
+
     // FIXME implement all methods of Doku_Renderer here
 
     /** @inheritDoc */
@@ -250,7 +255,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     /**
-     * @fixme we probably want one function to handle all images
      * @inheritDoc
      */
     function internalmedia($src, $title = null, $align = null, $width = null,
@@ -297,13 +301,31 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         if (null === $name) {
             $name = $hash;
         }
+        $isImage = is_array($name);
+        if ($isImage) {
+            $class = 'wikilink1';
+        } else {
+            $class = 'mail';
+        }
         global $ID;
         $localLinkNode = new Node('locallink');
         $localLinkNode->attr('href', '#' . $hash);
         $localLinkNode->attr('title', $ID.' ↵');
-        $localLinkNode->attr('class', 'wikilink1');
+        $localLinkNode->attr('class', $class);
         $this->nodestack->addTop($localLinkNode);
-        $this->cdata($name);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache']
+            );
+        } else {
+            $this->cdata($name);
+        }
         $this->nodestack->drop('locallink');
     }
 
@@ -428,7 +450,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $iwLinkNode->attr('title', $url);
         $iwLinkNode->attr('class', 'interwikilink interwiki iw_' . $shortcut);
         $this->nodestack->addTop($iwLinkNode);
-        $this->cdata($title);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $title['src'],
+                $title['title'],
+                $title['align'],
+                $title['width'],
+                $title['height'],
+                $title['cache']
+            );
+        } else {
+            $this->cdata($title);
+        }
         $this->nodestack->drop('interwikilink');
     }
 
@@ -448,7 +482,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $emailLink->attr('class', $class);
         $emailLink->attr('title', $address);
         $this->nodestack->addTop($emailLink);
-        $this->cdata($name ?: $address);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache']
+            );
+        } else {
+            $this->cdata($name);
+        }
         $this->nodestack->drop('emaillink');
     }
 
@@ -470,7 +516,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $wShareLinkNode->attr('class', $class);
         $wShareLinkNode->attr('title', hsc($link));
         $this->nodestack->addTop($wShareLinkNode);
-        $this->cdata($title);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $this->internalmedia(
+                $title['src'],
+                $title['title'],
+                $title['align'],
+                $title['width'],
+                $title['height'],
+                $title['cache']
+            );
+        } else {
+            $this->cdata($title);
+        }
         $this->nodestack->drop('windowssharelink');
     }
 

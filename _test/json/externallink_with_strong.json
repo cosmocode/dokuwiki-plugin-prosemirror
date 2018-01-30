@@ -6,7 +6,7 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Windows Shares like this one: ",
+                    "text": "External Links like ",
                     "marks": [
                         {
                             "type": "strong"
@@ -14,11 +14,11 @@
                     ]
                 },
                 {
-                    "type": "windowssharelink",
+                    "type": "externallink",
                     "content": [
                         {
                             "type": "text",
-                            "text": "\\\\server\\share",
+                            "text": "this",
                             "marks": [
                                 {
                                     "type": "strong"
@@ -27,14 +27,14 @@
                         }
                     ],
                     "attrs": {
-                        "href": "file:\/\/\/\/\/server\/share",
-                        "class": "windows",
-                        "title": "\\\\server\\share"
+                        "href": "https:\/\/dokuwiki.org\/",
+                        "title": "https:\/\/dokuwiki.org\/",
+                        "class": "urlextern"
                     }
                 },
                 {
                     "type": "text",
-                    "text": " or ",
+                    "text": " and with images ",
                     "marks": [
                         {
                             "type": "strong"
@@ -42,38 +42,7 @@
                     ]
                 },
                 {
-                    "type": "windowssharelink",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "foo bar",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                },
-                                {
-                                    "type": "em"
-                                }
-                            ]
-                        }
-                    ],
-                    "attrs": {
-                        "href": "file:\/\/\/\/\/server\/share",
-                        "class": "windows",
-                        "title": "\\\\server\\share"
-                    }
-                },
-                {
-                    "type": "text",
-                    "text": " or ",
-                    "marks": [
-                        {
-                            "type": "strong"
-                        }
-                    ]
-                },
-                {
-                    "type": "windowssharelink",
+                    "type": "externallink",
                     "content": [
                         {
                             "type": "image",
@@ -92,9 +61,9 @@
                         }
                     ],
                     "attrs": {
-                        "href": "file:\/\/\/\/\/server\/share",
-                        "class": "media",
-                        "title": "\\\\server\\share"
+                        "href": "https:\/\/dokuwiki.org\/",
+                        "title": "https:\/\/dokuwiki.org\/",
+                        "class": "media"
                     }
                 },
                 {

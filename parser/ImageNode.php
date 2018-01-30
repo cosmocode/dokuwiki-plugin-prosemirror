@@ -3,7 +3,7 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-class ImageNode extends Node
+class ImageNode extends Node implements InlineNodeInterface
 {
 
     /** @var  Node */
@@ -11,10 +11,15 @@ class ImageNode extends Node
 
     protected $attrs = [];
 
-    public function __construct($data, $parent)
+    protected $textNode = null;
+
+    public function __construct($data, $parent, $previousNode = false)
     {
         $this->parent = &$parent;
         $this->attrs = $data['attrs'];
+
+        // every inline node needs a TextNode to track marks
+        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
     }
 
     public function toSyntax()
@@ -81,6 +86,23 @@ class ImageNode extends Node
         $node->attr('cache', $cache);
         $node->attr('linking', $linking);
 
+        foreach(array_keys($renderer->getCurrentMarks()) as $mark) {
+            $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+        }
+
         $renderer->addToNodestack($node);
+    }
+
+    /**
+     * @param string $markType
+     */
+    public function increaseMark($markType)
+    {
+        return $this->textNode->increaseMark($markType);
+    }
+
+    public function getStartingNodeMarkScore($markType)
+    {
+        return $this->textNode->getStartingNodeMarkScore($markType);
     }
 }

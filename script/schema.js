@@ -66,7 +66,7 @@ nodes = nodes.addToEnd('quote', {
 });
 
 nodes = nodes.addToEnd('interwikilink', {
-    content: 'text',
+    content: 'text|image',
     marks: '_',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,

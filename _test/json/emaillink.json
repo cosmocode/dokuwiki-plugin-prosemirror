@@ -6,14 +6,24 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Email addresses like this one: "
+                    "text": "Email addresses like this one: ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
                 },
                 {
                     "type": "emaillink",
                     "content": [
                         {
                             "type": "text",
-                            "text": "andi@splitbrain.org"
+                            "text": "andi@splitbrain.org",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                }
+                            ]
                         }
                     ],
                     "attrs": {
@@ -24,14 +34,27 @@
                 },
                 {
                     "type": "text",
-                    "text": " or "
+                    "text": " or ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
                 },
                 {
                     "type": "emaillink",
                     "content": [
                         {
                             "type": "text",
-                            "text": "write me!"
+                            "text": "write me!",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                },
+                                {
+                                    "type": "em"
+                                }
+                            ]
                         }
                     ],
                     "attrs": {
@@ -42,7 +65,46 @@
                 },
                 {
                     "type": "text",
-                    "text": " are recognized, too."
+                    "text": " or ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "emaillink",
+                    "content": [
+                        {
+                            "type": "image",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                }
+                            ],
+                            "attrs": {
+                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                                "class": "media",
+                                "width": "20",
+                                "id": "wiki:dokuwiki-128.png",
+                                "cache": "cache"
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "href": "mailto:dokuwiki@freelists.org",
+                        "class": "media",
+                        "title": "dokuwiki@freelists.org"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " are recognized, too.",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
                 }
             ]
         }

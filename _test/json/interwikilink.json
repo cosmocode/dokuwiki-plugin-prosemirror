@@ -5,18 +5,110 @@
             "type": "paragraph",
             "content": [
                 {
+                    "type": "text",
+                    "text": "Interwiki links like this one: ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
                     "type": "interwikilink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "plugin:prosemirror",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                }
+                            ]
+                        }
+                    ],
                     "attrs": {
                         "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
                         "data-shortcut": "doku",
                         "data-reference": "plugin:prosemirror",
                         "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
                         "class": "interwikilink interwiki iw_doku"
-                    },
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " or ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "interwikilink",
                     "content": [
                         {
                             "type": "text",
-                            "text": "plugin:prosemirror"
+                            "text": "click me!",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                },
+                                {
+                                    "type": "em"
+                                }
+                            ]
+                        }
+                    ],
+                    "attrs": {
+                        "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "data-shortcut": "doku",
+                        "data-reference": "plugin:prosemirror",
+                        "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "class": "interwikilink interwiki iw_doku"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " or ",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "interwikilink",
+                    "content": [
+                        {
+                            "type": "image",
+                            "marks": [
+                                {
+                                    "type": "strong"
+                                }
+                            ],
+                            "attrs": {
+                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                                "class": "media",
+                                "width": "20",
+                                "id": "wiki:dokuwiki-128.png",
+                                "cache": "cache"
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "data-shortcut": "doku",
+                        "data-reference": "plugin:prosemirror",
+                        "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "class": "interwikilink interwiki iw_doku"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " are recognized, too.",
+                    "marks": [
+                        {
+                            "type": "strong"
                         }
                     ]
                 }
