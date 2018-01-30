@@ -269,6 +269,30 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     }
 
+    /**
+     * @inheritDoc
+     */
+    function externalmedia(
+        $src,
+        $title = null,
+        $align = null,
+        $width = null,
+        $height = null,
+        $cache = null,
+        $linking = null
+    ) {
+        \dokuwiki\plugin\prosemirror\parser\ImageNode::render($this,
+            $src,
+            $title,
+            $align,
+            $width,
+            $height,
+            $cache,
+            $linking
+        );
+    }
+
+
     public function locallink($hash, $name = null) {
         if (null === $name) {
             $name = $hash;
