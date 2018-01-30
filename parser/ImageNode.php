@@ -44,7 +44,7 @@ class ImageNode extends Node
         if ($this->attrs['linking'] && $this->attrs['linking'] !== 'details') {
             $query[] = $this->attrs['linking'];
         }
-        if ($this->attrs['cache'] !== 'cache') {
+        if ($this->attrs['cache'] && $this->attrs['cache'] !== 'cache') {
             $query[] = $this->attrs['cache'];
         }
 
