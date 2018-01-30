@@ -56,4 +56,31 @@ class ImageNode extends Node
 
         return '{{' . $leftAlign . $this->attrs['id'] . $queryString . $title . $rightAlign . '}}';
     }
+
+    public static function render(\renderer_plugin_prosemirror $renderer, $src, $title = null, $align = null,
+        $width = null, $height = null, $cache = null, $linking = null)
+    {
+        $node = new \dokuwiki\plugin\prosemirror\schema\Node('image');
+        $node->attr('src', ml($src));
+        $node->attr('title', $title);
+
+        $class = 'media';
+        if ($align === 'right') {
+            $class = 'mediaright';
+        } else if ($align === 'left') {
+            $class = 'medialeft';
+        } else if ($align === 'center') {
+            $class = 'mediacenter';
+        }
+
+        $node->attr('class', $class);
+        $node->attr('align', $align);
+        $node->attr('width', $width);
+        $node->attr('height', $height);
+        $node->attr('id', $src);
+        $node->attr('cache', $cache);
+        $node->attr('linking', $linking);
+
+        $renderer->addToNodestack($node);
+    }
 }

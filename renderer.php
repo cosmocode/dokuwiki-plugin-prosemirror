@@ -33,6 +33,21 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         return 'prosemirror';
     }
 
+    public function addToNodestackTop(Node $node)
+    {
+        $this->nodestack->addTop($node);
+    }
+
+    public function addToNodestack(Node $node)
+    {
+        $this->nodestack->add($node);
+    }
+
+    public function dropFromNodeStack($nodeType)
+    {
+        $this->nodestack->drop($nodeType);
+    }
+
     // FIXME implement all methods of Doku_Renderer here
 
     /** @inheritDoc */
@@ -241,32 +256,17 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     function internalmedia($src, $title = null, $align = null, $width = null,
                            $height = null, $cache = null, $linking = null) {
 
-        // FIXME null values need to be initialized with the correct defaults
+        // FIXME how do we handle non-images, e.g. pdfs or audio?
+        \dokuwiki\plugin\prosemirror\parser\ImageNode::render($this,
+            $src,
+            $title,
+            $align,
+            $width,
+            $height,
+            $cache,
+            $linking
+        );
 
-        $node = new Node('image');
-        $node->attr('src', ml($src));
-        $node->attr('title', $title);
-
-        $class = 'media';
-        if ($align === 'right') {
-            $class = 'mediaright';
-        } else if ($align === 'left') {
-            $class = 'medialeft';
-        } else if ($align === 'center') {
-            $class = 'mediacenter';
-        }
-
-        $node->attr('class', $class);
-        $node->attr('align', $align);
-        $node->attr('width', $width);
-        $node->attr('height', $height);
-
-        // FIXME these need to be implemented in the schema
-        $node->attr('id', $src);
-        $node->attr('cache', $cache);
-        $node->attr('linking', $linking);
-
-        $this->nodestack->add($node);
     }
 
     public function locallink($hash, $name = null) {
