@@ -25,6 +25,7 @@ abstract class Node {
         'table' => TableNode::class,
         'table_row' => TableRowNode::class,
         'table_cell' => TableCellNode::class,
+        'dwplugin' => PluginNode::class,
     ];
 
     abstract public function toSyntax();

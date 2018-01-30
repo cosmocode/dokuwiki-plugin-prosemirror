@@ -438,6 +438,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->add(new Node('horizontal_rule'));
     }
 
+    function plugin($name, $data, $state = '', $match = '') {
+        if (empty($match)) {
+            return;
+        }
+        $node = new Node('dwplugin');
+        $node->attr('class', 'dwplugin');
+        $node->attr('data-pluginname', $name);
+        $this->nodestack->addTop($node);
+        $this->cdata($match);
+        $this->nodestack->drop('dwplugin');
+    }
+
     #region elements with no special WYSIWYG representation
 
     /** @inheritDoc */

@@ -4,6 +4,7 @@
     <meta charset="utf8">
     <link rel="stylesheet" href="node_modules/prosemirror-view/style/prosemirror.css">
     <link rel="stylesheet" href="node_modules/prosemirror-menu/style/menu.css">
+    <link rel="stylesheet" href="trial.css">
 </header>
 <body>
 

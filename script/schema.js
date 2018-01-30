@@ -41,7 +41,7 @@ nodes = nodes.append(tableNodes({
     },
 }));
 
-
+// Nodes: https://prosemirror.net/docs/ref/#model.NodeSpec
 nodes = nodes.addToEnd('preformatted', {
     content: 'text',
     marks: '_',
@@ -162,6 +162,23 @@ nodes = nodes.addToEnd('footnote', {
     inline: true,
     toDOM() {
         return ['footnote', { class: 'footnote' }, 0];
+    },
+});
+
+nodes = nodes.addToEnd('dwplugin', {
+    content: 'text',
+    marks: '_',
+    attrs: {
+        class: { default: 'dwplugin' },
+    },
+    draggable: true,
+    inline: true,
+    group: 'inline',
+    defining: true,
+    isolating: true,
+    code: true,
+    toDOM(node) {
+        return ['code', node.attrs, 0];
     },
 });
 
