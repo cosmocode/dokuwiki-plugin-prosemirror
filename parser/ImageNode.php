@@ -54,7 +54,7 @@ class ImageNode extends Node
         }
 
 
-        return '{{' . $leftAlign . $this->attrs['id'] . $queryString . $title . $rightAlign . '}}';
+        return '{{' . $leftAlign . $this->attrs['id'] . $queryString . $rightAlign . $title . '}}';
     }
 
     public static function render(\renderer_plugin_prosemirror $renderer, $src, $title = null, $align = null,

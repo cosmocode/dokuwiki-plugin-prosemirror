@@ -1,0 +1,22 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "image",
+                    "attrs": {
+                        "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "title": "foo and bar",
+                        "class": "medialeft",
+                        "align": "left",
+                        "id": "wiki:dokuwiki-128.png",
+                        "cache": "cache",
+                        "linking": "details"
+                    }
+                }
+            ]
+        }
+    ]
+}
