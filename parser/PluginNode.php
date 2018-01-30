@@ -3,16 +3,27 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-class PluginNode extends Node
+class PluginNode extends Node implements InlineNodeInterface
 {
 
-    protected $data;
+    protected $textNode;
 
-    public function __construct($data, $parent) {
-        $this->data = $data;
+    public function __construct($data, $parent, $previous = false) {
+        $this->textNode = new TextNode($data['content'][0], $this, $previous);
     }
 
     public function toSyntax() {
-        return $this->data['content'];
+        return $this->textNode->toSyntax();
+    }
+
+    /**
+     * @param string $markType
+     */
+    public function increaseMark($markType) {
+        return $this->textNode->increaseMark($markType);
+    }
+
+    public function getStartingNodeMarkScore($markType) {
+        return $this->textNode->getStartingNodeMarkScore($markType);
     }
 }

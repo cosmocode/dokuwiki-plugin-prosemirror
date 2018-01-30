@@ -1,6 +1,19 @@
 @import "prosemirror.less";
 @import "menu.less";
 
-.ProseMirror .footnote {
-    background-color: #ffdddd;
+.ProseMirror {
+    .footnote {
+        background-color: #ffdddd;
+    }
+
+    code.dwplugin {
+        border: 1px solid greenyellow;
+    }
+
+    code.dwplugin::before {
+        content: '🔧';
+        color: greenyellow;
+        cursor: grab;
+        cursor: -webkit-grab;
+    }
 }
