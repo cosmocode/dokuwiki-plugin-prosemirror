@@ -1,0 +1,1 @@
+Windows Shares like [[\\server\share|this]] are recognized, too.

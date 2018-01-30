@@ -156,6 +156,20 @@ nodes = nodes.addToEnd('emaillink', {
     },
 });
 
+nodes = nodes.addToEnd('windowssharelink', {
+    content: 'text|image',
+    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    inline: true,
+    attrs: {
+        class: {},
+        href: {},
+        title: {},
+    },
+    toDOM(node) {
+        return ['a', node.attrs, 0];
+    },
+});
+
 nodes = nodes.addToEnd('footnote', {
     content: 'inline',
     group: 'inline',

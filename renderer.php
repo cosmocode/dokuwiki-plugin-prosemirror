@@ -452,6 +452,28 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('emaillink');
     }
 
+    public function windowssharelink($link, $title = null)
+    {
+        if (null === $title) {
+            $title = $link;
+        }
+        $isImage = is_array($title);
+        if ($isImage) {
+            $class = 'media';
+        } else {
+            $class = 'windows';
+        }
+        $url           = str_replace('\\', '/', $link);
+        $url           = 'file:///'.$url;
+        $wShareLinkNode = new Node('windowssharelink');
+        $wShareLinkNode->attr('href', $url);
+        $wShareLinkNode->attr('class', $class);
+        $wShareLinkNode->attr('title', hsc($link));
+        $this->nodestack->addTop($wShareLinkNode);
+        $this->cdata($title);
+        $this->nodestack->drop('windowssharelink');
+    }
+
     /** @inheritDoc */
     function linebreak() {
         $this->nodestack->add(new Node('hard_break'));

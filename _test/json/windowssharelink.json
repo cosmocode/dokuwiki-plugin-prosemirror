@@ -1,0 +1,32 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Windows Shares like "
+                },
+                {
+                    "type": "windowssharelink",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "this"
+                        }
+                    ],
+                    "attrs": {
+                        "href": "file:\/\/\/\/\/server\/share",
+                        "class": "windows",
+                        "title": "\\\\server\\share"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " are recognized, too."
+                }
+            ]
+        }
+    ]
+}

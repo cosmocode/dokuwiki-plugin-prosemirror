@@ -15,6 +15,7 @@ abstract class Node {
         'externallink' => ExternalLinkNode::class,
         'emaillink' => EmailLinkNode::class,
         'locallink' => LocalLinkNode::class,
+        'windowssharelink' => WindowsShareLinkNode::class,
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,
         'quote' => QuoteNode::class,
