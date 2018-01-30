@@ -236,7 +236,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     public function code($text, $lang = null, $file = null) { // FIXME add support for file and lang
         $node = new Node('code_block');
         $this->nodestack->addTop($node);
-        $this->cdata(trim($text));
+        $this->cdata(trim($text, "\n"));
         $this->nodestack->drop('code_block');
     }
 
