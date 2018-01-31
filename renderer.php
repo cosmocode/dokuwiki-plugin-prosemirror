@@ -297,239 +297,37 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
 
-    public function locallink($hash, $name = null) {
-        if (null === $name) {
-            $name = $hash;
-        }
-        $isImage = is_array($name);
-        if ($isImage) {
-            $class = 'wikilink1';
-        } else {
-            $class = 'mail';
-        }
-        global $ID;
-        $localLinkNode = new Node('locallink');
-        $localLinkNode->attr('href', '#' . $hash);
-        $localLinkNode->attr('title', $ID.' ↵');
-        $localLinkNode->attr('class', $class);
-        $this->nodestack->addTop($localLinkNode);
-        if ($isImage) {
-            // fixme: check if type is internal or external media
-            $this->internalmedia(
-                $name['src'],
-                $name['title'],
-                $name['align'],
-                $name['width'],
-                $name['height'],
-                $name['cache']
-            );
-        } else {
-            $this->cdata($name);
-        }
-        $this->nodestack->drop('locallink');
+    public function locallink($hash, $name = null)
+    {
+        \dokuwiki\plugin\prosemirror\parser\LocalLinkNode::render($this, $hash, $name);
     }
 
     /**
      * @inheritDoc
      */
-    public function internallink($id, $name = null) {
-        global $conf;
-        global $ID;
-        global $INFO;
-
-        @list($id, $params) = explode('?', $id, 2);
-
-        // For empty $id we need to know the current $ID
-        // We need this check because _simpleTitle needs
-        // correct $id and resolve_pageid() use cleanID($id)
-        // (some things could be lost)
-        if($id === '') {
-            $id = $ID;
-        }
-        $isImage = false;
-        if (is_array($name)) {
-            $isImage = true;
-        } else {
-            if (!$name) {
-                $name = $this->_simpleTitle($id);
-            }
-        }
-
-        //keep hash anchor
-        @list($id, $originalHash) = explode('#', $id, 2);
-        if(!empty($originalHash)) {
-            $check = false;
-            $hash = sectionID($originalHash, $check);
-        } else {
-            $hash = '';
-        }
-
-        // now first resolve and clean up the $id
-        $resolvedId = $id;
-        resolve_pageid(getNS($ID), $resolvedId, $exists);
-
-        if ($isImage) {
-            $class = 'media';
-        } else if ($exists) {
-            $class = 'wikilink1';
-        } else {
-            $class = 'wikilink2';
-        }
-
-        $internalLinkNode = new Node('internallink');
-        $internalLinkNode->attr('href', wl($resolvedId, $params) . ($hash ? '#' . $hash : ''));
-        $internalLinkNode->attr('title', $resolvedId);
-        $internalLinkNode->attr('data-id', $id);
-        $internalLinkNode->attr('data-query', $params);
-        $internalLinkNode->attr('data-hash', $originalHash);
-        $internalLinkNode->attr('class', $class);
-
-        $this->nodestack->addTop($internalLinkNode);
-        if ($isImage) {
-            // fixme: check if type is internal or external media
-            $this->internalmedia(
-                $name['src'],
-                $name['title'],
-                $name['align'],
-                $name['width'],
-                $name['height'],
-                $name['cache']
-            );
-        } else {
-            $this->cdata($name);
-        }
-        $this->nodestack->drop('internallink');
+    public function internallink($id, $name = null)
+    {
+        \dokuwiki\plugin\prosemirror\parser\InternalLinkNode::render($this, $id, $name);
     }
 
-    public function externallink($link, $title = null) {
-        if (null === $title) {
-            $title = $link;
-        }
-        $isImage = is_array($title);
-        if ($isImage) {
-            $class = 'media';
-        } else {
-            $class = 'urlextern';
-        }
-        $externalLinkNode = new Node('externallink');
-        $externalLinkNode->attr('href', $link);
-        $externalLinkNode->attr('title', $link);
-        $externalLinkNode->attr('class', $class);
-
-        $this->nodestack->addTop($externalLinkNode);
-        if ($isImage) {
-            // fixme: check if type is internal or external media
-            $this->internalmedia(
-                $title['src'],
-                $title['title'],
-                $title['align'],
-                $title['width'],
-                $title['height'],
-                $title['cache']
-            );
-        } else {
-            $this->cdata($title);
-        }
-        $this->nodestack->drop('externallink');
+    public function externallink($link, $title = null)
+    {
+        \dokuwiki\plugin\prosemirror\parser\ExternalLinkNode::render($this, $link, $title);
     }
 
-    public function interwikilink($link, $title = null, $wikiName, $wikiUri) {
-        $isImage = false;
-        if (null === $title) {
-            $title = $wikiUri;
-        } elseif (is_array($title)) {
-            $isImage = true;
-        }
-
-        $shortcut = $wikiName;
-        $url    = $this->_resolveInterWiki($shortcut, $wikiUri, $exists);
-        $iwLinkNode = new Node('interwikilink');
-        $iwLinkNode->attr('href', $url);
-        $iwLinkNode->attr('data-shortcut', hsc($wikiName));
-        $iwLinkNode->attr('data-reference', hsc($wikiUri));
-        $iwLinkNode->attr('title', $url);
-        $iwLinkNode->attr('class', 'interwikilink interwiki iw_' . $shortcut);
-        $this->nodestack->addTop($iwLinkNode);
-        if ($isImage) {
-            // fixme: check if type is internal or external media
-            $this->internalmedia(
-                $title['src'],
-                $title['title'],
-                $title['align'],
-                $title['width'],
-                $title['height'],
-                $title['cache']
-            );
-        } else {
-            $this->cdata($title);
-        }
-        $this->nodestack->drop('interwikilink');
+    public function interwikilink($link, $title = null, $wikiName, $wikiUri)
+    {
+        \dokuwiki\plugin\prosemirror\parser\InterwikiLinkNode::render($this, $title, $wikiName, $wikiUri);
     }
 
     public function emaillink($address, $name = null)
     {
-        if (null === $name) {
-            $name = $address;
-        }
-        $isImage = is_array($name);
-        if ($isImage) {
-            $class = 'media';
-        } else {
-            $class = 'mail';
-        }
-        $emailLink = new Node('emaillink');
-        $emailLink->attr('href', 'mailto:' . $address);
-        $emailLink->attr('class', $class);
-        $emailLink->attr('title', $address);
-        $this->nodestack->addTop($emailLink);
-        if ($isImage) {
-            // fixme: check if type is internal or external media
-            $this->internalmedia(
-                $name['src'],
-                $name['title'],
-                $name['align'],
-                $name['width'],
-                $name['height'],
-                $name['cache']
-            );
-        } else {
-            $this->cdata($name);
-        }
-        $this->nodestack->drop('emaillink');
+        \dokuwiki\plugin\prosemirror\parser\EmailLinkNode::render($this, $address, $name);
     }
 
     public function windowssharelink($link, $title = null)
     {
-        if (null === $title) {
-            $title = $link;
-        }
-        $isImage = is_array($title);
-        if ($isImage) {
-            $class = 'media';
-        } else {
-            $class = 'windows';
-        }
-        $url           = str_replace('\\', '/', $link);
-        $url           = 'file:///'.$url;
-        $wShareLinkNode = new Node('windowssharelink');
-        $wShareLinkNode->attr('href', $url);
-        $wShareLinkNode->attr('class', $class);
-        $wShareLinkNode->attr('title', hsc($link));
-        $this->nodestack->addTop($wShareLinkNode);
-        if ($isImage) {
-            // fixme: check if type is internal or external media
-            $this->internalmedia(
-                $title['src'],
-                $title['title'],
-                $title['align'],
-                $title['width'],
-                $title['height'],
-                $title['cache']
-            );
-        } else {
-            $this->cdata($title);
-        }
-        $this->nodestack->drop('windowssharelink');
+        \dokuwiki\plugin\prosemirror\parser\WindowsShareLinkNode::render($this, $link, $title);
     }
 
     /** @inheritDoc */

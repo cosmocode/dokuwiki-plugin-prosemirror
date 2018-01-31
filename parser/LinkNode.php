@@ -67,4 +67,52 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
 
         return $prefix . '[[' . $inner . $title . ']]' . $postfix;
     }
+
+    /**
+     * @param \renderer_plugin_prosemirror $renderer
+     * @param string $linktype
+     * @param string $href
+     * @param string|array $name
+     * @param string $title
+     * @param string $defaultClass
+     * @param array  $additionalAttributes
+     */
+    protected static function renderToJSON(
+        \renderer_plugin_prosemirror $renderer,
+        $linktype,
+        $href,
+        $name,
+        $title,
+        $defaultClass,
+        $additionalAttributes = [] )
+    {
+        $isImage = is_array($name);
+        if ($isImage) {
+            $class = 'media';
+        } else {
+            $class = $defaultClass;
+        }
+        $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node($linktype);
+        $linkNode->attr('href', $href);
+        $linkNode->attr('class', $class);
+        $linkNode->attr('title', $title);
+        foreach ($additionalAttributes as $attributeName => $attributeValue) {
+            $linkNode->attr($attributeName, $attributeValue);
+        }
+        $renderer->addToNodestackTop($linkNode);
+        if ($isImage) {
+            // fixme: check if type is internal or external media
+            $renderer->internalmedia(
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache']
+            );
+        } else {
+            $renderer->cdata($name);
+        }
+        $renderer->dropFromNodeStack($linktype);
+    }
 }

@@ -28,10 +28,10 @@
                     ],
                     "attrs": {
                         "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "data-shortcut": "doku",
-                        "data-reference": "plugin:prosemirror",
+                        "class": "interwikilink interwiki iw_doku",
                         "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "interwikilink interwiki iw_doku"
+                        "data-shortcut": "doku",
+                        "data-reference": "plugin:prosemirror"
                     }
                 },
                 {
@@ -61,10 +61,10 @@
                     ],
                     "attrs": {
                         "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "data-shortcut": "doku",
-                        "data-reference": "plugin:prosemirror",
+                        "class": "interwikilink interwiki iw_doku",
                         "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "interwikilink interwiki iw_doku"
+                        "data-shortcut": "doku",
+                        "data-reference": "plugin:prosemirror"
                     }
                 },
                 {
@@ -97,10 +97,10 @@
                     ],
                     "attrs": {
                         "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "data-shortcut": "doku",
-                        "data-reference": "plugin:prosemirror",
+                        "class": "media",
                         "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "interwikilink interwiki iw_doku"
+                        "data-shortcut": "doku",
+                        "data-reference": "plugin:prosemirror"
                     }
                 },
                 {

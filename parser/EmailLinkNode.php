@@ -12,4 +12,16 @@ class EmailLinkNode extends LinkNode
 
         return $this->getDefaultLinkSyntax($href, $href);
     }
+
+    public static function render($renderer, $address, $name)
+    {
+        self::renderToJSON(
+            $renderer,
+            'emaillink',
+            'mailto:' . $address,
+            $name ?: $address,
+            $address,
+            'mail'
+        );
+    }
 }

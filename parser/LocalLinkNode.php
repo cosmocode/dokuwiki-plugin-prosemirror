@@ -12,4 +12,17 @@ class LocalLinkNode extends LinkNode
 
         return $this->getDefaultLinkSyntax($hash, substr($hash, 1));
     }
+
+    public static function render($renderer, $hash, $name)
+    {
+        global $ID;
+        self::renderToJSON(
+            $renderer,
+            'locallink',
+            '#' . $hash,
+            $name ?: $hash,
+            $ID . ' ↵',
+            'wikilink1'
+        );
+    }
 }

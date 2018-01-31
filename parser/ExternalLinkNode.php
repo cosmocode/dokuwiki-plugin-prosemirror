@@ -12,4 +12,16 @@ class ExternalLinkNode extends LinkNode
 
         return $this->getDefaultLinkSyntax($href, $href);
     }
+
+    public static function render($renderer, $link, $name)
+    {
+        self::renderToJSON(
+            $renderer,
+            'externallink',
+            $link,
+            $name ?: $link,
+            hsc($link),
+            'urlextern'
+        );
+    }
 }

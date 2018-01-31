@@ -34,4 +34,59 @@ class InternalLinkNode extends LinkNode
 
         return $this->getDefaultLinkSyntax($inner, $defaultTitle);
     }
+
+    public static function render(\renderer_plugin_prosemirror $renderer, $id, $name)
+    {
+        global $ID;
+        @list($id, $params) = explode('?', $id, 2);
+
+        // For empty $id we need to know the current $ID
+        // We need this check because _simpleTitle needs
+        // correct $id and resolve_pageid() use cleanID($id)
+        // (some things could be lost)
+        if($id === '') {
+            $id = $ID;
+        }
+
+        if (!$name) {
+            $name = $renderer->_simpleTitle($id);
+        }
+
+
+        //keep hash anchor
+        @list($id, $originalHash) = explode('#', $id, 2);
+        if(!empty($originalHash)) {
+            $check = false;
+            $hash = sectionID($originalHash, $check);
+        } else {
+            $hash = '';
+        }
+
+        $resolvedId = $id;
+        resolve_pageid(getNS($ID), $resolvedId, $exists);
+
+        if ($exists) {
+            $class = 'wikilink1';
+        } else {
+            $class = 'wikilink2';
+        }
+        $url = wl($resolvedId, $params) . ($hash ? '#' . $hash : '');
+
+
+        $additionalAttributes = [
+            'data-id' => $id,
+            'data-query' => $params,
+            'data-hash' => $originalHash
+        ];
+
+        self::renderToJSON(
+            $renderer,
+            'internallink',
+            $url,
+            $name,
+            $resolvedId,
+            $class,
+            $additionalAttributes
+        );
+    }
 }
