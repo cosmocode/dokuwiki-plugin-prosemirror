@@ -7,14 +7,14 @@
     "prosemirror-example-setup": "^1.0.1",
     "prosemirror-history": "^1.0.0",
     "prosemirror-keymap": "^1.0.0",
-    "prosemirror-menu": "^1.0.1",
-    "prosemirror-model": "^1.0.1",
+    "prosemirror-menu": "^1.0.2",
+    "prosemirror-model": "^1.1.0",
     "prosemirror-schema-basic": "^1.0.0",
     "prosemirror-schema-list": "^1.0.0",
-    "prosemirror-state": "^1.0.1",
-    "prosemirror-tables": "^0.4.1",
-    "prosemirror-transform": "^1.0.1",
-    "prosemirror-view": "^1.0.4"
+    "prosemirror-state": "^1.1.0",
+    "prosemirror-tables": "^0.6.2",
+    "prosemirror-transform": "^1.0.2",
+    "prosemirror-view": "^1.0.10"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
