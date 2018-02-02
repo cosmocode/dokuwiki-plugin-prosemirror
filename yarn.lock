@@ -2670,6 +2670,14 @@ prosemirror-commands@^1.0.0:
     prosemirror-state "^1.0.0"
     prosemirror-transform "^1.0.0"
 
+prosemirror-commands@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/prosemirror-commands/-/prosemirror-commands-1.0.5.tgz#224835d3cf31deaf72ac800c1d2b3d6fa2c81ff9"
+  dependencies:
+    prosemirror-model "^1.0.0"
+    prosemirror-state "^1.0.0"
+    prosemirror-transform "^1.0.0"
+
 prosemirror-dropcursor@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/prosemirror-dropcursor/-/prosemirror-dropcursor-1.0.0.tgz#cf4ef449579afdc88b3dbd3e7256f2b3eaabecd6"
