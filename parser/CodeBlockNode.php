@@ -14,6 +14,15 @@ class CodeBlockNode extends Node {
 
     public function toSyntax()
     {
-        return '<code>' . "\n" . $this->data['content'][0]['text'] . "\n" . '</code>';
+        $tagname = $this->data['type'] === 'code_block' ? 'code' : 'file';
+        $openingTag = '<' . $tagname;
+        if (!empty($this->data['attrs']['data-language'])) {
+            $openingTag .= ' ' . $this->data['attrs']['data-language'];
+        }
+        if (!empty($this->data['attrs']['data-filename'])) {
+            $openingTag .= ' ' . $this->data['attrs']['data-filename'];
+        }
+        $openingTag .= '>';
+        return $openingTag . "\n" . $this->data['content'][0]['text'] . "\n</$tagname>";
     }
 }

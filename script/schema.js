@@ -53,8 +53,29 @@ nodes = nodes.addToEnd('preformatted', {
 
 // fixme we may want an explizit preformatted node so can tell preformatted and <code> apart
 const codeBlock = nodes.get('code_block');
-codeBlock.toDOM = function toDOM() { return ['pre', { class: 'code' }, 0]; };
+codeBlock.attrs = {
+    class: { default: 'code' },
+    'data-filename': { default: null },
+    'data-language': { default: null },
+};
+codeBlock.toDOM = function toDOM(node) { return ['pre', node.attrs, 0]; };
 nodes = nodes.update('code_block', codeBlock);
+
+nodes = nodes.addToEnd('file_block', {
+    content: 'text*',
+    marks: '',
+    group: 'block',
+    attrs: {
+        class: { default: 'code file' },
+        'data-filename': { default: null },
+        'data-language': { default: null },
+    },
+    code: true,
+    defining: true,
+    toDOM(node) {
+        return ['pre', node.attrs, 0];
+    },
+});
 
 nodes = nodes.addToEnd('quote', {
     content: 'block',

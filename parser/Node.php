@@ -18,6 +18,7 @@ abstract class Node {
         'windowssharelink' => WindowsShareLinkNode::class,
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,
+        'file_block' => CodeBlockNode::class,
         'quote' => QuoteNode::class,
         'image' => ImageNode::class,
         'hard_break' => HardBreakNode::class,

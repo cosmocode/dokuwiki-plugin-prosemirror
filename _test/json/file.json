@@ -2,7 +2,7 @@
     "type": "doc",
     "content": [
         {
-            "type": "code_block",
+            "type": "file_block",
             "content": [
                 {
                     "type": "text",
@@ -10,7 +10,7 @@
                 }
             ],
             "attrs": {
-                "class": "code poem",
+                "class": "file code poem",
                 "data-language": "poem",
                 "data-filename": "haiku.txt"
             }
