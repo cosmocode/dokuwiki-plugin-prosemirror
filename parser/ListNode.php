@@ -17,8 +17,14 @@ class ListNode extends Node {
     /** @var ListItemNode[] */
     protected $listItemNodes = [];
 
+    protected $depth = 0;
+
     public function __construct($data, $parent) {
         $this->parent = &$parent;
+        if (is_a($this->parent, 'dokuwiki\plugin\prosemirror\parser\ListItemNode')) {
+            $this->depth = $this->parent->getDepth() + 1;
+        }
+
         $this->prefix = $data['type'] == 'bullet_list' ? '  *' : '  -';
 
         foreach ($data['content'] as $listItemNode) {
@@ -30,19 +36,20 @@ class ListNode extends Node {
         $doc = '';
 
         foreach ($this->listItemNodes as $li) {
-            $liText = $this->prefix;
-            $lines = explode("\n", $li->toSyntax());
-            if ($lines[0][0] !== ' ') {
+            $liText = str_repeat('  ', $this->depth);
+            $liText .= $this->prefix;
+            $lines = $li->toSyntax();
+            if ($lines[0] !== ' ') {
                 $liText .= ' ';
             }
-            $liText .= array_shift($lines);
-            $liText .= "\n";
-            foreach ($lines as $subListLine) {
-                $liText .= '  ' . $subListLine . "\n";
-            }
-
+            $liText .= $lines . "\n";
             $doc .= $liText;
         }
         return rtrim($doc); // blocks should __not__ end with a newline, parents must handle breaks between children
+    }
+
+    public function getDepth()
+    {
+        return $this->depth;
     }
 }

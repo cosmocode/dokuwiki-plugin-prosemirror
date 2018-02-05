@@ -37,4 +37,9 @@ class ListItemNode extends Node {
         }
         return implode("\n", $lines);
     }
+
+    public function getDepth()
+    {
+        return $this->parent->getDepth();
+    }
 }
