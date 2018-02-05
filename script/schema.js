@@ -43,9 +43,10 @@ nodes = nodes.append(tableNodes({
 
 // Nodes: https://prosemirror.net/docs/ref/#model.NodeSpec
 nodes = nodes.addToEnd('preformatted', {
-    content: 'text',
-    marks: '_',
+    content: 'text*',
+    marks: '',
     group: 'block',
+    code: true,
     toDOM() {
         return ['pre', { class: 'code' }, 0];
     },
