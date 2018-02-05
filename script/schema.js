@@ -30,7 +30,7 @@ bulletList.content = 'listitem+';
 nodes = nodes.update('bullet_list', bulletList);
 
 listItem.group = 'listitem';
-listItem.content = 'paragraph listblock?';
+listItem.content = 'block+ listblock?';
 nodes = nodes.update('list_item', listItem);
 
 nodes = nodes.append(tableNodes({

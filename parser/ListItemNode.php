@@ -33,9 +33,18 @@ class ListItemNode extends Node {
     public function toSyntax() {
         $lines = [];
         foreach ($this->subnodes as $node) {
-            $lines[] = $node->toSyntax();
+            /*
+             * only sublists may start with a linebreak, other blocks, like <code> must not have a linebreak before them
+             * or DokuWiki will interprete this as a new block altogether, instead as something that is part of the
+             * current <li>
+             */
+            $prefixLinebreak = '';
+            if (is_a($node, ListNode::class)) {
+                $prefixLinebreak = "\n";
+            }
+            $lines[] = $prefixLinebreak. $node->toSyntax();
         }
-        return implode("\n", $lines);
+        return implode("", $lines);
     }
 
     public function getDepth()

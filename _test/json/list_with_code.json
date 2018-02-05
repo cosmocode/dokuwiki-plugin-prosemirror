@@ -1,0 +1,127 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Notes:"
+                }
+            ]
+        },
+        {
+            "type": "bullet_list",
+            "content": [
+                {
+                    "type": "list_item",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " For security reasons direct browsing of windows shares only works in Microsoft Internet Explorer per default (and only in the "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "\""
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "local zone"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "\""
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ")."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "list_item",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " For Mozilla and Firefox it can be enabled through different workaround mentioned in the "
+                                },
+                                {
+                                    "type": "externallink",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Mozilla Knowledge Base"
+                                        }
+                                    ],
+                                    "attrs": {
+                                        "href": "http:\/\/kb.mozillazine.org\/Links_to_local_pages_do_not_work",
+                                        "class": "urlextern",
+                                        "title": "http:\/\/kb.mozillazine.org\/Links_to_local_pages_do_not_work"
+                                    }
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ". However, there will still be a JavaScript warning about trying to open a Windows Share. To remove this warning (for all users), put the following line in "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "conf\/lang\/en\/lang.php",
+                                    "marks": [
+                                        {
+                                            "type": "code"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " (more details at "
+                                },
+                                {
+                                    "type": "interwikilink",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "localization"
+                                        }
+                                    ],
+                                    "attrs": {
+                                        "href": "https:\/\/www.dokuwiki.org\/localization#changing_some_localized_texts_and_strings_in_your_installation",
+                                        "class": "interwikilink interwiki iw_doku",
+                                        "title": "https:\/\/www.dokuwiki.org\/localization#changing_some_localized_texts_and_strings_in_your_installation",
+                                        "data-shortcut": "doku",
+                                        "data-reference": "localization#changing_some_localized_texts_and_strings_in_your_installation"
+                                    }
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "): "
+                                }
+                            ]
+                        },
+                        {
+                            "type": "code_block",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "<?php\n\/**\n * Customization of the english language file\n * Copy only the strings that needs to be modified\n *\/\n$lang['js']['nosmblinks'] = '';"
+                                }
+                            ],
+                            "attrs": {
+                                "class": "code ",
+                                "data-filename": "conf\/lang\/en\/lang.php"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

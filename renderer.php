@@ -53,6 +53,16 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         return $this->marks;
     }
 
+    /**
+     * If there is a block scope open, close it.
+     */
+    protected function clearBlock() {
+        $parentNode = $this->nodestack->current()->getType();
+        if (in_array($parentNode, ['paragraph'])) {
+            $this->nodestack->drop($parentNode);
+        }
+    }
+
     // FIXME implement all methods of Doku_Renderer here
 
     /** @inheritDoc */
@@ -232,6 +242,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     public function preformatted($text) {
+        $this->clearBlock();
         $node = new Node('preformatted');
         $this->nodestack->addTop($node);
         $this->cdata($text);
@@ -239,6 +250,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
     }
 
     public function code($text, $lang = null, $file = null) { // FIXME add support for file and lang
+        $this->clearBlock();
         $node = new Node('code_block');
         $node->attr('class', 'code ' . $lang);
         $node->attr('data-language', $lang);
@@ -250,6 +262,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     public function file($text, $lang = null, $file = null)
     {
+        $this->clearBlock();
         $node = new Node('file_block');
         $node->attr('class', 'file code ' . $lang);
         $node->attr('data-language', $lang);
@@ -270,6 +283,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     public function htmlblock($text)
     {
+        $this->clearBlock();
         $node = new Node('html_block');
         $node->attr('class', 'html_block');
         $this->nodestack->addTop($node);
@@ -288,6 +302,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
 
     public function phpblock($text)
     {
+        $this->clearBlock();
         $node = new Node('php_block');
         $node->attr('class', 'php_block');
         $this->nodestack->addTop($node);
