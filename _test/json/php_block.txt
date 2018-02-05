@@ -1,0 +1,9 @@
+Foo
+
+<PHP>
+echo '<table class="inline"><tr><td>The same, but inside a block level element:</td>';
+echo '<td>'.phpversion().'</td>';
+echo '</tr></table>';
+</PHP>
+
+Bar

@@ -259,6 +259,42 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('file_block');
     }
 
+    public function html($text)
+    {
+        $node = new Node('html_inline');
+        $node->attr('class', 'html_inline');
+        $this->nodestack->addTop($node);
+        $this->cdata(str_replace("\n", ' ', $text));
+        $this->nodestack->drop('html_inline');
+    }
+
+    public function htmlblock($text)
+    {
+        $node = new Node('html_block');
+        $node->attr('class', 'html_block');
+        $this->nodestack->addTop($node);
+        $this->cdata(trim($text, "\n"));
+        $this->nodestack->drop('html_block');
+    }
+
+    public function php($text)
+    {
+        $node = new Node('php_inline');
+        $node->attr('class', 'php_inline');
+        $this->nodestack->addTop($node);
+        $this->cdata(str_replace("\n", ' ', $text));
+        $this->nodestack->drop('php_inline');
+    }
+
+    public function phpblock($text)
+    {
+        $node = new Node('php_block');
+        $node->attr('class', 'php_block');
+        $this->nodestack->addTop($node);
+        $this->cdata(trim($text, "\n"));
+        $this->nodestack->drop('php_block');
+    }
+
     function footnote_open() {
         $footnoteNode = new Node('footnote');
         $this->nodestack->addTop($footnoteNode);

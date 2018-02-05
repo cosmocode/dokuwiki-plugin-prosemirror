@@ -1,0 +1,1 @@
+Foo <html>This is some <span style="color:red;font-size:150%;">inline HTML</span></html> Bar
