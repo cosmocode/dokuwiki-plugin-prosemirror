@@ -31,6 +31,7 @@ abstract class Node {
         'table' => TableNode::class,
         'table_row' => TableRowNode::class,
         'table_cell' => TableCellNode::class,
+        'rss' => RSSNode::class,
         'dwplugin' => PluginNode::class,
     ];
 

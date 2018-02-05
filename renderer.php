@@ -310,6 +310,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('php_block');
     }
 
+    /**
+     * @inheritDoc
+     */
+    function rss($url, $params)
+    {
+        $this->clearBlock();
+        $node = new Node('rss');
+        $node->attr('data-url', hsc($url));
+        $node->attr('data-params', json_encode($params));
+        $this->nodestack->add($node);
+    }
+
+
     function footnote_open() {
         $footnoteNode = new Node('footnote');
         $this->nodestack->addTop($footnoteNode);

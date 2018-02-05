@@ -1,0 +1,1 @@
+{{rss>http://slashdot.org/index.rss 5 author date 60m}}

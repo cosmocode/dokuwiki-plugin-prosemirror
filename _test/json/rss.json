@@ -1,0 +1,12 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "rss",
+            "attrs": {
+                "data-url": "http:\/\/slashdot.org\/index.rss",
+                "data-params": "{\"max\":\"5\",\"reverse\":0,\"author\":1,\"date\":1,\"details\":0,\"nosort\":0,\"refresh\":3600}"
+            }
+        }
+    ]
+}

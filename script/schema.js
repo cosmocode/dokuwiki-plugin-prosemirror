@@ -258,6 +258,20 @@ nodes = nodes.addToEnd('footnote', {
     },
 });
 
+nodes = nodes.addToEnd('rss', {
+    group: 'block',
+    atom: true,
+    attrs: {
+        class: { default: 'rss' },
+        'data-url': { default: null },
+        'data-params': { default: null },
+    },
+    toDOM(node) {
+        const url = node.attrs['data-url'] || '';
+        return ['span', node.attrs, `RSS: ${url}`];
+    },
+});
+
 nodes = nodes.addToEnd('dwplugin', {
     content: 'text',
     marks: '_',
