@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 
-import { EditorState } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { Node } from 'prosemirror-model';
-import { MenuItem } from 'prosemirror-menu';
-import { insertPoint } from 'prosemirror-transform';
-import { buildMenuItems, exampleSetup } from 'prosemirror-example-setup';
+const { EditorState } = require('prosemirror-state');
+const { EditorView } = require('prosemirror-view');
+const { Node } = require('prosemirror-model');
+const { MenuItem } = require('prosemirror-menu');
+const { insertPoint } = require('prosemirror-transform');
+const { buildMenuItems, exampleSetup } = require('prosemirror-example-setup');
 
-import { schema } from './schema';
+const { schema } = require('./schema');
 
 
 const signatureMI = new MenuItem({
