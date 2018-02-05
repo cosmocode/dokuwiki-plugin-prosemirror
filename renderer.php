@@ -402,6 +402,11 @@ class renderer_plugin_prosemirror extends Doku_Renderer {
         $this->nodestack->drop('dwplugin');
     }
 
+    function smiley($smiley)
+    {
+        $this->cdata($smiley);
+    }
+
     #region elements with no special WYSIWYG representation
 
     /** @inheritDoc */
