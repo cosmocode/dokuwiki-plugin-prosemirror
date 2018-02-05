@@ -1,0 +1,18 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "code_block",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "a block of code\nblock text\nfoo bar"
+                }
+            ],
+            "attrs": {
+                "class": "code ",
+                "data-filename": "haiku.txt"
+            }
+        }
+    ]
+}

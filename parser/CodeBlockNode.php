@@ -18,6 +18,8 @@ class CodeBlockNode extends Node {
         $openingTag = '<' . $tagname;
         if (!empty($this->data['attrs']['data-language'])) {
             $openingTag .= ' ' . $this->data['attrs']['data-language'];
+        } else {
+            $openingTag .= ' -';
         }
         if (!empty($this->data['attrs']['data-filename'])) {
             $openingTag .= ' ' . $this->data['attrs']['data-filename'];
