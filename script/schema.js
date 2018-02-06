@@ -147,9 +147,9 @@ nodes = nodes.addToEnd('quote', {
 
 nodes = nodes.addToEnd('interwikilink', {
     content: 'text|image',
-    marks: '_',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
+    atom: true,
     attrs: {
         class: {},
         href: {},
@@ -180,6 +180,7 @@ nodes = nodes.addToEnd('internallink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
+    atom: true,
     attrs: {
         class: {},
         href: {},
@@ -197,6 +198,7 @@ nodes = nodes.addToEnd('externallink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
+    atom: true,
     attrs: {
         class: {},
         href: {},
@@ -211,6 +213,7 @@ nodes = nodes.addToEnd('locallink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
+    atom: true,
     attrs: {
         class: {},
         href: {},
@@ -226,6 +229,7 @@ nodes = nodes.addToEnd('emaillink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
+    atom: true,
     attrs: {
         class: {},
         href: {},
@@ -240,6 +244,7 @@ nodes = nodes.addToEnd('windowssharelink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
+    atom: true,
     attrs: {
         class: {},
         href: {},
