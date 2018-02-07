@@ -13,6 +13,9 @@ class ExternalLinkNode extends LinkNode
         }
 
         $this->attrs = $data['attrs'];
+
+        // every inline node needs a TextNode to track marks
+        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
     }
 
     public function toSyntax()

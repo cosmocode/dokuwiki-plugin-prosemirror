@@ -15,21 +15,16 @@
                 },
                 {
                     "type": "externallink",
-                    "content": [
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "this",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ]
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
                         "href": "https:\/\/dokuwiki.org\/",
-                        "title": "https:\/\/dokuwiki.org\/",
-                        "class": "urlextern"
+                        "class": "urlextern",
+                        "data-name": "this",
+                        "title": "https:\/\/dokuwiki.org\/"
                     }
                 },
                 {
@@ -43,27 +38,19 @@
                 },
                 {
                     "type": "externallink",
-                    "content": [
+                    "marks": [
                         {
-                            "type": "image",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ],
-                            "attrs": {
-                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "width": "20",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
                         "href": "https:\/\/dokuwiki.org\/",
                         "title": "https:\/\/dokuwiki.org\/",
-                        "class": "media"
+                        "class": "media",
+                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-width": "20",
+                        "image-id": "wiki:dokuwiki-128.png"
                     }
                 },
                 {

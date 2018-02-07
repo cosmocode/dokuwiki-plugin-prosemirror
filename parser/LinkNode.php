@@ -12,8 +12,8 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
     /** @var  Node */
     protected $parent;
 
-    /** @var TextNode|ImageNode  */
-    protected $contentNode = null;
+    /** @var TextNode */
+    protected $textNode = null;
 
     protected $attrs = [];
 
@@ -41,11 +41,11 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
      * @param string $markType
      */
     public function increaseMark($markType) {
-        return $this->contentNode->increaseMark($markType);
+        return $this->textNode->increaseMark($markType);
     }
 
     public function getStartingNodeMarkScore($markType) {
-        return $this->contentNode->getStartingNodeMarkScore($markType);
+        return $this->textNode->getStartingNodeMarkScore($markType);
     }
 
     protected function getDefaultLinkSyntax ($inner, $defaultTitle) {
@@ -113,6 +113,9 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         $linkNode->attr('title', $title);
         foreach ($additionalAttributes as $attributeName => $attributeValue) {
             $linkNode->attr($attributeName, $attributeValue);
+        }
+        foreach(array_keys($renderer->getCurrentMarks()) as $mark) {
+            $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
         }
         $renderer->addToNodestack($linkNode);
     }
