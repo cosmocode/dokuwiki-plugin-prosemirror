@@ -1,5 +1,5 @@
 // FIXME: prevent XSS!
-class LinkPrompt {
+class LinkView {
     /**
      *
      * @param {Node} node
@@ -88,4 +88,4 @@ class LinkPrompt {
     }
 }
 
-exports.LinkPrompt = LinkPrompt;
+exports.LinkView = LinkView;

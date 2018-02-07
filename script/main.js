@@ -8,7 +8,7 @@ const { insertPoint } = require('prosemirror-transform');
 const { buildMenuItems, exampleSetup } = require('prosemirror-example-setup');
 
 const { schema } = require('./schema');
-const { LinkPrompt } = require('./LinkPrompt');
+const { LinkView } = require('./LinkView');
 
 
 const signatureMI = new MenuItem({
@@ -83,7 +83,7 @@ const view = new EditorView(document.querySelector('#prosemirror__editor'), {
         json.value = JSON.stringify(view.state.doc.toJSON(), null, spaces);
     },
     nodeViews: {
-        externallink(node, outerview, getPos) { return new LinkPrompt(node, outerview, getPos); },
+        externallink(node, outerview, getPos) { return new LinkView(node, outerview, getPos); },
     },
 });
 window.view = view.editor;
