@@ -23,6 +23,12 @@ module.exports = {
             },
             {
                 loader: 'babel-loader',
+                options: {
+                    presets: [
+                        ['env', { modules: false }],
+                        'stage-2', // suppport for ES7 features like the spread operator
+                    ],
+                },
             },
         ],
     },

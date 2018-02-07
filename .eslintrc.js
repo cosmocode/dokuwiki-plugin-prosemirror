@@ -1,10 +1,9 @@
-/* globals process */
-'use strict';
 
 // production rules
 const prod = {
     "indent": ["error", 4],
     "no-magic-numbers": ["warn", { "ignore": [0, 1, -1]}],
+    'max-len':  ["error", { "code": 120, "ignoreComments": true }],
 };
 
 // dev rules extend production rules
@@ -29,6 +28,7 @@ module.exports = {
     ],
     "env": {
         "browser": true,
+        "jquery": true,
     },
     rules
 };
