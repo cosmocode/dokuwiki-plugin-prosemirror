@@ -6,12 +6,6 @@
             "content": [
                 {
                     "type": "externallink",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "https:\/\/www.google.com"
-                        }
-                    ],
                     "attrs": {
                         "href": "https://www.google.com",
                         "title": "https://www.google.com",

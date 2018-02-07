@@ -19,6 +19,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin {
      */
     public function register(Doku_Event_Handler $controller) {
         $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'output_editor');
+        $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
     }
 
     /**
@@ -52,6 +53,26 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin {
         // data for handsontable
         $form->addHidden('prosemirror_json', p_render('prosemirror', $instructions, $info));
         $form->insertElement(1, '<div id="prosemirror__editor"></div>');
+    }
+
+    public function addAddtionalForms(Doku_Event $event)
+    {
+        if (!in_array($event->data, ['edit', 'preview'])) {
+            return;
+        }
+        $linkForm = '
+<form class="plugin_prosemirror_linkform" id="prosemirror-linkform">
+    <fieldset>
+        <label for="prosemirror-linktarget-input">Link target</label>
+        <input type="text" id="prosemirror-linktarget-input"/>
+        <label for="prosemirror-linkname-input">Link name</label>
+        <input type="text" id="prosemirror-linkname-input" placeholder="(automatic)"/>
+        <button type="submit" class="plugin_prosemirror_linkform__ok_button" name="ok-button">OK</button>
+        <button type="button" class="plugin_prosemirror_linkform__cancel_button" name="cancel-button">Cancel</button>
+    </fieldset>
+</form>
+        ';
+        echo $linkForm;
     }
 }
 

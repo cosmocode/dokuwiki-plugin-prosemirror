@@ -145,6 +145,21 @@ nodes = nodes.addToEnd('quote', {
     },
 });
 
+const imageNode = nodes.get('image');
+imageNode.attrs.width = { default: null };
+imageNode.attrs.height = { default: null };
+imageNode.attrs.align = { default: null };
+imageNode.attrs.linking = { default: null };
+imageNode.attrs.cache = { default: null };
+imageNode.attrs.class = {};
+imageNode.attrs.id = {};
+nodes = nodes.update('image', imageNode);
+
+const imageAttrs = {};
+Object.keys(imageNode.attrs).forEach((key) => {
+    imageAttrs[`image-${key}`] = { default: null };
+});
+
 nodes = nodes.addToEnd('interwikilink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
@@ -195,13 +210,14 @@ nodes = nodes.addToEnd('internallink', {
 });
 
 nodes = nodes.addToEnd('externallink', {
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
+    group: 'inline',
     inline: true,
     attrs: {
         class: {},
         href: {},
         title: {},
         'data-name': { default: null },
+        ...imageAttrs,
     },
     toDOM(node) {
         return ['a', node.attrs];
@@ -293,16 +309,6 @@ nodes = nodes.addToEnd('dwplugin', {
         return ['code', node.attrs, 0];
     },
 });
-
-const imageNode = nodes.get('image');
-imageNode.attrs.width = { default: null };
-imageNode.attrs.height = { default: null };
-imageNode.attrs.align = { default: null };
-imageNode.attrs.linking = { default: null };
-imageNode.attrs.cache = { default: null };
-imageNode.attrs.class = {};
-imageNode.attrs.id = {};
-nodes = nodes.update('image', imageNode);
 
 // FIXME we need a table header attribute
 // FIXME what table cells can accept is to be defined

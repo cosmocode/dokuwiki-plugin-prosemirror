@@ -6,16 +6,11 @@
             "content": [
                 {
                     "type": "externallink",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Google"
-                        }
-                    ],
                     "attrs": {
                         "href": "https://www.google.com",
                         "title": "https://www.google.com",
-                        "class": "urlextern"
+                        "class": "urlextern",
+                        "data-name": "Google"
                     }
                 }
             ]

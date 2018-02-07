@@ -66,8 +66,33 @@ class ImageNode extends Node implements InlineNodeInterface
         $width = null, $height = null, $cache = null, $linking = null)
     {
         $node = new \dokuwiki\plugin\prosemirror\schema\Node('image');
-        $node->attr('src', ml($src));
-        $node->attr('title', $title);
+
+        self::addAttributes(
+            $node,
+            $src,
+            $title,
+            $align,
+            $width,
+            $height,
+            $cache,
+            $linking
+        );
+
+        foreach(array_keys($renderer->getCurrentMarks()) as $mark) {
+            $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+        }
+
+        $renderer->addToNodestack($node);
+    }
+
+    public static function addAttributes(
+        \dokuwiki\plugin\prosemirror\schema\Node $node,
+        $src, $title = null, $align = null,
+        $width = null, $height = null, $cache = null, $linking = null,
+        $prefix = ''
+    ) {
+        $node->attr($prefix . 'src', ml($src));
+        $node->attr($prefix . 'title', $title);
 
         $class = 'media';
         if ($align === 'right') {
@@ -78,19 +103,17 @@ class ImageNode extends Node implements InlineNodeInterface
             $class = 'mediacenter';
         }
 
-        $node->attr('class', $class);
-        $node->attr('align', $align);
-        $node->attr('width', $width);
-        $node->attr('height', $height);
-        $node->attr('id', $src);
-        $node->attr('cache', $cache);
-        $node->attr('linking', $linking);
-
-        foreach(array_keys($renderer->getCurrentMarks()) as $mark) {
-            $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+        if ($cache !== null && $cache === 'cache') {
+            $cache = null;
         }
 
-        $renderer->addToNodestack($node);
+        $node->attr($prefix . 'class', $class);
+        $node->attr($prefix . 'align', $align);
+        $node->attr($prefix . 'width', $width);
+        $node->attr($prefix . 'height', $height);
+        $node->attr($prefix . 'id', $src);
+        $node->attr($prefix . 'cache', $cache);
+        $node->attr($prefix . 'linking', $linking);
     }
 
     /**

@@ -95,25 +95,25 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node($linktype);
         $linkNode->attr('href', $href);
         $linkNode->attr('class', $class);
-        $linkNode->attr('data-name', $name);
-        $linkNode->attr('title', $title);
-        foreach ($additionalAttributes as $attributeName => $attributeValue) {
-            $linkNode->attr($attributeName, $attributeValue);
-        }
-        $renderer->addToNodestackTop($linkNode);
         if ($isImage) {
-            // fixme: check if type is internal or external media
-            $renderer->internalmedia(
+            ImageNode::addAttributes(
+                $linkNode,
                 $name['src'],
                 $name['title'],
                 $name['align'],
                 $name['width'],
                 $name['height'],
-                $name['cache']
+                $name['cache'],
+                null,
+                'image-'
             );
         } else {
-            $renderer->cdata($name);
+            $linkNode->attr('data-name', $name);
         }
-        $renderer->dropFromNodeStack($linktype);
+        $linkNode->attr('title', $title);
+        foreach ($additionalAttributes as $attributeName => $attributeValue) {
+            $linkNode->attr($attributeName, $attributeValue);
+        }
+        $renderer->addToNodestack($linkNode);
     }
 }

@@ -6,21 +6,13 @@
             "content": [
                 {
                     "type": "externallink",
-                    "content": [
-                        {
-                            "type": "image",
-                            "attrs": {
-                                "src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
-                        }
-                    ],
                     "attrs": {
                         "href": "https://www.php.net",
                         "title": "https://www.php.net",
-                        "class": "media"
+                        "class": "media",
+                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-id": "wiki:dokuwiki-128.png"
                     }
                 }
             ]
