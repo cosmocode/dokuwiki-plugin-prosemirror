@@ -60,19 +60,30 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin {
         if (!in_array($event->data, ['edit', 'preview'])) {
             return;
         }
-        $linkForm = '
-<form class="plugin_prosemirror_linkform" id="prosemirror-linkform">
-    <fieldset>
-        <label for="prosemirror-linktarget-input">Link target</label>
-        <input type="text" id="prosemirror-linktarget-input"/>
-        <label for="prosemirror-linkname-input">Link name</label>
-        <input type="text" id="prosemirror-linkname-input" placeholder="(automatic)"/>
-        <button type="submit" class="plugin_prosemirror_linkform__ok_button" name="ok-button">OK</button>
-        <button type="button" class="plugin_prosemirror_linkform__cancel_button" name="cancel-button">Cancel</button>
-    </fieldset>
-</form>
-        ';
-        echo $linkForm;
+
+        $linkForm = new dokuwiki\Form\Form(['class' => 'plugin_prosemirror_linkform', 'id' => 'prosemirror-linkform']);
+        $linkForm->addFieldsetOpen('Links');
+        $linkForm->addTextInput('linktarget', 'Link target')->attr('required', 'required');
+
+        $linkForm->addTagOpen('div')->addClass('radio-wrapper');
+        $linkForm->addRadioButton('linktype', 'Wiki page')->val('page')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('linktype', 'Interwiki link')->val('interwiki')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('linktype', 'email')->val('email')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('linktype', 'Other/external')->val('external')->attr('checked', 'checked');
+        $linkForm->addTagClose('div');
+
+        $linkForm->addTagOpen('div')->addClass('radio-wrapper');
+        $linkForm->addRadioButton('nametype', 'automatic')->val('automatic')->attr('checked', 'checked');
+        $linkForm->addRadioButton('nametype', 'custom')->val('custom');
+        $linkForm->addRadioButton('nametype', 'internalmedia')->val('wiki image')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('nametype', 'externalmedia')->val('external image')->attr('disabled', 'disabled');
+        $linkForm->addTagClose('div');
+
+        $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', '(automatic)');
+        $linkForm->addButton('ok-button', 'OK')->attr('type', 'submit');
+        $linkForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
+
+        echo $linkForm->toHTML();
     }
 }
 

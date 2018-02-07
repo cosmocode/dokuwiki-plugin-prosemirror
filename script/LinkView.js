@@ -1,4 +1,7 @@
 // FIXME: prevent XSS!
+
+const { LinkForm } = require('./LinkForm');
+
 class LinkView {
     /**
      *
@@ -12,6 +15,8 @@ class LinkView {
         this.getPos = getPos;
 
         this.renderLink(node.attrs);
+
+        this.linkForm = new LinkForm();
     }
 
     renderLink(attributes) {
@@ -46,20 +51,25 @@ class LinkView {
 
     selectNode() {
         this.dom.classList.add('ProseMirror-selectednode');
-        this.$linkform = jQuery('#prosemirror-linkform');
-        this.$linkform.find('#prosemirror-linktarget-input').val(this.node.attrs.href);
 
-        this.$linkform.css('display', 'inline-block');
+        this.linkForm.setLinkType('external');
+        this.linkForm.setLinkTarget(this.node.attrs.href);
 
-        this.$linkform.on('submit', (event) => {
+        if (this.node.attrs['data-name']) {
+            this.linkForm.setLinkNameType('custom', this.node.attrs['data-name']);
+        }
+
+        this.linkForm.show();
+
+        this.linkForm.on('submit', (event) => {
             event.preventDefault();
             event.stopPropagation();
 
             const newAttrs = this.node.copy().attrs;
 
-            newAttrs.href = this.$linkform.find('#prosemirror-linktarget-input').val();
-            newAttrs.title = this.$linkform.find('#prosemirror-linktarget-input').val();
-            const newTitle = this.$linkform.find('#prosemirror-linkname-input').val();
+            newAttrs.href = this.linkForm.getLinkTarget();
+            newAttrs.title = this.linkForm.getLinkTarget();
+            const newTitle = this.linkForm.getLinkName();
             if (newTitle) {
                 newAttrs['data-name'] = newTitle;
                 // fixme: adjust class to urlextern if no longer media!
@@ -82,9 +92,10 @@ class LinkView {
 
     deselectNode() {
         this.dom.classList.remove('ProseMirror-selectednode');
-        this.$linkform.off('submit');
 
-        this.$linkform.css('display', 'none');
+        this.linkForm.off('submit');
+        this.linkForm.hide();
+        this.linkForm.resetForm();
     }
 }
 
