@@ -1,3 +1,4 @@
+// FIXME: prevent XSS!
 class LinkPrompt {
     /**
      *
@@ -19,10 +20,28 @@ class LinkPrompt {
             jQuery(this.dom).on('click', (event) => { event.preventDefault(); });
         }
         Object.entries(attributes).forEach(([name, value]) => {
+            if (name.substr(0, 'image-'.length) === 'image-') {
+                return;
+            }
             this.dom.setAttribute(name, value);
         });
         this.dom.setAttribute('style', 'cursor: text;');
-        this.dom.textContent = attributes['data-name'];
+        if (attributes['data-name']) {
+            this.dom.textContent = attributes['data-name'];
+        } else if (attributes['image-src']) {
+            this.dom.innerHTML = '';
+            const image = document.createElement('img');
+
+            Object.entries(attributes).forEach(([name, value]) => {
+                if (name.substr(0, 'image-'.length) === 'image-' && value !== null) {
+                    image.setAttribute(name.substr('image-'.length), value);
+                }
+            });
+
+            this.dom.appendChild(image);
+        } else {
+            this.dom.textContent = attributes.href;
+        }
     }
 
     selectNode() {
@@ -43,6 +62,12 @@ class LinkPrompt {
             const newTitle = this.$linkform.find('#prosemirror-linkname-input').val();
             if (newTitle) {
                 newAttrs['data-name'] = newTitle;
+                // fixme: adjust class to urlextern if no longer media!
+                Object.keys(newAttrs).forEach((attr) => {
+                    if (attr.substr(0, 'image-'.length) === 'image-') {
+                        delete newAttrs[attr];
+                    }
+                });
             }
             const nodeStartPos = this.getPos();
             this.renderLink(newAttrs);
