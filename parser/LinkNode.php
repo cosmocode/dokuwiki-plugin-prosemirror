@@ -95,6 +95,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node($linktype);
         $linkNode->attr('href', $href);
         $linkNode->attr('class', $class);
+        $linkNode->attr('data-name', $name);
         $linkNode->attr('title', $title);
         foreach ($additionalAttributes as $attributeName => $attributeValue) {
             $linkNode->attr($attributeName, $attributeValue);

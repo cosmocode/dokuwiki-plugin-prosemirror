@@ -195,17 +195,16 @@ nodes = nodes.addToEnd('internallink', {
 });
 
 nodes = nodes.addToEnd('externallink', {
-    content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
-    atom: true,
     attrs: {
         class: {},
         href: {},
         title: {},
+        'data-name': { default: null },
     },
     toDOM(node) {
-        return ['a', node.attrs, 0];
+        return ['a', node.attrs];
     },
 });
 
