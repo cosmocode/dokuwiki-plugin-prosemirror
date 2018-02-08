@@ -3,7 +3,8 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-abstract class LinkNode extends Node implements InlineNodeInterface {
+abstract class LinkNode extends Node implements InlineNodeInterface
+{
 
 
     /** @var  InlineNodeInterface */
@@ -17,7 +18,8 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
 
     protected $attrs = [];
 
-    public function __construct($data, $parent, $previousNode = false) {
+    public function __construct($data, $parent, $previousNode = false)
+    {
         $this->parent = &$parent;
         if ($previousNode !== false) {
             $this->previous = &$previousNode;
@@ -33,15 +35,18 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
     /**
      * @param string $markType
      */
-    public function increaseMark($markType) {
+    public function increaseMark($markType)
+    {
         return $this->textNode->increaseMark($markType);
     }
 
-    public function getStartingNodeMarkScore($markType) {
+    public function getStartingNodeMarkScore($markType)
+    {
         return $this->textNode->getStartingNodeMarkScore($markType);
     }
 
-    protected function getDefaultLinkSyntax2($inner) {
+    protected function getDefaultLinkSyntax2($inner)
+    {
         $title = '';
         $prefix = $this->textNode->getPrefixSyntax();;
         $postfix = $this->textNode->getPostfixSyntax();
@@ -130,7 +135,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
      * @param string|array $name
      * @param string $title
      * @param string $defaultClass
-     * @param array  $additionalAttributes
+     * @param array $additionalAttributes
      */
     protected static function renderToJSON(
         \renderer_plugin_prosemirror $renderer,
@@ -139,8 +144,8 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         $name,
         $title,
         $defaultClass,
-        $additionalAttributes = [] )
-    {
+        $additionalAttributes = []
+    ) {
         $isImage = is_array($name);
         if ($isImage) {
             $class = 'media';
@@ -169,7 +174,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         foreach ($additionalAttributes as $attributeName => $attributeValue) {
             $linkNode->attr($attributeName, $attributeValue);
         }
-        foreach(array_keys($renderer->getCurrentMarks()) as $mark) {
+        foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
             $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
         }
         $renderer->addToNodestack($linkNode);

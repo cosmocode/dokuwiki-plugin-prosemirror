@@ -2,7 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-abstract class Node {
+abstract class Node
+{
 
     protected static $nodeclass = [
         'text' => TextNode::class,
@@ -39,7 +40,8 @@ abstract class Node {
         'windowssharelink' => WindowsShareLinkNode::class,
     ];
 
-    public static function getSubNode($node, $parent, $previous = null) {
+    public static function getSubNode($node, $parent, $previous = null)
+    {
         if ($node['type'] === 'link') {
             $linkType = $node['attrs']['data-type'];
             return new self::$linkClasses[$linkType]($node, $parent, $previous);

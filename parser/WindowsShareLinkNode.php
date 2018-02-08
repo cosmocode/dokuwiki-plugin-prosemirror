@@ -14,10 +14,10 @@ class WindowsShareLinkNode extends LinkNode
         return $this->getDefaultLinkSyntax($href, $href);
     }
 
-    public static function render($renderer, $link, $title )
+    public static function render($renderer, $link, $title)
     {
-        $url           = str_replace('\\', '/', $link);
-        $url           = 'file:///'.$url;
+        $url = str_replace('\\', '/', $link);
+        $url = 'file:///' . $url;
         self::renderToJSON(
             $renderer,
             'windowssharelink',

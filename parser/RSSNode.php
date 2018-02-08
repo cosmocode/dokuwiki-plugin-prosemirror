@@ -2,12 +2,14 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class RSSNode extends Node {
+class RSSNode extends Node
+{
 
     protected $parent;
     protected $data;
 
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
         $this->data = $data;
     }
@@ -45,7 +47,7 @@ class RSSNode extends Node {
             }
 
             if (!empty($params['refresh'])) {
-                $paramString .= ' ' . ($params['refresh'])/60 . 'm';
+                $paramString .= ' ' . ($params['refresh']) / 60 . 'm';
             }
         }
         $postfix = '}}';

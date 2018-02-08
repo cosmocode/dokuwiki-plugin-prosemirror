@@ -62,9 +62,16 @@ class ImageNode extends Node implements InlineNodeInterface
         return '{{' . $leftAlign . $this->attrs['id'] . $queryString . $rightAlign . $title . '}}';
     }
 
-    public static function render(\renderer_plugin_prosemirror $renderer, $src, $title = null, $align = null,
-        $width = null, $height = null, $cache = null, $linking = null)
-    {
+    public static function render(
+        \renderer_plugin_prosemirror $renderer,
+        $src,
+        $title = null,
+        $align = null,
+        $width = null,
+        $height = null,
+        $cache = null,
+        $linking = null
+    ) {
         $node = new \dokuwiki\plugin\prosemirror\schema\Node('image');
 
         self::addAttributes(
@@ -78,7 +85,7 @@ class ImageNode extends Node implements InlineNodeInterface
             $linking
         );
 
-        foreach(array_keys($renderer->getCurrentMarks()) as $mark) {
+        foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
             $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
         }
 
@@ -87,8 +94,13 @@ class ImageNode extends Node implements InlineNodeInterface
 
     public static function addAttributes(
         \dokuwiki\plugin\prosemirror\schema\Node $node,
-        $src, $title = null, $align = null,
-        $width = null, $height = null, $cache = null, $linking = null,
+        $src,
+        $title = null,
+        $align = null,
+        $width = null,
+        $height = null,
+        $cache = null,
+        $linking = null,
         $prefix = ''
     ) {
         $node->attr($prefix . 'src', ml($src));

@@ -7,7 +7,8 @@ namespace dokuwiki\plugin\prosemirror\schema;
  * @package dokuwiki\plugin\prosemirror\schema
  * @link http://prosemirror.net/ref.html#model.Node
  */
-class Node implements \JsonSerializable {
+class Node implements \JsonSerializable
+{
 
     /** @var  string The type of node that this is */
     protected $type;
@@ -29,45 +30,57 @@ class Node implements \JsonSerializable {
      *
      * @param string $type
      */
-    public function __construct($type) {
+    public function __construct($type)
+    {
         $this->type = $type;
-        if($type == 'text') $this->setText('');
+        if ($type == 'text') {
+            $this->setText('');
+        }
     }
 
     /**
      * @param Node $child
      */
-    public function addChild(Node $child) {
-        if($this->type == 'text') throw new \RuntimeException('TextNodes may not have children');
+    public function addChild(Node $child)
+    {
+        if ($this->type == 'text') {
+            throw new \RuntimeException('TextNodes may not have children');
+        }
         $this->content[] = $child;
     }
 
     /**
      * @param Mark $mark
      */
-    public function addMark(Mark $mark) {
+    public function addMark(Mark $mark)
+    {
         $this->marks[] = $mark;
     }
 
     /**
      * @return string
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
     /**
      * @return string
      */
-    public function getText() {
+    public function getText()
+    {
         return $this->text;
     }
 
     /**
      * @param string $text
      */
-    public function setText($text) {
-        if($this->type != 'text') throw new \RuntimeException('Non-TextNodes may not have text');
+    public function setText($text)
+    {
+        if ($this->type != 'text') {
+            throw new \RuntimeException('Non-TextNodes may not have text');
+        }
         $this->text = $text;
     }
 
@@ -76,9 +89,10 @@ class Node implements \JsonSerializable {
      * @param null $value Attribute value to set, null to get
      * @return $this|mixed Either the wanted value or the Node itself
      */
-    public function attr($key, $value = null) {
-        if(is_null($value)) {
-            if(isset($this->attrs[$key])) {
+    public function attr($key, $value = null)
+    {
+        if (is_null($value)) {
+            if (isset($this->attrs[$key])) {
                 return $this->attrs[$key];
             } else {
                 return null;
@@ -96,20 +110,21 @@ class Node implements \JsonSerializable {
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize() {
+    function jsonSerialize()
+    {
         $json = array(
             'type' => $this->type
         );
-        if($this->type == 'text') {
+        if ($this->type == 'text') {
             $json['text'] = $this->text;
-        } elseif($this->content) {
+        } elseif ($this->content) {
             $json['content'] = $this->content;
         }
 
-        if($this->marks) {
+        if ($this->marks) {
             $json['marks'] = $this->marks;
         }
-        if($this->attrs) {
+        if ($this->attrs) {
             $json['attrs'] = $this->attrs;
         }
 

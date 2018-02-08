@@ -59,7 +59,9 @@ codeBlock.attrs = {
     'data-filename': { default: null },
     'data-language': { default: null },
 };
-codeBlock.toDOM = function toDOM(node) { return ['pre', node.attrs, 0]; };
+codeBlock.toDOM = function toDOM(node) {
+    return ['pre', node.attrs, 0];
+};
 nodes = nodes.update('code_block', codeBlock);
 
 nodes = nodes.addToEnd('file_block', {

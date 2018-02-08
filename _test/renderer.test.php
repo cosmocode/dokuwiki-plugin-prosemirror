@@ -6,7 +6,8 @@
  * @group plugin_prosemirror
  * @group plugins
  */
-class renderer_plugin_prosemirror_test extends DokuWikiTest {
+class renderer_plugin_prosemirror_test extends DokuWikiTest
+{
 
     protected $pluginsEnabled = array('prosemirror');
 
@@ -17,7 +18,8 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
      * @param string $expectedJSON
      * @param string $msg
      */
-    public function test_renderer($dokuwikiMarkup, $expectedJSON, $msg) {
+    public function test_renderer($dokuwikiMarkup, $expectedJSON, $msg)
+    {
         global $ID;
         $ID = 'wiki:syntax';
         $instructions = p_get_instructions($dokuwikiMarkup);
@@ -28,11 +30,12 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest {
     /**
      * @return array
      */
-    public function rendererProvider() {
+    public function rendererProvider()
+    {
         $data = array();
 
         $files = glob(__DIR__ . '/json/*.json');
-        foreach($files as $file) {
+        foreach ($files as $file) {
             $name = basename($file, '.json');
             $json = file_get_contents(__DIR__ . '/json/' . $name . '.json');
             $wiki = file_get_contents(__DIR__ . '/json/' . $name . '.txt');

@@ -16,13 +16,13 @@ class InternalLinkNode extends LinkNode
 
         global $ID;
         $additionalAttributes = [];
-        @list($id, ) = explode('?', $originalId, 2);
+        @list($id,) = explode('?', $originalId, 2);
 
         // For empty $id we need to know the current $ID
         // We need this check because _simpleTitle needs
         // correct $id and resolve_pageid() use cleanID($id)
         // (some things could be lost)
-        if($id === '') {
+        if ($id === '') {
             $id = $ID;
         }
 
@@ -52,11 +52,12 @@ class InternalLinkNode extends LinkNode
         );
     }
 
-    protected static function getLinkTitle($title, $default, $id) {
-        if(null === $title || trim($title) == '') {
-            if(useHeading('content') && $id) {
+    protected static function getLinkTitle($title, $default, $id)
+    {
+        if (null === $title || trim($title) == '') {
+            if (useHeading('content') && $id) {
                 $heading = p_get_first_heading($id);
-                if(!blank($heading)) {
+                if (!blank($heading)) {
                     return hsc($heading);
                 }
             }

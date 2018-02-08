@@ -2,7 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class Mark {
+class Mark
+{
 
     public static $markOrder = [
         'strong' => 1,
@@ -29,7 +30,8 @@ class Mark {
     /** @var  TextNode */
     protected $parent;
 
-    public function __construct($data, &$parent) {
+    public function __construct($data, &$parent)
+    {
         $this->type = $data['type'];
         if (isset($data['attrs'])) {
             $this->attrs = $data['attrs'];
@@ -37,31 +39,38 @@ class Mark {
         $this->parent = &$parent;
     }
 
-    public function setPrevious($previousMark) {
+    public function setPrevious($previousMark)
+    {
         $this->previousMark = &$previousMark;
     }
 
-    public function setNext($nextMark) {
+    public function setNext($nextMark)
+    {
         $this->nextMark = &$nextMark;
     }
 
-    public function isOpeningMark() {
+    public function isOpeningMark()
+    {
         return $this->parent->getStartingNodeMarkScore($this->type) === $this->getTailLength();
     }
 
-    public function isClosingMark() {
+    public function isClosingMark()
+    {
         return $this->tailLength === 0;
     }
 
-    public function incrementTail() {
+    public function incrementTail()
+    {
         $this->tailLength += 1;
     }
 
-    public function getTailLength() {
+    public function getTailLength()
+    {
         return $this->tailLength;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -70,7 +79,8 @@ class Mark {
      * @param null|Mark $newNext
      * @return Mark
      */
-    public function switchPlaces(Mark $newPrevious, $newNext) {
+    public function switchPlaces(Mark $newPrevious, $newNext)
+    {
         $oldPrevious = $this->previousMark;
         $this->previousMark = &$newPrevious;
         $this->nextMark = &$newNext;
@@ -80,7 +90,8 @@ class Mark {
         return $oldPrevious;
     }
 
-    public function sort() {
+    public function sort()
+    {
         if ($this->previousMark === null) {
             return true;
         }
@@ -104,25 +115,29 @@ class Mark {
         return false;
     }
 
-    public function getFirst() {
+    public function getFirst()
+    {
         if (!$this->previousMark) {
             return $this;
         }
         return $this->previousMark->getFirst();
     }
 
-    public function getLast() {
+    public function getLast()
+    {
         if (!$this->nextMark) {
             return $this;
         }
         return $this->nextMark->getLast();
     }
 
-    public function getPrevious() {
+    public function getPrevious()
+    {
         return $this->previousMark;
     }
 
-    public function getNext() {
+    public function getNext()
+    {
         return $this->nextMark;
     }
 
@@ -146,14 +161,16 @@ class Mark {
         'deleted' => '</del>',
     ];
 
-    public function getOpeningSyntax() {
+    public function getOpeningSyntax()
+    {
         if ($this->type !== 'unformatted') {
             return self::$openingMarks[$this->type];
         }
         return $this->getUnformattedSyntax('opening');
     }
 
-    public function getClosingSyntax() {
+    public function getClosingSyntax()
+    {
         if ($this->type !== 'unformatted') {
             return self::$closingMarks[$this->type];
         }
@@ -167,8 +184,9 @@ class Mark {
      * @param string $type
      * @return string
      */
-    protected function getUnformattedSyntax($type) {
-        if (strpos($this->parent->getInnerSyntax(),'%%') === false) {
+    protected function getUnformattedSyntax($type)
+    {
+        if (strpos($this->parent->getInnerSyntax(), '%%') === false) {
             return '%%';
         }
         if ($type === 'opening') {

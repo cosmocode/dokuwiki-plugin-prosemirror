@@ -9,17 +9,19 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-class ListNode extends Node {
+class ListNode extends Node
+{
 
     protected $parent;
-    /** @var string  */
+    /** @var string */
     protected $prefix;
     /** @var ListItemNode[] */
     protected $listItemNodes = [];
 
     protected $depth = 0;
 
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
         if (is_a($this->parent, 'dokuwiki\plugin\prosemirror\parser\ListItemNode')) {
             $this->depth = $this->parent->getDepth() + 1;
@@ -32,7 +34,8 @@ class ListNode extends Node {
         }
     }
 
-    public function toSyntax() {
+    public function toSyntax()
+    {
         $doc = '';
 
         foreach ($this->listItemNodes as $li) {

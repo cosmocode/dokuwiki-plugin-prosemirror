@@ -83,7 +83,9 @@ const view = new EditorView(document.querySelector('#prosemirror__editor'), {
         json.value = JSON.stringify(view.state.doc.toJSON(), null, spaces);
     },
     nodeViews: {
-        link(node, outerview, getPos) { return new LinkView(node, outerview, getPos); },
+        link(node, outerview, getPos) {
+            return new LinkView(node, outerview, getPos);
+        },
     },
 });
 window.view = view.editor;

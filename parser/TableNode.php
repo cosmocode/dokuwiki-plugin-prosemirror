@@ -27,11 +27,13 @@ class TableNode extends Node
         return $doc;
     }
 
-    public function getRowSpans() {
+    public function getRowSpans()
+    {
         return $this->rowSpans;
     }
 
-    public function setRowSpans(array $rowSpans) {
+    public function setRowSpans(array $rowSpans)
+    {
         $this->rowSpans = $rowSpans;
     }
 

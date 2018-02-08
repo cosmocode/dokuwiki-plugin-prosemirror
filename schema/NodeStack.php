@@ -2,7 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\schema;
 
-class NodeStack {
+class NodeStack
+{
 
     /** @var Node[] */
     protected $stack = array();
@@ -16,7 +17,8 @@ class NodeStack {
     /**
      * NodeStack constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $node = new Node('doc');
         $this->doc = $node;
         $this->top($node);
@@ -27,7 +29,8 @@ class NodeStack {
      *
      * @return Node
      */
-    public function current() {
+    public function current()
+    {
         return $this->stack[$this->stacklength];
     }
 
@@ -36,7 +39,8 @@ class NodeStack {
      *
      * @return Node
      */
-    public function doc() {
+    public function doc()
+    {
         return $this->doc;
     }
 
@@ -45,7 +49,8 @@ class NodeStack {
      *
      * @param Node $node
      */
-    protected function top(Node $node) {
+    protected function top(Node $node)
+    {
         $this->stack[] = $node;
         $this->stacklength++;
     }
@@ -55,7 +60,8 @@ class NodeStack {
      *
      * @param Node $node
      */
-    public function addTop(Node $node) {
+    public function addTop(Node $node)
+    {
         $this->add($node);
         $this->top($node);
     }
@@ -66,12 +72,13 @@ class NodeStack {
      * @param string $type The type of node that is expected. A RuntimeException is thrown if the current nod does not match
      * @return Node
      */
-    public function drop($type) {
+    public function drop($type)
+    {
         /** @var Node $node */
         $node = array_pop($this->stack);
         $this->stacklength--;
-        if($node->getType() != $type) {
-            throw new \RuntimeException("Expected the current node to be of type $type found ".$node->getType()." instead.");
+        if ($node->getType() != $type) {
+            throw new \RuntimeException("Expected the current node to be of type $type found " . $node->getType() . " instead.");
         }
         return $node;
     }
@@ -81,7 +88,8 @@ class NodeStack {
      *
      * @param Node $node
      */
-    public function add(Node $node) {
+    public function add(Node $node)
+    {
         $this->current()->addChild($node);
     }
 

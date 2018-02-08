@@ -12,5 +12,4 @@
 // $lang['fixme'] = 'FIXME';
 
 
-
 //Setup VIM: ex: et ts=4 :

@@ -9,7 +9,8 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-class ListItemNode extends Node {
+class ListItemNode extends Node
+{
 
     protected $parent;
     /** @var Node[] */
@@ -21,7 +22,8 @@ class ListItemNode extends Node {
      * @param          $data
      * @param ListNode $parent
      */
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
 
         foreach ($data['content'] as $node) {
@@ -30,7 +32,8 @@ class ListItemNode extends Node {
 
     }
 
-    public function toSyntax() {
+    public function toSyntax()
+    {
         $lines = [];
         foreach ($this->subnodes as $node) {
             /*
@@ -42,7 +45,7 @@ class ListItemNode extends Node {
             if (is_a($node, ListNode::class)) {
                 $prefixLinebreak = "\n";
             }
-            $lines[] = $prefixLinebreak. $node->toSyntax();
+            $lines[] = $prefixLinebreak . $node->toSyntax();
         }
         return implode("", $lines);
     }

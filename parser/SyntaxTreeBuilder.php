@@ -2,14 +2,16 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class SyntaxTreeBuilder {
+class SyntaxTreeBuilder
+{
 
     /**
      * @param $json
      *
      * @return Node
      */
-    public static function parseJsonIntoTree($json) {
+    public static function parseJsonIntoTree($json)
+    {
         $data = json_decode($json, true);
 
         $rootNode = new RootNode($data['content']);

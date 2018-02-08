@@ -13,7 +13,8 @@ if (!defined('DOKU_INC')) {
     die();
 }
 
-class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
+class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
+{
 
     /**
      * Registers a callback function for a given event
@@ -22,7 +23,8 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
      *
      * @return void
      */
-    public function register(Doku_Event_Handler $controller) {
+    public function register(Doku_Event_Handler $controller)
+    {
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handle_preprocess');
 
     }
@@ -30,13 +32,14 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
     /**
      * [Custom event handler which performs action]
      *
-     * @param Doku_Event $event  event object by reference
-     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
+     * @param Doku_Event $event event object by reference
+     * @param mixed $param [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
      *
      * @return void
      */
-    public function handle_preprocess(Doku_Event $event, $param) {
+    public function handle_preprocess(Doku_Event $event, $param)
+    {
         global $TEXT, $INPUT;
         if ($INPUT->server->str('REQUEST_METHOD') !== 'POST'
             || ($event->data !== 'save' && $event->data !== 'preview')
@@ -46,7 +49,7 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin {
         }
         $unparsedJSON = $INPUT->post->str('prosemirror_json');
         if (json_decode($unparsedJSON, true) === null) {
-            msg('Error decoding prosemirror data', - 1);
+            msg('Error decoding prosemirror data', -1);
             return;
         }
         $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($unparsedJSON);
