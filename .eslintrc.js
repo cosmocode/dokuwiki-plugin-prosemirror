@@ -29,5 +29,9 @@ module.exports = {
         browser: true,
         jquery: true,
     },
+    globals: {
+        JSINFO: false,
+        DOKU_BASE: false,
+    },
     rules,
 };
