@@ -22,7 +22,11 @@ class LinkView {
     renderLink(attributes) {
         if (!this.dom) {
             this.dom = document.createElement('a');
-            jQuery(this.dom).on('click', (event) => { event.preventDefault(); });
+            jQuery(this.dom).on('click', (event) => {
+                if (typeof event.ctrlKey === 'undefined' || !event.ctrlKey) {
+                    event.preventDefault();
+                }
+            });
         }
         this.dom.setAttribute('href', LinkView.transformInnerToHref(attributes['data-type'], attributes['data-inner']));
         this.dom.setAttribute('title', attributes['data-inner']);
