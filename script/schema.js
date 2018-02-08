@@ -210,24 +210,6 @@ nodes = nodes.addToEnd('interwikilink', {
     ],
 });
 
-nodes = nodes.addToEnd('internallink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        'data-id': {},
-        'data-query': { default: null },
-        'data-hash': { default: null },
-        title: { default: null },
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-});
-
 nodes = nodes.addToEnd('locallink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
