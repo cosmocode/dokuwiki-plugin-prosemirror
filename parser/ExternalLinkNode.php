@@ -5,62 +5,18 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class ExternalLinkNode extends LinkNode
 {
-    public function __construct($data, $parent, $previousNode = false)
-    {
-        $this->parent = &$parent;
-        if ($previousNode !== false) {
-            $this->previous = &$previousNode;
-        }
-
-        $this->attrs = $data['attrs'];
-
-        // every inline node needs a TextNode to track marks
-        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
-    }
-
     public function toSyntax()
     {
-        $href = $this->attrs['href'];
-        $name = $this->attrs['data-name'];
-
-        $inner = $href;
-        $defaultTitle = $href;
-
-        $title = '';
-        $prefix = '';
-        $postfix = '';
-
-        if (!empty($name) && $defaultTitle !== $name) {
-            $title = '|' . $name;
-        }
-
-        if (!empty($this->attrs['image-src'])) {
-            $imageAttrs = [];
-            foreach ($this->attrs as $key => $value) {
-                @list ($keyPrefix, $attrKey) = explode('-', $key);
-                if ($keyPrefix === 'image') {
-                    $imageAttrs[$attrKey] = $value;
-                }
-            }
-            $imageNode = new ImageNode([
-                'attrs' => $imageAttrs,
-                'marks' => [],
-            ], $this);
-            $title = '|' . $imageNode->toSyntax();
-        }
-
-        return $prefix . '[[' . $inner . $title . ']]' . $postfix;
+        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
     }
 
     public static function render($renderer, $link, $name)
     {
-        self::renderToJSON(
+        self::renderToJSON2(
             $renderer,
             'externallink',
             $link,
-            $name,
-            hsc($link),
-            'urlextern'
+            $name
         );
     }
 }

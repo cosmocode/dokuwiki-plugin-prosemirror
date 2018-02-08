@@ -16,7 +16,7 @@ class RootNode extends Node{
 
     public function __construct($subnodes) {
         foreach ($subnodes as $node) {
-            $this->subnodes[] = new self::$nodeclass[$node['type']]($node, $this);
+            $this->subnodes[] = self::getSubNode($node, $this);
         }
     }
 

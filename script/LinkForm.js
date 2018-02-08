@@ -1,5 +1,4 @@
 class LinkForm {
-    // VALID_LINKTYPES = ['page', 'interwiki', 'email', 'external'];
     constructor() {
         jQuery(this.initializeLinkForm.bind(this));
     }
@@ -66,7 +65,7 @@ class LinkForm {
 
     resetForm() {
         this.setLinkTarget('');
-        this.setLinkType('external');
+        this.setLinkType('externallink');
         this.setLinkNameType('automatic');
         this.off();
     }
@@ -87,6 +86,24 @@ class LinkForm {
                 break;
             default:
                 console.log(nametype);
+            }
+        });
+
+        $linkform.find('[name="linktype"]').on('change', () => {
+            const linktype = $linkform.find('[name="linktype"]:checked').val();
+            switch (linktype) {
+            case 'externallink':
+                $linkform.find('[name="linktarget"]')
+                    .attr('type', 'url') // fixme this doesn't allow "\\server\share" links
+                    .prop('placeholder', 'https://www.example.com');
+                break;
+            case 'emaillink':
+                $linkform.find('[name="linktarget"]')
+                    .attr('type', 'email')
+                    .prop('placeholder', 'mail@example.com');
+                break;
+            default:
+                console.warn(`unknown / unhandled linktype ${linktype}`);
             }
         });
 

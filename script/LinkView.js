@@ -24,6 +24,9 @@ class LinkView {
             this.dom = document.createElement('a');
             jQuery(this.dom).on('click', (event) => { event.preventDefault(); });
         }
+        this.dom.setAttribute('href', LinkView.transformInnerToHref(attributes['data-type'], attributes['data-inner']));
+        this.dom.setAttribute('title', attributes['data-inner']);
+
         Object.entries(attributes).forEach(([name, value]) => {
             if (name.substr(0, 'image-'.length) === 'image-') {
                 return;
@@ -31,9 +34,12 @@ class LinkView {
             this.dom.setAttribute(name, value);
         });
         this.dom.setAttribute('style', 'cursor: text;');
+
+        const isImage = attributes['image-src'] && attributes['image-src'].length > 0;
+
         if (attributes['data-name']) {
             this.dom.textContent = attributes['data-name'];
-        } else if (attributes['image-src']) {
+        } else if (isImage) {
             this.dom.innerHTML = '';
             const image = document.createElement('img');
 
@@ -45,15 +51,21 @@ class LinkView {
 
             this.dom.appendChild(image);
         } else {
-            this.dom.textContent = attributes.href;
+            this.dom.textContent = attributes['data-inner'];
+        }
+
+        if (isImage) {
+            this.dom.setAttribute('class', 'media');
+        } else {
+            this.dom.setAttribute('class', LinkView.getClassFromType(attributes['data-type']));
         }
     }
 
     selectNode() {
         this.dom.classList.add('ProseMirror-selectednode');
 
-        this.linkForm.setLinkType('external');
-        this.linkForm.setLinkTarget(this.node.attrs.href);
+        this.linkForm.setLinkType(this.node.attrs['data-type']);
+        this.linkForm.setLinkTarget(this.node.attrs['data-inner']);
 
         if (this.node.attrs['data-name']) {
             this.linkForm.setLinkNameType('custom', this.node.attrs['data-name']);
@@ -67,20 +79,31 @@ class LinkView {
 
             const newAttrs = this.node.copy().attrs;
 
-            newAttrs.href = this.linkForm.getLinkTarget();
-            newAttrs.title = this.linkForm.getLinkTarget();
+            const linkType = this.linkForm.getLinkType();
+            const linkTarget = this.linkForm.getLinkTarget();
+            newAttrs['data-inner'] = linkTarget;
+            newAttrs['data-type'] = linkType;
+            const nameType = this.linkForm.getLinkNameType();
             const newTitle = this.linkForm.getLinkName();
-            if (newTitle) {
+            if (nameType === 'custom') {
                 newAttrs['data-name'] = newTitle;
-                // fixme: adjust class to urlextern if no longer media!
                 Object.keys(newAttrs).forEach((attr) => {
                     if (attr.substr(0, 'image-'.length) === 'image-') {
                         delete newAttrs[attr];
                     }
                 });
             }
-            const nodeStartPos = this.getPos();
+            if (nameType === 'automatic') {
+                delete newAttrs['data-name'];
+                Object.keys(newAttrs).forEach((attr) => {
+                    if (attr.substr(0, 'image-'.length) === 'image-') {
+                        delete newAttrs[attr];
+                    }
+                });
+            }
+
             this.renderLink(newAttrs);
+            const nodeStartPos = this.getPos();
             this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
                 nodeStartPos,
                 null,
@@ -96,6 +119,31 @@ class LinkView {
         this.linkForm.off('submit');
         this.linkForm.hide();
         this.linkForm.resetForm();
+    }
+
+
+    static transformInnerToHref(linktype, inner) {
+        switch (linktype) {
+        case 'externallink':
+            return inner;
+        case 'emaillink':
+            return `mailto:${inner}`;
+        default:
+            console.log(`unknown linktype: ${linktype}`);
+            return false;
+        }
+    }
+
+    static getClassFromType(linktype) {
+        switch (linktype) {
+        case 'externallink':
+            return 'urlextern';
+        case 'emaillink':
+            return 'mail';
+        default:
+            console.log(`unknown linktype to return class from: ${linktype}`);
+            return false;
+        }
     }
 }
 

@@ -160,6 +160,22 @@ Object.keys(imageNode.attrs).forEach((key) => {
     imageAttrs[`image-${key}`] = { default: null };
 });
 
+nodes = nodes.addToEnd('link', {
+    group: 'inline',
+    inline: true,
+    attrs: {
+        // class: {},
+        // href: {},
+        'data-type': {},
+        'data-inner': {},
+        'data-name': { default: null },
+        ...imageAttrs,
+    },
+    toDOM(node) {
+        return ['a', node.attrs];
+    },
+});
+
 nodes = nodes.addToEnd('interwikilink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
@@ -209,38 +225,7 @@ nodes = nodes.addToEnd('internallink', {
     },
 });
 
-nodes = nodes.addToEnd('externallink', {
-    group: 'inline',
-    inline: true,
-    attrs: {
-        class: {},
-        href: {},
-        title: {},
-        'data-name': { default: null },
-        ...imageAttrs,
-    },
-    toDOM(node) {
-        return ['a', node.attrs];
-    },
-});
-
 nodes = nodes.addToEnd('locallink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        title: {},
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-});
-
-
-nodes = nodes.addToEnd('emaillink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
     inline: true,
@@ -316,6 +301,8 @@ nodes = nodes.addToEnd('dwplugin', {
 // FIXME table cells need alignment attributes
 // FIXME we don't allow stuff in links
 // FIXME extend image node with additional attributes
+
+marks = marks.remove('link');
 
 marks = marks.addToEnd('deleted', {
     parseDOM: [

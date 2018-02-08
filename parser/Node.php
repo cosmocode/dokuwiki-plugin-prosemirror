@@ -10,12 +10,6 @@ abstract class Node {
         'bullet_list' => ListNode::class,
         'ordered_list' => ListNode::class,
         'heading' => HeadingNode::class,
-        'interwikilink' => InterwikiLinkNode::class,
-        'internallink' => InternalLinkNode::class,
-        'externallink' => ExternalLinkNode::class,
-        'emaillink' => EmailLinkNode::class,
-        'locallink' => LocalLinkNode::class,
-        'windowssharelink' => WindowsShareLinkNode::class,
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,
         'file_block' => CodeBlockNode::class,
@@ -34,6 +28,25 @@ abstract class Node {
         'rss' => RSSNode::class,
         'dwplugin' => PluginNode::class,
     ];
+
+
+    protected static $linkClasses = [
+        'interwikilink' => InterwikiLinkNode::class,
+        'internallink' => InternalLinkNode::class,
+        'emaillink' => EmailLinkNode::class,
+        'externallink' => ExternalLinkNode::class,
+        'locallink' => LocalLinkNode::class,
+        'windowssharelink' => WindowsShareLinkNode::class,
+    ];
+
+    public static function getSubNode($node, $parent, $previous = null) {
+        if ($node['type'] === 'link') {
+            $linkType = $node['attrs']['data-type'];
+            return new self::$linkClasses[$linkType]($node, $parent, $previous);
+        }
+
+        return new self::$nodeclass[$node['type']]($node, $parent, $previous);
+    }
 
     abstract public function toSyntax();
 

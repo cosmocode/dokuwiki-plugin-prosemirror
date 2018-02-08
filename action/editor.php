@@ -68,8 +68,8 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin {
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');
         $linkForm->addRadioButton('linktype', 'Wiki page')->val('page')->attr('disabled', 'disabled');
         $linkForm->addRadioButton('linktype', 'Interwiki link')->val('interwiki')->attr('disabled', 'disabled');
-        $linkForm->addRadioButton('linktype', 'email')->val('email')->attr('disabled', 'disabled');
-        $linkForm->addRadioButton('linktype', 'Other/external')->val('external')->attr('checked', 'checked');
+        $linkForm->addRadioButton('linktype', 'email')->val('emaillink');
+        $linkForm->addRadioButton('linktype', 'Other/external')->val('externallink')->attr('checked', 'checked');
         $linkForm->addTagClose('div');
 
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');

@@ -14,22 +14,15 @@
                     ]
                 },
                 {
-                    "type": "emaillink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "andi@splitbrain.org",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ]
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "mailto:andi@splitbrain.org",
-                        "class": "mail",
-                        "title": "andi@splitbrain.org"
+                        "data-type": "emaillink",
+                        "data-inner": "andi@splitbrain.org"
                     }
                 },
                 {
@@ -42,25 +35,19 @@
                     ]
                 },
                 {
-                    "type": "emaillink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "write me!",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                },
-                                {
-                                    "type": "em"
-                                }
-                            ]
+                            "type": "strong"
+                        },
+                        {
+                            "type": "em"
                         }
                     ],
                     "attrs": {
-                        "href": "mailto:andi@splitbrain.org",
-                        "class": "mail",
-                        "title": "andi@splitbrain.org"
+                        "data-type": "emaillink",
+                        "data-inner": "andi@splitbrain.org",
+                        "data-name": "write me!"
                     }
                 },
                 {
@@ -73,28 +60,19 @@
                     ]
                 },
                 {
-                    "type": "emaillink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "image",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ],
-                            "attrs": {
-                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "width": "20",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "mailto:dokuwiki@freelists.org",
-                        "class": "media",
-                        "title": "dokuwiki@freelists.org"
+                        "data-type": "emaillink",
+                        "data-inner": "dokuwiki@freelists.org",
+                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-width": "20",
+                        "image-id": "wiki:dokuwiki-128.png"
                     }
                 },
                 {

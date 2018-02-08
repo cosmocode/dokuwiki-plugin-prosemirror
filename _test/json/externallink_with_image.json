@@ -5,11 +5,10 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "externallink",
+                    "type": "link",
                     "attrs": {
-                        "href": "https://www.php.net",
-                        "title": "https://www.php.net",
-                        "class": "media",
+                        "data-inner": "https://www.php.net",
+                        "data-type": "externallink",
                         "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
                         "image-class": "media",
                         "image-id": "wiki:dokuwiki-128.png"

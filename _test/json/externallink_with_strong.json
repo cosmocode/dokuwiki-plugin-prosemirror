@@ -14,17 +14,16 @@
                     ]
                 },
                 {
-                    "type": "externallink",
+                    "type": "link",
                     "marks": [
                         {
                             "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "https:\/\/dokuwiki.org\/",
-                        "class": "urlextern",
-                        "data-name": "this",
-                        "title": "https:\/\/dokuwiki.org\/"
+                        "data-inner": "https:\/\/dokuwiki.org\/",
+                        "data-type": "externallink",
+                        "data-name": "this"
                     }
                 },
                 {
@@ -37,16 +36,15 @@
                     ]
                 },
                 {
-                    "type": "externallink",
+                    "type": "link",
                     "marks": [
                         {
                             "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "https:\/\/dokuwiki.org\/",
-                        "title": "https:\/\/dokuwiki.org\/",
-                        "class": "media",
+                        "data-inner": "https:\/\/dokuwiki.org\/",
+                        "data-type": "externallink",
                         "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
                         "image-class": "media",
                         "image-width": "20",

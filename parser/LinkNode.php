@@ -25,15 +25,8 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
 
         $this->attrs = $data['attrs'];
 
-        if (count($data['content']) !== 1) {
-            throw new \InvalidArgumentException('An LinkNode must contain exactly one TextNode or ImageNode');
-        }
-
-        if ($data['content'][0]['type'] === 'image') {
-            $this->contentNode = new ImageNode($data['content'][0], $this, $previousNode);
-        } else {
-            $this->contentNode = new TextNode($data['content'][0], $this, $previousNode);
-        }
+        // every inline node needs a TextNode to track marks
+        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
     }
 
 
@@ -48,7 +41,34 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         return $this->textNode->getStartingNodeMarkScore($markType);
     }
 
-    protected function getDefaultLinkSyntax ($inner, $defaultTitle) {
+    protected function getDefaultLinkSyntax2($inner) {
+        $title = '';
+        $prefix = $this->textNode->getPrefixSyntax();;
+        $postfix = $this->textNode->getPostfixSyntax();
+
+        if (!empty($this->attrs['data-name'])) {
+            $title = '|' . $this->attrs['data-name'];
+        } else if (!empty($this->attrs['image-src'])) {
+            $imageAttrs = [];
+            foreach ($this->attrs as $key => $value) {
+                @list ($keyPrefix, $attrKey) = explode('-', $key, 2);
+                if ($keyPrefix === 'image') {
+                    $imageAttrs[$attrKey] = $value;
+                }
+            }
+            $imageNode = new ImageNode([
+                'attrs' => $imageAttrs,
+                'marks' => [],
+            ], $this);
+            $title = '|' . $imageNode->toSyntax();
+        }
+
+        return $prefix . '[[' . $inner . $title . ']]' . $postfix;
+    }
+
+
+    protected function getDefaultLinkSyntax($inner, $defaultTitle)
+    {
         $title = '';
         $prefix = '';
         $postfix = '';
@@ -66,6 +86,41 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         }
 
         return $prefix . '[[' . $inner . $title . ']]' . $postfix;
+    }
+
+    protected static function renderToJSON2(
+        \renderer_plugin_prosemirror $renderer,
+        $linktype,
+        $inner,
+        $name,
+        $additionalAttributes = []
+    ) {
+        $isImage = is_array($name);
+        $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node('link');
+        $linkNode->attr('data-type', $linktype);
+        $linkNode->attr('data-inner', $inner);
+        if ($isImage) {
+            ImageNode::addAttributes(
+                $linkNode,
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache'],
+                null,
+                'image-'
+            );
+        } else {
+            $linkNode->attr('data-name', $name);
+        }
+        foreach ($additionalAttributes as $attributeName => $attributeValue) {
+            $linkNode->attr($attributeName, $attributeValue);
+        }
+        foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
+            $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+        }
+        $renderer->addToNodestack($linkNode);
     }
 
     /**
