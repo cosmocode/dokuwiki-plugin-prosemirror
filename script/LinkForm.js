@@ -91,16 +91,22 @@ class LinkForm {
 
         $linkform.find('[name="linktype"]').on('change', () => {
             const linktype = $linkform.find('[name="linktype"]:checked').val();
+            const $linkTargetInput = $linkform.find('[name="linktarget"]');
             switch (linktype) {
             case 'externallink':
-                $linkform.find('[name="linktarget"]')
+                $linkTargetInput
                     .attr('type', 'url') // fixme this doesn't allow "\\server\share" links
                     .prop('placeholder', 'https://www.example.com');
                 break;
             case 'emaillink':
-                $linkform.find('[name="linktarget"]')
+                $linkTargetInput
                     .attr('type', 'email')
                     .prop('placeholder', 'mail@example.com');
+                break;
+            case 'internallink':
+                $linkTargetInput
+                    .attr('type', 'text')
+                    .prop('placeholder', 'namespace:page');
                 break;
             default:
                 console.warn(`unknown / unhandled linktype ${linktype}`);

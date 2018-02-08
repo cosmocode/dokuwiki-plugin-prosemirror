@@ -5,19 +5,13 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "internallink",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "page"
-                        }
-                    ],
+                    "type": "link",
                     "attrs": {
-                        "href": "/./doku.php?id=name:space:page&amp;foo=bar",
-                        "title": "name:space:page",
-                        "data-id": "name:space:page",
-                        "data-query": "foo=bar",
-                        "class": "wikilink2"
+                        "data-type": "internallink",
+                        "data-inner": "name:space:page?foo=bar",
+                        "data-initialName": "page",
+                        "data-initialClass": "wikilink2",
+                        "data-initialTitle": "name:space:page"
                     }
                 }
             ]

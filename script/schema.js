@@ -164,11 +164,12 @@ nodes = nodes.addToEnd('link', {
     group: 'inline',
     inline: true,
     attrs: {
-        // class: {},
-        // href: {},
         'data-type': {},
         'data-inner': {},
         'data-name': { default: null },
+        'data-initialName': { default: null },
+        'data-initialClass': { default: null },
+        'data-initialTitle': { default: null },
         ...imageAttrs,
     },
     toDOM(node) {
