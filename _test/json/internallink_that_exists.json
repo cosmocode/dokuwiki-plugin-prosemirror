@@ -9,9 +9,10 @@
                     "attrs": {
                         "data-type": "internallink",
                         "data-inner": "wiki:syntax",
-                        "data-initialName": "syntax",
-                        "data-initialClass": "wikilink1",
-                        "data-initialTitle": "wiki:syntax"
+                        "data-resolvedName": "syntax",
+                        "data-resolvedClass": "wikilink1",
+                        "data-resolvedTitle": "wiki:syntax",
+                        "data-resolvedID": "wiki:syntax"
                     }
                 }
             ]

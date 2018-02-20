@@ -12,7 +12,8 @@
                         "image-src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
                         "image-class": "media",
                         "image-id": "wiki:dokuwiki-128.png",
-                        "data-initialTitle": "wiki:syntax"
+                        "data-resolvedTitle": "wiki:syntax",
+                        "data-resolvedID": "wiki:syntax"
                     }
                 }
             ]

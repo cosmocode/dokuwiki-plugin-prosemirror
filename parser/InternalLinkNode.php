@@ -29,10 +29,11 @@ class InternalLinkNode extends LinkNode
 
         $resolvedId = $id;
         resolve_pageid(getNS($ID), $resolvedId, $exists);
-        $additionalAttributes['data-initialTitle'] = $resolvedId;
+        $additionalAttributes['data-resolvedTitle'] = $resolvedId;
+        $additionalAttributes['data-resolvedID'] = $resolvedId;
 
         if (!is_array($name)) {
-            $additionalAttributes['data-initialName'] = self::getLinkTitle($name, $renderer->_simpleTitle($id), $id);
+            $additionalAttributes['data-resolvedName'] = self::getLinkTitle($name, $renderer->_simpleTitle($id), $resolvedId);
 
             if ($exists) {
                 $class = 'wikilink1';
@@ -40,7 +41,7 @@ class InternalLinkNode extends LinkNode
                 $class = 'wikilink2';
             }
 
-            $additionalAttributes['data-initialClass'] = $class;
+            $additionalAttributes['data-resolvedClass'] = $class;
         }
 
         self::renderToJSON2(

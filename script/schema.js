@@ -169,9 +169,10 @@ nodes = nodes.addToEnd('link', {
         'data-type': {},
         'data-inner': {},
         'data-name': { default: null },
-        'data-initialName': { default: null },
-        'data-initialClass': { default: null },
-        'data-initialTitle': { default: null },
+        'data-resolvedID': { default: null },
+        'data-resolvedName': { default: null },
+        'data-resolvedClass': { default: null },
+        'data-resolvedTitle': { default: null },
         ...imageAttrs,
     },
     toDOM(node) {

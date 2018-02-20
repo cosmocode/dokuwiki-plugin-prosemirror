@@ -9,9 +9,10 @@
                     "attrs": {
                         "data-type": "internallink",
                         "data-inner": "name:space:page",
-                        "data-initialName": "page",
-                        "data-initialClass": "wikilink2",
-                        "data-initialTitle": "name:space:page"
+                        "data-resolvedTitle": "name:space:page",
+                        "data-resolvedID": "name:space:page",
+                        "data-resolvedName": "page",
+                        "data-resolvedClass": "wikilink2"
                     }
                 }
             ]

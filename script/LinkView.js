@@ -28,13 +28,24 @@ class LinkView {
                 }
             });
         }
-        this.dom.setAttribute('href', LinkView.transformInnerToHref(attributes['data-type'], attributes['data-inner']));
+
+        // href
+        this.dom.setAttribute(
+            'href',
+            LinkView.transformInnerToHref(
+                attributes['data-type'],
+                attributes['data-resolvedID'] || attributes['data-inner'],
+            ),
+        );
 
         // title
-        if (attributes['data-initialTitle']) {
-            this.dom.setAttribute('title', attributes['data-initialTitle']);
+        if (attributes['data-resolvedTitle']) {
+            this.dom.setAttribute('title', attributes['data-resolvedTitle']);
         } else {
-            this.dom.setAttribute('title', LinkView.getTitleFromInner(attributes['data-type'], attributes['data-inner']));
+            this.dom.setAttribute(
+                'title',
+                LinkView.getTitleFromInner(attributes['data-type'], attributes['data-inner']),
+            );
         }
 
         Object.entries(attributes).forEach(([name, value]) => {
@@ -59,8 +70,8 @@ class LinkView {
                 }
             });
             this.dom.appendChild(image);
-        } else if (attributes['data-initialName']) {
-            this.dom.textContent = attributes['data-initialName'];
+        } else if (attributes['data-resolvedName']) {
+            this.dom.textContent = attributes['data-resolvedName'];
         } else {
             this.dom.textContent = LinkView.getDefaultNameFromInner(attributes['data-type'], attributes['data-inner']);
         }
@@ -68,8 +79,8 @@ class LinkView {
         // class
         if (isImage) {
             this.dom.setAttribute('class', 'media');
-        } else if (attributes['data-initialClass']) {
-            this.dom.setAttribute('class', attributes['data-initialClass']);
+        } else if (attributes['data-resolvedClass']) {
+            this.dom.setAttribute('class', attributes['data-resolvedClass']);
         } else {
             this.dom.setAttribute('class', LinkView.getClassFromType(attributes['data-type']));
         }
@@ -92,7 +103,7 @@ class LinkView {
             event.stopPropagation();
 
             let newAttrs = this.node.copy().attrs;
-            newAttrs = LinkView.unsetPrefixAttributes('data-initial', newAttrs);
+            newAttrs = LinkView.unsetPrefixAttributes('data-resolved', newAttrs);
 
             newAttrs['data-inner'] = this.linkForm.getLinkTarget();
             newAttrs['data-type'] = this.linkForm.getLinkType();
@@ -104,6 +115,39 @@ class LinkView {
             if (nameType === 'automatic') {
                 delete newAttrs['data-name'];
                 newAttrs = LinkView.unsetPrefixAttributes('image-', newAttrs);
+            }
+
+            if (newAttrs['data-type'] === 'internallink') {
+                jQuery.get(
+                    `${DOKU_BASE}/lib/exe/ajax.php`,
+                    {
+                        call: 'plugin_prosemirror',
+                        action: 'resolveLink',
+                        inner: newAttrs['data-inner'],
+                        ns: JSINFO.namespace,
+                    },
+                ).done((data) => {
+                    const {
+                        id, exists, heading,
+                    } = JSON.parse(data);
+                    newAttrs['data-resolvedID'] = id;
+                    newAttrs['data-resolvedTitle'] = id;
+                    newAttrs['data-resolvedClass'] = exists ? 'wikilink1' : 'wikilink2';
+                    if (nameType === 'automatic') {
+                        newAttrs['data-resolvedName'] = heading;
+                    }
+                    this.renderLink(newAttrs);
+
+                    const nodeStartPos = this.getPos();
+                    this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
+                        nodeStartPos,
+                        null,
+                        newAttrs,
+                        this.node.marks,
+                    ));
+                });
+
+                return;
             }
 
             this.renderLink(newAttrs);
@@ -142,8 +186,9 @@ class LinkView {
             return inner;
         case 'emaillink':
             return `mailto:${inner}`;
-        case 'internallink':
+        case 'internallink': {
             return `${DOKU_BASE}doku.php?id=${inner.replace('?', '&')}`;
+        }
         default:
             console.log(`unknown linktype: ${linktype}`);
             return false;
