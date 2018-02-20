@@ -124,7 +124,7 @@ class LinkView {
                         call: 'plugin_prosemirror',
                         action: 'resolveLink',
                         inner: newAttrs['data-inner'],
-                        ns: JSINFO.namespace,
+                        id: JSINFO.id,
                     },
                 ).done((data) => {
                     const {

@@ -14,22 +14,19 @@
                     ]
                 },
                 {
-                    "type": "locallink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "images_and_other_files",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ]
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "#images_and_other_files",
-                        "title": "wiki:syntax \u21b5",
-                        "class": "wikilink1"
+                        "data-type": "internallink",
+                        "data-inner": "#images_and_other_files",
+                        "data-resolvedTitle": "wiki:syntax \u21b5",
+                        "data-resolvedID": "wiki:syntax#images_and_other_files",
+                        "data-resolvedName": "images_and_other_files",
+                        "data-resolvedClass": "wikilink1"
                     }
                 },
                 {
@@ -42,25 +39,23 @@
                     ]
                 },
                 {
-                    "type": "locallink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "click me!",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                },
-                                {
-                                    "type": "em"
-                                }
-                            ]
+                            "type": "strong"
+                        },
+                        {
+                            "type": "em"
                         }
                     ],
                     "attrs": {
-                        "href": "#images_and_other_files",
-                        "title": "wiki:syntax \u21b5",
-                        "class": "wikilink1"
+                        "data-type": "internallink",
+                        "data-inner": "#images_and_other_files",
+                        "data-name": "click me!",
+                        "data-resolvedTitle": "wiki:syntax \u21b5",
+                        "data-resolvedID": "wiki:syntax#images_and_other_files",
+                        "data-resolvedName": "images_and_other_files",
+                        "data-resolvedClass": "wikilink1"
                     }
                 },
                 {
@@ -73,28 +68,23 @@
                     ]
                 },
                 {
-                    "type": "locallink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "image",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ],
-                            "attrs": {
-                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "width": "20",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "#images_and_other_files",
-                        "title": "wiki:syntax \u21b5",
-                        "class": "media"
+                        "data-type": "internallink",
+                        "data-inner": "#images_and_other_files",
+                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-width": "20",
+                        "image-id": "wiki:dokuwiki-128.png",
+                        "data-resolvedTitle": "wiki:syntax \u21b5",
+                        "data-resolvedID": "wiki:syntax#images_and_other_files",
+                        "data-resolvedName": "images_and_other_files",
+                        "data-resolvedClass": "wikilink1"
                     }
                 },
                 {

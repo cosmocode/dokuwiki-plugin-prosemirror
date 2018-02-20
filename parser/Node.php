@@ -36,7 +36,6 @@ abstract class Node
         'internallink' => InternalLinkNode::class,
         'emaillink' => EmailLinkNode::class,
         'externallink' => ExternalLinkNode::class,
-        'locallink' => LocalLinkNode::class,
         'windowssharelink' => WindowsShareLinkNode::class,
     ];
 

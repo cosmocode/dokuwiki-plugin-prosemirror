@@ -48,8 +48,8 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
             case 'resolveLink':
                 {
                     $inner = $INPUT->str('inner');
-                    $ns = $INPUT->str('ns');
-                    echo json_encode($this->resolveLink($inner, $ns));
+                    $id = $INPUT->str('id');
+                    echo json_encode($this->resolveLink($inner, $id));
                     break;
                 }
             default:
@@ -60,17 +60,21 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         }
     }
 
-    protected function resolveLink($inner, $ns)
+    protected function resolveLink($inner, $curId)
     {
-        dbglog($ns, __FILE__ . ': ' . __LINE__);
+        if ($inner[0] === '#') {
+            return dokuwiki\plugin\prosemirror\parser\LocalLinkNode::resolveLocalLink($inner, $curId);
+        }
 
+
+        // FIXME: move this to parser/InternalLinkNode ?
         $params = '';
         $parts  = explode('?', $inner, 2);
         $resolvedPageId = $parts[0];
         if(count($parts) === 2) {
             $params = $parts[1];
         }
-
+        $ns = getNS($curId);
         $xhtml_renderer = p_get_renderer('xhtml');
         $default = $xhtml_renderer->_simpleTitle($inner);
         resolve_pageid($ns, $resolvedPageId, $exists);

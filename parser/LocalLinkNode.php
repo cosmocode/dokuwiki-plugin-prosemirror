@@ -16,13 +16,31 @@ class LocalLinkNode extends LinkNode
     public static function render($renderer, $hash, $name)
     {
         global $ID;
-        self::renderToJSON(
+
+        $additionalAttributes = [
+            'data-resolvedTitle' => $ID . ' ↵',
+            'data-resolvedID' => $ID . '#' . $hash,
+            'data-resolvedName' => $hash,
+            'data-resolvedClass' => 'wikilink1',
+        ];
+
+        self::renderToJSON2(
             $renderer,
-            'locallink',
+            'internallink',
             '#' . $hash,
-            $name ?: $hash,
-            $ID . ' ↵',
-            'wikilink1'
+            $name,
+            $additionalAttributes
         );
+    }
+
+    public static function resolveLocalLink($hash, $id)
+    {
+        $trimmedHash = trim($hash, '#');
+        return [
+            'id' => $id . '#' . $trimmedHash,
+            'exists' => true,
+            'heading' => $trimmedHash,
+            'title' => $id . ' ↵',
+        ];
     }
 }
