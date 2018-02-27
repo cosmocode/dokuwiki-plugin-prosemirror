@@ -189,6 +189,11 @@ class LinkView {
         case 'internallink': {
             return `${DOKU_BASE}doku.php?id=${inner.replace('?', '&')}`;
         }
+        case 'other':
+            if (inner.substr(0, '\\\\'.length) === '\\\\') {
+                return `file:///${inner.replace('\\', '/')}`;
+            }
+            return inner;
         default:
             console.log(`unknown linktype: ${linktype}`);
             return false;
@@ -198,6 +203,7 @@ class LinkView {
     static getDefaultNameFromInner(linktype, inner) {
         switch (linktype) {
         case 'externallink':
+        case 'other':
         case 'emaillink':
             return inner;
         case 'internallink': { // FIXME we have to get the actual name from the server via ajax
@@ -213,6 +219,7 @@ class LinkView {
     static getTitleFromInner(linktype, inner) {
         switch (linktype) {
         case 'externallink':
+        case 'other':
         case 'emaillink':
             return inner;
         case 'internallink': { // FIXME we have to get the actual title for relative links from the server via ajax
@@ -233,6 +240,8 @@ class LinkView {
             return 'mail';
         case 'internallink':
             return ''; // FIXME we need ajax to show whether the page exists or not
+        case 'other':
+            return 'windows'; // FIXME what could other possible uses for 'other' be?
         default:
             console.log(`unknown linktype to return class from: ${linktype}`);
             return false;

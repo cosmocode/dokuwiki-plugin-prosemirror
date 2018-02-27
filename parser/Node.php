@@ -37,6 +37,7 @@ abstract class Node
         'emaillink' => EmailLinkNode::class,
         'externallink' => ExternalLinkNode::class,
         'windowssharelink' => WindowsShareLinkNode::class,
+        'other' => ExternalLinkNode::class,
     ];
 
     public static function getSubNode($node, $parent, $previous = null)

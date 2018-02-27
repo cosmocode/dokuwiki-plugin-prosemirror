@@ -95,7 +95,7 @@ class LinkForm {
             switch (linktype) {
             case 'externallink':
                 $linkTargetInput
-                    .attr('type', 'url') // fixme this doesn't allow "\\server\share" links
+                    .attr('type', 'url')
                     .prop('placeholder', 'https://www.example.com');
                 break;
             case 'emaillink':
@@ -107,6 +107,11 @@ class LinkForm {
                 $linkTargetInput
                     .attr('type', 'text')
                     .prop('placeholder', 'namespace:page');
+                break;
+            case 'other':
+                $linkTargetInput
+                    .attr('type', 'text')
+                    .prop('placeholder', '');
                 break;
             default:
                 console.warn(`unknown / unhandled linktype ${linktype}`);

@@ -16,15 +16,6 @@ class WindowsShareLinkNode extends LinkNode
 
     public static function render($renderer, $link, $title)
     {
-        $url = str_replace('\\', '/', $link);
-        $url = 'file:///' . $url;
-        self::renderToJSON(
-            $renderer,
-            'windowssharelink',
-            $url,
-            $title ?: $link,
-            hsc($link),
-            'windows'
-        );
+        self::renderToJSON2($renderer, 'other', $link, $title);
     }
 }
