@@ -5,23 +5,15 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "internallink",
-                    "content": [
-                        {
-                            "type": "image",
-                            "attrs": {
-                                "src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
-                        }
-                    ],
+                    "type": "link",
                     "attrs": {
-                        "href": "/./doku.php?id=wiki:syntax",
-                        "title": "wiki:syntax",
-                        "data-id": "wiki:syntax",
-                        "class": "media"
+                        "data-type": "internallink",
+                        "data-inner": "wiki:syntax",
+                        "image-src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-id": "wiki:dokuwiki-128.png",
+                        "data-resolvedTitle": "wiki:syntax",
+                        "data-resolvedID": "wiki:syntax"
                     }
                 }
             ]

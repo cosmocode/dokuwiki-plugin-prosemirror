@@ -5,23 +5,18 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class ExternalLinkNode extends LinkNode
 {
-
     public function toSyntax()
     {
-        $href = $this->attrs['href'];
-
-        return $this->getDefaultLinkSyntax($href, $href);
+        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
     }
 
     public static function render($renderer, $link, $name)
     {
-        self::renderToJSON(
+        self::renderToJSON2(
             $renderer,
             'externallink',
             $link,
-            $name ?: $link,
-            hsc($link),
-            'urlextern'
+            $name
         );
     }
 }

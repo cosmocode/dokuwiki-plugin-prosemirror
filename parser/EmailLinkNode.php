@@ -8,20 +8,16 @@ class EmailLinkNode extends LinkNode
 
     public function toSyntax()
     {
-        list(, $href) = explode(':', $this->attrs['href'], 2);
-
-        return $this->getDefaultLinkSyntax($href, $href);
+        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
     }
 
     public static function render($renderer, $address, $name)
     {
-        self::renderToJSON(
+        self::renderToJSON2(
             $renderer,
             'emaillink',
-            'mailto:' . $address,
-            $name ?: $address,
             $address,
-            'mail'
+            $name
         );
     }
 }

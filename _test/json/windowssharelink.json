@@ -14,22 +14,15 @@
                     ]
                 },
                 {
-                    "type": "windowssharelink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "\\\\server\\share",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ]
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "file:\/\/\/\/\/server\/share",
-                        "class": "windows",
-                        "title": "\\\\server\\share"
+                        "data-type": "other",
+                        "data-inner": "\\\\server\\share"
                     }
                 },
                 {
@@ -42,25 +35,19 @@
                     ]
                 },
                 {
-                    "type": "windowssharelink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "foo bar",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                },
-                                {
-                                    "type": "em"
-                                }
-                            ]
+                            "type": "strong"
+                        },
+                        {
+                            "type": "em"
                         }
                     ],
                     "attrs": {
-                        "href": "file:\/\/\/\/\/server\/share",
-                        "class": "windows",
-                        "title": "\\\\server\\share"
+                        "data-type": "other",
+                        "data-inner": "\\\\server\\share",
+                        "data-name": "foo bar"
                     }
                 },
                 {
@@ -73,28 +60,19 @@
                     ]
                 },
                 {
-                    "type": "windowssharelink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "image",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ],
-                            "attrs": {
-                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "width": "20",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "file:\/\/\/\/\/server\/share",
-                        "class": "media",
-                        "title": "\\\\server\\share"
+                        "data-type": "other",
+                        "data-inner": "\\\\server\\share",
+                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-width": "20",
+                        "image-id": "wiki:dokuwiki-128.png"
                     }
                 },
                 {

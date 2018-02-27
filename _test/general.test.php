@@ -1,17 +1,20 @@
 <?php
+
 /**
  * General tests for the prosemirror plugin
  *
  * @group plugin_prosemirror
  * @group plugins
  */
-class general_plugin_prosemirror_test extends DokuWikiTest {
+class general_plugin_prosemirror_test extends DokuWikiTest
+{
 
     /**
      * Simple test to make sure the plugin.info.txt is in correct format
      */
-    public function test_plugininfo() {
-        $file = __DIR__.'/../plugin.info.txt';
+    public function test_plugininfo()
+    {
+        $file = __DIR__ . '/../plugin.info.txt';
         $this->assertFileExists($file);
 
         $info = confToHash($file);
@@ -35,25 +38,29 @@ class general_plugin_prosemirror_test extends DokuWikiTest {
      * Test to ensure that every conf['...'] entry in conf/default.php has a corresponding meta['...'] entry in
      * conf/metadata.php.
      */
-    public function test_plugin_conf() {
-        $conf_file = __DIR__.'/../conf/default.php';
-        if (file_exists($conf_file)){
+    public function test_plugin_conf()
+    {
+        $conf_file = __DIR__ . '/../conf/default.php';
+        if (file_exists($conf_file)) {
             include($conf_file);
         }
-        $meta_file = __DIR__.'/../conf/metadata.php';
+        $meta_file = __DIR__ . '/../conf/metadata.php';
         if (file_exists($meta_file)) {
             include($meta_file);
         }
 
-        $this->assertEquals(gettype($conf), gettype($meta),'Both ' . DOKU_PLUGIN . 'prosemirror/conf/default.php and ' . DOKU_PLUGIN . 'prosemirror/conf/metadata.php have to exist and contain the same keys.');
+        $this->assertEquals(gettype($conf), gettype($meta),
+            'Both ' . DOKU_PLUGIN . 'prosemirror/conf/default.php and ' . DOKU_PLUGIN . 'prosemirror/conf/metadata.php have to exist and contain the same keys.');
 
         if (gettype($conf) != 'NULL' && gettype($meta) != 'NULL') {
-            foreach($conf as $key => $value) {
-                $this->assertArrayHasKey($key, $meta, 'Key $meta[\'' . $key . '\'] missing in ' . DOKU_PLUGIN . 'prosemirror/conf/metadata.php');
+            foreach ($conf as $key => $value) {
+                $this->assertArrayHasKey($key, $meta,
+                    'Key $meta[\'' . $key . '\'] missing in ' . DOKU_PLUGIN . 'prosemirror/conf/metadata.php');
             }
 
-            foreach($meta as $key => $value) {
-                $this->assertArrayHasKey($key, $conf, 'Key $conf[\'' . $key . '\'] missing in ' . DOKU_PLUGIN . 'prosemirror/conf/default.php');
+            foreach ($meta as $key => $value) {
+                $this->assertArrayHasKey($key, $conf,
+                    'Key $conf[\'' . $key . '\'] missing in ' . DOKU_PLUGIN . 'prosemirror/conf/default.php');
             }
         }
 

@@ -3,7 +3,8 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-abstract class LinkNode extends Node implements InlineNodeInterface {
+abstract class LinkNode extends Node implements InlineNodeInterface
+{
 
 
     /** @var  InlineNodeInterface */
@@ -12,12 +13,13 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
     /** @var  Node */
     protected $parent;
 
-    /** @var TextNode|ImageNode  */
-    protected $contentNode = null;
+    /** @var TextNode */
+    protected $textNode = null;
 
     protected $attrs = [];
 
-    public function __construct($data, $parent, $previousNode = false) {
+    public function __construct($data, $parent, $previousNode = false)
+    {
         $this->parent = &$parent;
         if ($previousNode !== false) {
             $this->previous = &$previousNode;
@@ -25,30 +27,53 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
 
         $this->attrs = $data['attrs'];
 
-        if (count($data['content']) !== 1) {
-            throw new \InvalidArgumentException('An LinkNode must contain exactly one TextNode or ImageNode');
-        }
-
-        if ($data['content'][0]['type'] === 'image') {
-            $this->contentNode = new ImageNode($data['content'][0], $this, $previousNode);
-        } else {
-            $this->contentNode = new TextNode($data['content'][0], $this, $previousNode);
-        }
+        // every inline node needs a TextNode to track marks
+        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
     }
 
 
     /**
      * @param string $markType
      */
-    public function increaseMark($markType) {
-        return $this->contentNode->increaseMark($markType);
+    public function increaseMark($markType)
+    {
+        return $this->textNode->increaseMark($markType);
     }
 
-    public function getStartingNodeMarkScore($markType) {
-        return $this->contentNode->getStartingNodeMarkScore($markType);
+    public function getStartingNodeMarkScore($markType)
+    {
+        return $this->textNode->getStartingNodeMarkScore($markType);
     }
 
-    protected function getDefaultLinkSyntax ($inner, $defaultTitle) {
+    protected function getDefaultLinkSyntax2($inner)
+    {
+        $title = '';
+        $prefix = $this->textNode->getPrefixSyntax();;
+        $postfix = $this->textNode->getPostfixSyntax();
+
+        if (!empty($this->attrs['data-name'])) {
+            $title = '|' . $this->attrs['data-name'];
+        } else if (!empty($this->attrs['image-src'])) {
+            $imageAttrs = [];
+            foreach ($this->attrs as $key => $value) {
+                @list ($keyPrefix, $attrKey) = explode('-', $key, 2);
+                if ($keyPrefix === 'image') {
+                    $imageAttrs[$attrKey] = $value;
+                }
+            }
+            $imageNode = new ImageNode([
+                'attrs' => $imageAttrs,
+                'marks' => [],
+            ], $this);
+            $title = '|' . $imageNode->toSyntax();
+        }
+
+        return $prefix . '[[' . $inner . $title . ']]' . $postfix;
+    }
+
+
+    protected function getDefaultLinkSyntax($inner, $defaultTitle)
+    {
         $title = '';
         $prefix = '';
         $postfix = '';
@@ -68,6 +93,41 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         return $prefix . '[[' . $inner . $title . ']]' . $postfix;
     }
 
+    protected static function renderToJSON2(
+        \renderer_plugin_prosemirror $renderer,
+        $linktype,
+        $inner,
+        $name,
+        $additionalAttributes = []
+    ) {
+        $isImage = is_array($name);
+        $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node('link');
+        $linkNode->attr('data-type', $linktype);
+        $linkNode->attr('data-inner', $inner);
+        if ($isImage) {
+            ImageNode::addAttributes(
+                $linkNode,
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache'],
+                null,
+                'image-'
+            );
+        } else {
+            $linkNode->attr('data-name', $name);
+        }
+        foreach ($additionalAttributes as $attributeName => $attributeValue) {
+            $linkNode->attr($attributeName, $attributeValue);
+        }
+        foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
+            $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+        }
+        $renderer->addToNodestack($linkNode);
+    }
+
     /**
      * @param \renderer_plugin_prosemirror $renderer
      * @param string $linktype
@@ -75,7 +135,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
      * @param string|array $name
      * @param string $title
      * @param string $defaultClass
-     * @param array  $additionalAttributes
+     * @param array $additionalAttributes
      */
     protected static function renderToJSON(
         \renderer_plugin_prosemirror $renderer,
@@ -84,8 +144,8 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         $name,
         $title,
         $defaultClass,
-        $additionalAttributes = [] )
-    {
+        $additionalAttributes = []
+    ) {
         $isImage = is_array($name);
         if ($isImage) {
             $class = 'media';
@@ -95,24 +155,28 @@ abstract class LinkNode extends Node implements InlineNodeInterface {
         $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node($linktype);
         $linkNode->attr('href', $href);
         $linkNode->attr('class', $class);
-        $linkNode->attr('title', $title);
-        foreach ($additionalAttributes as $attributeName => $attributeValue) {
-            $linkNode->attr($attributeName, $attributeValue);
-        }
-        $renderer->addToNodestackTop($linkNode);
         if ($isImage) {
-            // fixme: check if type is internal or external media
-            $renderer->internalmedia(
+            ImageNode::addAttributes(
+                $linkNode,
                 $name['src'],
                 $name['title'],
                 $name['align'],
                 $name['width'],
                 $name['height'],
-                $name['cache']
+                $name['cache'],
+                null,
+                'image-'
             );
         } else {
-            $renderer->cdata($name);
+            $linkNode->attr('data-name', $name);
         }
-        $renderer->dropFromNodeStack($linktype);
+        $linkNode->attr('title', $title);
+        foreach ($additionalAttributes as $attributeName => $attributeValue) {
+            $linkNode->attr($attributeName, $attributeValue);
+        }
+        foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
+            $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+        }
+        $renderer->addToNodestack($linkNode);
     }
 }

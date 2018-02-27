@@ -2,7 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-interface InlineNodeInterface {
+interface InlineNodeInterface
+{
 
     public function __construct($data, $parent, $previous = false);
 

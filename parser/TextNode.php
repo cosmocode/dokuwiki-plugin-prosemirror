@@ -2,7 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class TextNode extends Node implements InlineNodeInterface {
+class TextNode extends Node implements InlineNodeInterface
+{
 
     /** @var  TextNode */
     public $previous = null;
@@ -10,12 +11,13 @@ class TextNode extends Node implements InlineNodeInterface {
     /** @var  Node */
     protected $parent;
 
-    /** @var Mark[]  */
+    /** @var Mark[] */
     protected $marks = [];
 
     protected $text = '';
 
-    public function __construct($data, $parent, $previous = false) {
+    public function __construct($data, $parent, $previous = false)
+    {
         $this->parent = &$parent;
         if ($previous !== false) {
             $this->previous = &$previous;
@@ -27,7 +29,8 @@ class TextNode extends Node implements InlineNodeInterface {
         }
     }
 
-    public function getPrefixSyntax() {
+    public function getPrefixSyntax()
+    {
         $doc = '';
 
         /** @var Mark[] $openingMarks */
@@ -35,7 +38,7 @@ class TextNode extends Node implements InlineNodeInterface {
         foreach ($this->marks as $mark) {
             if ($mark->isOpeningMark()) {
                 $previousOpeningMark = end($openingMarks);
-                if($previousOpeningMark) {
+                if ($previousOpeningMark) {
                     $mark->setPrevious($previousOpeningMark);
                     $previousOpeningMark->setNext($mark);
                 }
@@ -63,14 +66,15 @@ class TextNode extends Node implements InlineNodeInterface {
         return $doc;
     }
 
-    public function getPostfixSyntax() {
+    public function getPostfixSyntax()
+    {
         $doc = '';
         /** @var Mark[] $closingMarks */
         $closingMarks = [];
         foreach ($this->marks as $mark) {
             if ($mark->isClosingMark()) {
                 $previousClosingMark = end($closingMarks);
-                if($previousClosingMark) {
+                if ($previousClosingMark) {
                     $mark->setPrevious($previousClosingMark);
                     $previousClosingMark->setNext($mark);
                 }
@@ -99,12 +103,14 @@ class TextNode extends Node implements InlineNodeInterface {
         return $doc;
     }
 
-    public function getInnerSyntax() {
+    public function getInnerSyntax()
+    {
         return $this->text;
     }
 
 
-    public function toSyntax() {
+    public function toSyntax()
+    {
         $prefix = $this->getPrefixSyntax();
         $inner = $this->getInnerSyntax();
         $postfix = $this->getPostfixSyntax();
@@ -117,7 +123,8 @@ class TextNode extends Node implements InlineNodeInterface {
      * @return $this
      * @throws \Exception
      */
-    protected function setMarks(array $marks) {
+    protected function setMarks(array $marks)
+    {
         foreach ($marks as $markData) {
             $currentMark = new Mark($markData, $this);
             $type = $currentMark->getType();
@@ -132,7 +139,8 @@ class TextNode extends Node implements InlineNodeInterface {
     /**
      * @param string $markType
      */
-    public function increaseMark($markType) {
+    public function increaseMark($markType)
+    {
         if (!isset($this->marks[$markType])) {
             return;
         }
@@ -143,7 +151,8 @@ class TextNode extends Node implements InlineNodeInterface {
         }
     }
 
-    public function getStartingNodeMarkScore($markType) {
+    public function getStartingNodeMarkScore($markType)
+    {
         if ($this === $this->previous) {
             throw new \Exception('circular reference: ' . $this->text);
         }

@@ -9,19 +9,22 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-class HeadingNode extends Node {
+class HeadingNode extends Node
+{
 
     protected $parent;
     protected $level;
     protected $text;
 
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
         $this->level = $data['attrs']['level'];
         $this->text = $data['content'][0]['text'];
     }
 
-    public function toSyntax() {
+    public function toSyntax()
+    {
         $wrapper = [
             1 => '======',
             2 => '=====',
@@ -30,6 +33,6 @@ class HeadingNode extends Node {
             5 => '==',
         ];
 
-        return $wrapper[$this->level] . ' ' . $this->text .  ' ' . $wrapper[$this->level];
+        return $wrapper[$this->level] . ' ' . $this->text . ' ' . $wrapper[$this->level];
     }
 }

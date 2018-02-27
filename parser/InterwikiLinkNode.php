@@ -2,33 +2,27 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class InterwikiLinkNode extends LinkNode {
+class InterwikiLinkNode extends LinkNode
+{
 
-    public function toSyntax() {
-        $inner = $this->attrs['data-shortcut'];
-        $inner .= '>';
-        $reference = $this->attrs['data-reference'];
-        $inner .= $reference;
-
-        return $this->getDefaultLinkSyntax($inner, $reference);
+    public function toSyntax()
+    {
+        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
     }
 
     public static function render(\renderer_plugin_prosemirror $renderer, $name, $wikiName, $wikiUri)
     {
         $shortcut = $wikiName;
-        $url    = $renderer->_resolveInterWiki($shortcut, $wikiUri, $exists);
+        $url = $renderer->_resolveInterWiki($shortcut, $wikiUri, $exists);
         $additionalAttributes = [
-            'data-shortcut' => hsc($wikiName),
-            'data-reference' => hsc($wikiUri),
+            'data-resolvedUrl' => $url,
+            'data-resolvedClass' => 'interwikilink interwiki iw_' . $shortcut,
         ];
-
-        self::renderToJSON(
+        self::renderToJSON2(
             $renderer,
             'interwikilink',
-            $url,
-            $name ?: $wikiUri,
-            hsc($url),
-            'interwikilink interwiki iw_' . $shortcut,
+            "$wikiName>$wikiUri",
+            $name,
             $additionalAttributes
         );
     }

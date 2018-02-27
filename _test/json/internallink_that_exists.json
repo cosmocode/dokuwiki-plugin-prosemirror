@@ -5,18 +5,14 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "internallink",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "syntax"
-                        }
-                    ],
+                    "type": "link",
                     "attrs": {
-                        "href": "/./doku.php?id=wiki:syntax",
-                        "title": "wiki:syntax",
-                        "data-id": "wiki:syntax",
-                        "class": "wikilink1"
+                        "data-type": "internallink",
+                        "data-inner": "wiki:syntax",
+                        "data-resolvedName": "syntax",
+                        "data-resolvedClass": "wikilink1",
+                        "data-resolvedTitle": "wiki:syntax",
+                        "data-resolvedID": "wiki:syntax"
                     }
                 }
             ]

@@ -2,12 +2,14 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class PreformattedNode extends Node {
+class PreformattedNode extends Node
+{
 
     protected $parent;
     protected $data;
 
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
         $this->data = $data;
     }

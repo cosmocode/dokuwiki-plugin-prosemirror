@@ -2,12 +2,14 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-class CodeBlockNode extends Node {
+class CodeBlockNode extends Node
+{
 
     protected $parent;
     protected $data;
 
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
         $this->data = $data;
     }

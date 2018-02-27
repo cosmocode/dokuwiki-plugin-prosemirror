@@ -1,1 +1,1 @@
-[[wiki:syntax#windows shares]]
+[[wiki:syntax#windows_shares]]

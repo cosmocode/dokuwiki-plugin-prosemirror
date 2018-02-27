@@ -7,7 +7,8 @@ namespace dokuwiki\plugin\prosemirror\schema;
  * @package dokuwiki\plugin\prosemirror\schema
  * @link http://prosemirror.net/ref.html#model.Mark
  */
-class Mark implements \JsonSerializable {
+class Mark implements \JsonSerializable
+{
 
     /** @var  string The type of this mark */
     protected $type;
@@ -20,7 +21,8 @@ class Mark implements \JsonSerializable {
      *
      * @param string $type
      */
-    public function __construct($type) {
+    public function __construct($type)
+    {
         $this->type = $type;
     }
 
@@ -29,9 +31,10 @@ class Mark implements \JsonSerializable {
      * @param null $value Attribute value to set, null to get
      * @return $this|mixed Either the wanted value or the Mark itself
      */
-    public function attr($key, $value = null) {
-        if(is_null($value)) {
-            if(isset($this->attrs[$key])) {
+    public function attr($key, $value = null)
+    {
+        if (is_null($value)) {
+            if (isset($this->attrs[$key])) {
                 return $this->attrs[$key];
             } else {
                 return null;
@@ -49,11 +52,12 @@ class Mark implements \JsonSerializable {
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize() {
+    function jsonSerialize()
+    {
         $json = array(
             'type' => $this->type
         );
-        if($this->attrs) {
+        if ($this->attrs) {
             $json['attrs'] = $this->attrs;
         }
 

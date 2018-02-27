@@ -14,24 +14,17 @@
                     ]
                 },
                 {
-                    "type": "interwikilink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "plugin:prosemirror",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ]
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "interwikilink interwiki iw_doku",
-                        "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "data-shortcut": "doku",
-                        "data-reference": "plugin:prosemirror"
+                        "data-type": "interwikilink",
+                        "data-inner": "doku>plugin:prosemirror",
+                        "data-resolvedUrl": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "data-resolvedClass": "interwikilink interwiki iw_doku"
                     }
                 },
                 {
@@ -44,27 +37,21 @@
                     ]
                 },
                 {
-                    "type": "interwikilink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "text",
-                            "text": "click me!",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                },
-                                {
-                                    "type": "em"
-                                }
-                            ]
+                            "type": "strong"
+                        },
+                        {
+                            "type": "em"
                         }
                     ],
                     "attrs": {
-                        "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "interwikilink interwiki iw_doku",
-                        "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "data-shortcut": "doku",
-                        "data-reference": "plugin:prosemirror"
+                        "data-type": "interwikilink",
+                        "data-inner": "doku>plugin:prosemirror",
+                        "data-name": "click me!",
+                        "data-resolvedUrl": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "data-resolvedClass": "interwikilink interwiki iw_doku"
                     }
                 },
                 {
@@ -77,30 +64,21 @@
                     ]
                 },
                 {
-                    "type": "interwikilink",
-                    "content": [
+                    "type": "link",
+                    "marks": [
                         {
-                            "type": "image",
-                            "marks": [
-                                {
-                                    "type": "strong"
-                                }
-                            ],
-                            "attrs": {
-                                "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
-                                "class": "media",
-                                "width": "20",
-                                "id": "wiki:dokuwiki-128.png",
-                                "cache": "cache"
-                            }
+                            "type": "strong"
                         }
                     ],
                     "attrs": {
-                        "href": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "class": "media",
-                        "title": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
-                        "data-shortcut": "doku",
-                        "data-reference": "plugin:prosemirror"
+                        "data-type": "interwikilink",
+                        "data-inner": "doku>plugin:prosemirror",
+                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-class": "media",
+                        "image-width": "20",
+                        "image-id": "wiki:dokuwiki-128.png",
+                        "data-resolvedUrl": "https:\/\/www.dokuwiki.org\/plugin%3Aprosemirror",
+                        "data-resolvedClass": "interwikilink interwiki iw_doku"
                     }
                 },
                 {

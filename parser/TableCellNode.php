@@ -37,15 +37,18 @@ class TableCellNode extends Node
         return $prefix . $doc;
     }
 
-    public function isHeaderCell() {
+    public function isHeaderCell()
+    {
         return $this->data['attrs']['is_header'];
     }
 
-    public function getRowSpan() {
+    public function getRowSpan()
+    {
         return $this->data['attrs']['rowspan'];
     }
 
-    public function getColSpan() {
+    public function getColSpan()
+    {
         return $this->data['attrs']['colspan'];
     }
 }

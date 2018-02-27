@@ -59,7 +59,9 @@ codeBlock.attrs = {
     'data-filename': { default: null },
     'data-language': { default: null },
 };
-codeBlock.toDOM = function toDOM(node) { return ['pre', node.attrs, 0]; };
+codeBlock.toDOM = function toDOM(node) {
+    return ['pre', node.attrs, 0];
+};
 nodes = nodes.update('code_block', codeBlock);
 
 nodes = nodes.addToEnd('file_block', {
@@ -145,6 +147,40 @@ nodes = nodes.addToEnd('quote', {
     },
 });
 
+const imageNode = nodes.get('image');
+imageNode.attrs.width = { default: null };
+imageNode.attrs.height = { default: null };
+imageNode.attrs.align = { default: null };
+imageNode.attrs.linking = { default: null };
+imageNode.attrs.cache = { default: null };
+imageNode.attrs.class = {};
+imageNode.attrs.id = {};
+nodes = nodes.update('image', imageNode);
+
+const imageAttrs = {};
+Object.keys(imageNode.attrs).forEach((key) => {
+    imageAttrs[`image-${key}`] = { default: null };
+});
+
+nodes = nodes.addToEnd('link', {
+    group: 'inline',
+    inline: true,
+    attrs: {
+        'data-type': {},
+        'data-inner': {},
+        'data-name': { default: null },
+        'data-resolvedID': { default: null },
+        'data-resolvedUrl': { default: null },
+        'data-resolvedName': { default: null },
+        'data-resolvedClass': { default: null },
+        'data-resolvedTitle': { default: null },
+        ...imageAttrs,
+    },
+    toDOM(node) {
+        return ['a', node.attrs];
+    },
+});
+
 nodes = nodes.addToEnd('interwikilink', {
     content: 'text|image',
     group: 'inline', // fixme should later be changed to substition? or add substitution?
@@ -174,70 +210,6 @@ nodes = nodes.addToEnd('interwikilink', {
             },
         },
     ],
-});
-
-nodes = nodes.addToEnd('internallink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        'data-id': {},
-        'data-query': { default: null },
-        'data-hash': { default: null },
-        title: { default: null },
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-});
-
-nodes = nodes.addToEnd('externallink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        title: {},
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-});
-
-nodes = nodes.addToEnd('locallink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        title: {},
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-});
-
-
-nodes = nodes.addToEnd('emaillink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        title: {},
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
 });
 
 nodes = nodes.addToEnd('windowssharelink', {
@@ -295,22 +267,14 @@ nodes = nodes.addToEnd('dwplugin', {
     },
 });
 
-const imageNode = nodes.get('image');
-imageNode.attrs.width = { default: null };
-imageNode.attrs.height = { default: null };
-imageNode.attrs.align = { default: null };
-imageNode.attrs.linking = { default: null };
-imageNode.attrs.cache = { default: null };
-imageNode.attrs.class = {};
-imageNode.attrs.id = {};
-nodes = nodes.update('image', imageNode);
-
 // FIXME we need a table header attribute
 // FIXME what table cells can accept is to be defined
 // FIXME table cells need colspan and rowspan attributes
 // FIXME table cells need alignment attributes
 // FIXME we don't allow stuff in links
 // FIXME extend image node with additional attributes
+
+marks = marks.remove('link');
 
 marks = marks.addToEnd('deleted', {
     parseDOM: [

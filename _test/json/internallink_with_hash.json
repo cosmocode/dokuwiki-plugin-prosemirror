@@ -5,19 +5,14 @@
             "type": "paragraph",
             "content": [
                 {
-                    "type": "internallink",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "windows shares"
-                        }
-                    ],
+                    "type": "link",
                     "attrs": {
-                        "href": "/./doku.php?id=wiki:syntax#windows_shares",
-                        "class": "wikilink1",
-                        "title": "wiki:syntax",
-                        "data-id": "wiki:syntax",
-                        "data-hash": "windows shares"
+                        "data-type": "internallink",
+                        "data-inner": "wiki:syntax#windows_shares",
+                        "data-resolvedName": "windows_shares",
+                        "data-resolvedClass": "wikilink1",
+                        "data-resolvedTitle": "wiki:syntax#windows_shares",
+                        "data-resolvedID": "wiki:syntax#windows_shares"
                     }
                 }
             ]

@@ -1,4 +1,5 @@
 <?php
+
 use dokuwiki\plugin\prosemirror\schema\Node;
 use dokuwiki\plugin\prosemirror\schema\NodeStack;
 
@@ -8,15 +9,18 @@ use dokuwiki\plugin\prosemirror\schema\NodeStack;
  * @group plugin_prosemirror
  * @group plugins
  */
-class nodestack_plugin_prosemirror_test extends DokuWikiTest {
+class nodestack_plugin_prosemirror_test extends DokuWikiTest
+{
 
 
-    public function test_init() {
+    public function test_init()
+    {
         $nodestack = new NodeStack();
         $this->assertSame('doc', $nodestack->current()->getType());
     }
 
-    public function test_addpop() {
+    public function test_addpop()
+    {
         $nodestack = new NodeStack();
         $node = new Node('foo');
 
@@ -27,7 +31,8 @@ class nodestack_plugin_prosemirror_test extends DokuWikiTest {
         $this->assertSame($node, $popped);
     }
 
-    public function test_dropfail() {
+    public function test_dropfail()
+    {
         $this->expectException('\\RuntimeException');
 
         $nodestack = new NodeStack();

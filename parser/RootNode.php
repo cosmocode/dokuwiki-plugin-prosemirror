@@ -9,18 +9,21 @@
 namespace dokuwiki\plugin\prosemirror\parser;
 
 
-class RootNode extends Node{
+class RootNode extends Node
+{
 
     /** @var Node[] */
     protected $subnodes = [];
 
-    public function __construct($subnodes) {
+    public function __construct($subnodes)
+    {
         foreach ($subnodes as $node) {
-            $this->subnodes[] = new self::$nodeclass[$node['type']]($node, $this);
+            $this->subnodes[] = self::getSubNode($node, $this);
         }
     }
 
-    public function toSyntax() {
+    public function toSyntax()
+    {
         $doc = '';
         foreach ($this->subnodes as $subnode) {
             $doc .= $subnode->toSyntax();

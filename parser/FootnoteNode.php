@@ -16,7 +16,8 @@ class FootnoteNode extends Node
 
     protected $parent;
 
-    public function __construct($data, $parent) {
+    public function __construct($data, $parent)
+    {
         $this->parent = &$parent;
 
         $previousNode = false;
@@ -27,7 +28,8 @@ class FootnoteNode extends Node
         }
     }
 
-    public function toSyntax() {
+    public function toSyntax()
+    {
         $doc = '';
         foreach ($this->subnodes as $subnode) {
             $doc .= $subnode->toSyntax();

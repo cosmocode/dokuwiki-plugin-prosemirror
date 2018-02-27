@@ -1,4 +1,5 @@
 <?php
+
 use dokuwiki\plugin\prosemirror\schema\Node;
 
 /**
@@ -7,10 +8,12 @@ use dokuwiki\plugin\prosemirror\schema\Node;
  * @group plugin_prosemirror
  * @group plugins
  */
-class node_plugin_prosemirror_test extends DokuWikiTest {
+class node_plugin_prosemirror_test extends DokuWikiTest
+{
 
 
-    public function test_normnode() {
+    public function test_normnode()
+    {
         // empty node
         $node = new Node('foo');
         $this->assertSame('foo', $node->getType());
@@ -63,7 +66,8 @@ class node_plugin_prosemirror_test extends DokuWikiTest {
         $node->setText('hallo');
     }
 
-    public function test_textnode() {
+    public function test_textnode()
+    {
         // empty node
         $node = new Node('text');
         $this->assertSame('text', $node->getType());

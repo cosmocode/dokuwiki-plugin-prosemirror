@@ -10,7 +10,6 @@
                         "src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
                         "class": "media",
                         "id": "wiki:dokuwiki-128.png",
-                        "cache": "cache",
                         "linking": "details"
                     }
                 }
