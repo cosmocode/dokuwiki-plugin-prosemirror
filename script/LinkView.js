@@ -30,13 +30,17 @@ class LinkView {
         }
 
         // href
-        this.dom.setAttribute(
-            'href',
-            LinkView.transformInnerToHref(
-                attributes['data-type'],
-                attributes['data-resolvedID'] || attributes['data-inner'],
-            ),
-        );
+        if (attributes['data-resolvedUrl']) {
+            this.dom.setAttribute('href', attributes['data-resolvedUrl']);
+        } else {
+            this.dom.setAttribute(
+                'href',
+                LinkView.transformInnerToHref(
+                    attributes['data-type'],
+                    attributes['data-resolvedID'] || attributes['data-inner'],
+                ),
+            );
+        }
 
         // title
         if (attributes['data-resolvedTitle']) {
@@ -90,7 +94,7 @@ class LinkView {
         this.dom.classList.add('ProseMirror-selectednode');
 
         this.linkForm.setLinkType(this.node.attrs['data-type']);
-        this.linkForm.setLinkTarget(this.node.attrs['data-inner']);
+        this.linkForm.setLinkTarget(this.node.attrs['data-type'], this.node.attrs['data-inner']);
 
         if (this.node.attrs['data-name']) {
             this.linkForm.setLinkNameType('custom', this.node.attrs['data-name']);
@@ -122,7 +126,7 @@ class LinkView {
                     `${DOKU_BASE}/lib/exe/ajax.php`,
                     {
                         call: 'plugin_prosemirror',
-                        action: 'resolveLink',
+                        action: 'resolveInternalLink',
                         inner: newAttrs['data-inner'],
                         id: JSINFO.id,
                     },
@@ -136,6 +140,35 @@ class LinkView {
                     if (nameType === 'automatic') {
                         newAttrs['data-resolvedName'] = heading;
                     }
+                    this.renderLink(newAttrs);
+
+                    const nodeStartPos = this.getPos();
+                    this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
+                        nodeStartPos,
+                        null,
+                        newAttrs,
+                        this.node.marks,
+                    ));
+                });
+
+                return;
+            }
+
+            if (newAttrs['data-type'] === 'interwikilink') {
+                jQuery.get(
+                    `${DOKU_BASE}/lib/exe/ajax.php`,
+                    {
+                        call: 'plugin_prosemirror',
+                        action: 'resolveInterWikiLink',
+                        inner: newAttrs['data-inner'],
+                        id: JSINFO.id,
+                    },
+                ).done((data) => {
+                    const {
+                        url, resolvedClass,
+                    } = JSON.parse(data);
+                    newAttrs['data-resolvedUrl'] = url;
+                    newAttrs['data-resolvedClass'] = resolvedClass;
                     this.renderLink(newAttrs);
 
                     const nodeStartPos = this.getPos();
@@ -206,6 +239,9 @@ class LinkView {
         case 'other':
         case 'emaillink':
             return inner;
+        case 'interwikilink': {
+            return inner.split(/>/)[1];
+        }
         case 'internallink': { // FIXME we have to get the actual name from the server via ajax
             const id = inner.split(/[?|#]/)[0];
             return id.split(':').pop();
@@ -221,6 +257,7 @@ class LinkView {
         case 'externallink':
         case 'other':
         case 'emaillink':
+        case 'interwikilink':
             return inner;
         case 'internallink': { // FIXME we have to get the actual title for relative links from the server via ajax
             const id = inner.split(/[?|#]/)[0];
@@ -238,6 +275,7 @@ class LinkView {
             return 'urlextern';
         case 'emaillink':
             return 'mail';
+        case 'interwikilink':
         case 'internallink':
             return ''; // FIXME we need ajax to show whether the page exists or not
         case 'other':

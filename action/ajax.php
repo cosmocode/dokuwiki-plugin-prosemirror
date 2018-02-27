@@ -45,11 +45,18 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
 
         global $INPUT;
         switch ($INPUT->str('action')) {
-            case 'resolveLink':
+            case 'resolveInternalLink':
                 {
                     $inner = $INPUT->str('inner');
                     $id = $INPUT->str('id');
-                    echo json_encode($this->resolveLink($inner, $id));
+                    echo json_encode($this->resolveInternalLink($inner, $id));
+                    break;
+                }
+            case 'resolveInterWikiLink':
+                {
+                    $inner = $INPUT->str('inner');
+                    list($shortcut, $reference) = explode('>', $inner);
+                    echo json_encode($this->resolveInterWikiLink($shortcut, $reference));
                     break;
                 }
             default:
@@ -60,7 +67,18 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         }
     }
 
-    protected function resolveLink($inner, $curId)
+    protected function resolveInterWikiLink($shortcut, $reference)
+    {
+        $xhtml_renderer = p_get_renderer('xhtml');
+        $xhtml_renderer->interwiki = getInterwiki();
+        $url = $xhtml_renderer->_resolveInterWiki($shortcut, $reference, $exits);
+        return [
+            'url' => $url,
+            'resolvedClass' => 'interwikilink interwiki iw_' . $shortcut,
+        ];
+    }
+
+    protected function resolveInternalLink($inner, $curId)
     {
         if ($inner[0] === '#') {
             return dokuwiki\plugin\prosemirror\parser\LocalLinkNode::resolveLocalLink($inner, $curId);

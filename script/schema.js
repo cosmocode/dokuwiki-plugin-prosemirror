@@ -170,6 +170,7 @@ nodes = nodes.addToEnd('link', {
         'data-inner': {},
         'data-name': { default: null },
         'data-resolvedID': { default: null },
+        'data-resolvedUrl': { default: null },
         'data-resolvedName': { default: null },
         'data-resolvedClass': { default: null },
         'data-resolvedTitle': { default: null },

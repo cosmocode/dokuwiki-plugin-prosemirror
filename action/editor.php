@@ -68,11 +68,13 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 
         $linkForm = new dokuwiki\Form\Form(['class' => 'plugin_prosemirror_linkform', 'id' => 'prosemirror-linkform']);
         $linkForm->addFieldsetOpen('Links');
+        $iwOptions = array_keys(getInterwiki());
+        $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
         $linkForm->addTextInput('linktarget', 'Link target')->attr('required', 'required');
 
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');
         $linkForm->addRadioButton('linktype', 'Wiki page')->val('internallink');
-        $linkForm->addRadioButton('linktype', 'Interwiki link')->val('interwiki')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('linktype', 'Interwiki')->val('interwikilink');
         $linkForm->addRadioButton('linktype', 'email')->val('emaillink');
         $linkForm->addRadioButton('linktype', 'external')->val('externallink')->attr('checked', 'checked');
         $linkForm->addRadioButton('linktype', 'Other')->val('other');

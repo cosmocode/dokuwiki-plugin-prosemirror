@@ -35,10 +35,25 @@ class LinkForm {
     }
 
     getLinkTarget() {
+        if (this.getLinkType() === 'interwikilink') {
+            const shortcut = this.$linkform.find('[name="iwshortcut"]').val();
+            const reference = this.$linkform.find('[name="linktarget"]').val();
+            return `${shortcut}>${reference}`;
+        }
         return this.$linkform.find('[name="linktarget"]').val();
     }
 
-    setLinkTarget(target) {
+    setLinkTarget(type, target) {
+        if (type === 'interwikilink') {
+            let [shortcut, reference] = target.split('>', 2);
+            if (!reference) {
+                reference = shortcut;
+                shortcut = 'go';
+            }
+            this.$linkform.find('[name="iwshortcut"]').show().val(shortcut);
+            this.$linkform.find('[name="linktarget"]').val(reference);
+            return;
+        }
         this.$linkform.find('[name="linktarget"]').val(target);
     }
 
@@ -92,6 +107,7 @@ class LinkForm {
         $linkform.find('[name="linktype"]').on('change', () => {
             const linktype = $linkform.find('[name="linktype"]:checked').val();
             const $linkTargetInput = $linkform.find('[name="linktarget"]');
+            this.$linkform.find('[name="iwshortcut"]').hide();
             switch (linktype) {
             case 'externallink':
                 $linkTargetInput
@@ -107,6 +123,12 @@ class LinkForm {
                 $linkTargetInput
                     .attr('type', 'text')
                     .prop('placeholder', 'namespace:page');
+                break;
+            case 'interwikilink':
+                this.$linkform.find('[name="iwshortcut"]').show();
+                $linkTargetInput
+                    .attr('type', 'text')
+                    .prop('placeholder', '');
                 break;
             case 'other':
                 $linkTargetInput
