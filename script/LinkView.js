@@ -1,8 +1,9 @@
 // FIXME: prevent XSS!
 
 const { LinkForm } = require('./LinkForm');
+const { AbstractNodeView } = require('./AbstractNodeView');
 
-class LinkView {
+class LinkView extends AbstractNodeView {
     /**
      *
      * @param {Node} node
@@ -10,16 +11,12 @@ class LinkView {
      * @param {function} getPos
      */
     constructor(node, view, getPos) {
-        this.node = node;
-        this.outerView = view;
-        this.getPos = getPos;
-
-        this.renderLink(node.attrs);
+        super(node, view, getPos);
 
         this.linkForm = new LinkForm();
     }
 
-    renderLink(attributes) {
+    renderNode(attributes) {
         if (!this.dom) {
             this.dom = document.createElement('a');
             jQuery(this.dom).on('click', (event) => {
@@ -140,7 +137,7 @@ class LinkView {
                     if (nameType === 'automatic') {
                         newAttrs['data-resolvedName'] = heading;
                     }
-                    this.renderLink(newAttrs);
+                    this.renderNode(newAttrs);
 
                     const nodeStartPos = this.getPos();
                     this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
@@ -169,7 +166,7 @@ class LinkView {
                     } = JSON.parse(data);
                     newAttrs['data-resolvedUrl'] = url;
                     newAttrs['data-resolvedClass'] = resolvedClass;
-                    this.renderLink(newAttrs);
+                    this.renderNode(newAttrs);
 
                     const nodeStartPos = this.getPos();
                     this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
@@ -183,7 +180,7 @@ class LinkView {
                 return;
             }
 
-            this.renderLink(newAttrs);
+            this.renderNode(newAttrs);
             const nodeStartPos = this.getPos();
             this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
                 nodeStartPos,

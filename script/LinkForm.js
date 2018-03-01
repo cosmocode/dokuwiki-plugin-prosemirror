@@ -1,46 +1,33 @@
-class LinkForm {
+const { NodeForm } = require('./NodeForm');
+
+class LinkForm extends NodeForm {
     constructor() {
+        super('prosemirror-linkform');
         jQuery(this.initializeLinkForm.bind(this));
     }
 
-    show() {
-        this.$linkform.show();
-    }
-
-    hide() {
-        this.$linkform.hide();
-    }
-
-    on(eventName, callback) {
-        this.$linkform.on(eventName, callback);
-    }
-
-    off(eventName) {
-        this.$linkform.off(eventName);
-    }
-
     getLinkType() {
-        return this.$linkform.find('[name="linktype"]:checked').val();
+        return this.$form.find('[name="linktype"]:checked').val();
     }
 
     setLinkType(type) {
-        const availableTypes = this.$linkform.find('[name="linktype"]').map(function getValidValues() {
+        const availableTypes = this.$form.find('[name="linktype"]').map(function getValidValues() {
             return jQuery(this).val();
         }).get();
         if (!availableTypes.includes(type)) {
             console.error(`invalid link type ${type}. Only the following are valid: `, availableTypes);
             return;
         }
-        this.$linkform.find(`[name="linktype"][value="${type}"]`).prop('checked', true).trigger('change');
+        this.$form.find(`[name="linktype"][value="${type}"]`).prop('checked', true).trigger('change');
     }
 
     getLinkTarget() {
         if (this.getLinkType() === 'interwikilink') {
-            const shortcut = this.$linkform.find('[name="iwshortcut"]').val();
-            const reference = this.$linkform.find('[name="linktarget"]').val();
+            const shortcut = this.$form.find('[name="iwshortcut"]').val();
+            const reference = this.$form.find('[name="linktarget"]').val();
             return `${shortcut}>${reference}`;
         }
-        return this.$linkform.find('[name="linktarget"]').val();
+        return this.$form.find('[name="linktarget"]').val();
     }
 
     setLinkTarget(type, target) {
@@ -50,19 +37,19 @@ class LinkForm {
                 reference = shortcut;
                 shortcut = 'go';
             }
-            this.$linkform.find('[name="iwshortcut"]').show().val(shortcut);
-            this.$linkform.find('[name="linktarget"]').val(reference);
+            this.$form.find('[name="iwshortcut"]').show().val(shortcut);
+            this.$form.find('[name="linktarget"]').val(reference);
             return;
         }
-        this.$linkform.find('[name="linktarget"]').val(target);
+        this.$form.find('[name="linktarget"]').val(target);
     }
 
     getLinkNameType() {
-        return this.$linkform.find('[name="nametype"]:checked').val();
+        return this.$form.find('[name="nametype"]:checked').val();
     }
 
     setLinkNameType(type, name = '') {
-        const availableTypes = this.$linkform.find('[name="nametype"]').map(function getValidValues() {
+        const availableTypes = this.$form.find('[name="nametype"]').map(function getValidValues() {
             return jQuery(this).val();
         }).get();
         if (!availableTypes.includes(type)) {
@@ -70,12 +57,12 @@ class LinkForm {
             return;
         }
 
-        this.$linkform.find(`[name="nametype"][value="${type}"]`).prop('checked', true).trigger('change');
-        this.$linkform.find('[name="linkname"]').val(name);
+        this.$form.find(`[name="nametype"][value="${type}"]`).prop('checked', true).trigger('change');
+        this.$form.find('[name="linkname"]').val(name);
     }
 
     getLinkName() {
-        return this.$linkform.find('[name="linkname"]').val();
+        return this.$form.find('[name="linkname"]').val();
     }
 
     resetForm() {
@@ -86,17 +73,15 @@ class LinkForm {
     }
 
     initializeLinkForm() {
-        const $linkform = jQuery('#prosemirror-linkform');
-        this.$linkform = $linkform;
-        $linkform.find('[name="nametype"]').on('change', () => {
-            const nametype = $linkform.find('[name="nametype"]:checked').val();
+        this.$form.find('[name="nametype"]').on('change', () => {
+            const nametype = this.$form.find('[name="nametype"]:checked').val();
             switch (nametype) {
             case 'automatic':
-                $linkform.find('[name="linkname"]').val('').attr('type', 'hidden').closest('label')
+                this.$form.find('[name="linkname"]').val('').attr('type', 'hidden').closest('label')
                     .hide();
                 break;
             case 'custom':
-                $linkform.find('[name="linkname"]').val('').attr('type', 'text').closest('label')
+                this.$form.find('[name="linkname"]').val('').attr('type', 'text').closest('label')
                     .show();
                 break;
             default:
@@ -104,10 +89,10 @@ class LinkForm {
             }
         });
 
-        $linkform.find('[name="linktype"]').on('change', () => {
-            const linktype = $linkform.find('[name="linktype"]:checked').val();
-            const $linkTargetInput = $linkform.find('[name="linktarget"]');
-            this.$linkform.find('[name="iwshortcut"]').hide();
+        this.$form.find('[name="linktype"]').on('change', () => {
+            const linktype = this.$form.find('[name="linktype"]:checked').val();
+            const $linkTargetInput = this.$form.find('[name="linktarget"]');
+            this.$form.find('[name="iwshortcut"]').hide();
             switch (linktype) {
             case 'externallink':
                 $linkTargetInput
@@ -125,7 +110,7 @@ class LinkForm {
                     .prop('placeholder', 'namespace:page');
                 break;
             case 'interwikilink':
-                this.$linkform.find('[name="iwshortcut"]').show();
+                this.$form.find('[name="iwshortcut"]').show();
                 $linkTargetInput
                     .attr('type', 'text')
                     .prop('placeholder', '');
