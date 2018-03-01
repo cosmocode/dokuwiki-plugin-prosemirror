@@ -3,10 +3,9 @@ const { NodeForm } = require('./NodeForm');
 class MediaForm extends NodeForm {
     constructor() {
         super('prosemirror-mediaform');
-        // jQuery(this.initialize.bind(this));
     }
 
-    setSource(id) {
+    setSource(id = '') {
         this.$form.find('[name="mediatarget"]').val(id);
     }
 
@@ -14,7 +13,7 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="mediatarget"]').val();
     }
 
-    setCaption(caption) {
+    setCaption(caption = '') {
         this.$form.find('[name="mediacaption"]').val(caption);
     }
 
@@ -22,7 +21,7 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="mediacaption"]').val();
     }
 
-    setWidth(width) {
+    setWidth(width = '') {
         this.$form.find('[name="width"]').val(width);
     }
 
@@ -30,7 +29,7 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="width"]').val();
     }
 
-    setHeight(height) {
+    setHeight(height = '') {
         this.$form.find('[name="height"]').val(height);
     }
 
@@ -38,7 +37,7 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="height"]').val();
     }
 
-    setAlignment(alignment) {
+    setAlignment(alignment = '') {
         this.$form.find('[name="alignment"]').prop('checked', '');
         this.$form.find(`[name="alignment"][value="${alignment}"]`).prop('checked', 'checked');
     }
@@ -47,7 +46,7 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="alignment"]:checked').val();
     }
 
-    setLinking(linking) {
+    setLinking(linking = 'details') {
         this.$form.find('[name="linking"]').prop('checked', '');
         this.$form.find(`[name="linking"][value="${linking}"]`).prop('checked', 'checked');
     }
@@ -56,7 +55,7 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="linking"]:checked').val();
     }
 
-    setCache(cache) {
+    setCache(cache = '') {
         this.$form.find('[name="caching"]').prop('checked', '');
         this.$form.find(`[name="caching"][value="${cache}"]`).prop('checked', 'checked');
     }
@@ -65,8 +64,14 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="caching"]:checked').val();
     }
 
-    // initialize() {
-    //
-    // }
+    resetForm() {
+        this.setSource();
+        this.setCaption();
+        this.setWidth();
+        this.setHeight();
+        this.setAlignment();
+        this.setLinking();
+        this.setCache();
+    }
 }
 exports.MediaForm = MediaForm;

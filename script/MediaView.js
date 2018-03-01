@@ -86,7 +86,7 @@ class MediaView extends AbstractNodeView {
 
         this.MediaForm.hide();
         this.MediaForm.off('submit');
-        // this.MediaForm.resetForm();
+        this.MediaForm.resetForm();
     }
 }
 
