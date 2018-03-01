@@ -9,6 +9,7 @@ const { buildMenuItems, exampleSetup } = require('prosemirror-example-setup');
 
 const { schema } = require('./schema');
 const { LinkView } = require('./LinkView');
+const { MediaView } = require('./MediaView');
 
 
 const signatureMI = new MenuItem({
@@ -85,6 +86,9 @@ const view = new EditorView(document.querySelector('#prosemirror__editor'), {
     nodeViews: {
         link(node, outerview, getPos) {
             return new LinkView(node, outerview, getPos);
+        },
+        image(node, outerview, getPos) {
+            return new MediaView(node, outerview, getPos);
         },
     },
 });

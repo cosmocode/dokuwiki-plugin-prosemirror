@@ -59,12 +59,47 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                     echo json_encode($this->resolveInterWikiLink($shortcut, $reference));
                     break;
                 }
+            case 'resolveMedia':
+                {
+                    $attrs = $INPUT->arr('attrs');
+                    echo json_encode($this->resolveMedia($attrs));
+                    break;
+                }
             default:
                 {
                     dbglog('Unknown action: ' . $INPUT->str('action'), __FILE__ . ': ' . __LINE__);
                     http_status(400, 'unknown action');
                 }
         }
+    }
+
+    protected function resolveMedia($attrs)
+    {
+        $xhtml_renderer = p_get_renderer('xhtml');
+        if (media_isexternal($attrs['id']) || link_isinterwiki($attrs['id'])) {
+            $xhtml_renderer->externalmedia(
+                $attrs['id'],
+                $attrs['title'],
+                $attrs['align'],
+                $attrs['width'],
+                $attrs['height'],
+                $attrs['cache'],
+                $attrs['linking']
+            );
+        } else {
+            $xhtml_renderer->internalmedia(
+                $attrs['id'],
+                $attrs['title'],
+                $attrs['align'],
+                $attrs['width'],
+                $attrs['height'],
+                $attrs['cache'],
+                $attrs['linking']
+            );
+        }
+        return [
+            'data-resolvedHtml' => $xhtml_renderer->doc,
+        ];
     }
 
     protected function resolveInterWikiLink($shortcut, $reference)

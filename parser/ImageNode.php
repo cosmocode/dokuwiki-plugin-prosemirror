@@ -89,6 +89,11 @@ class ImageNode extends Node implements InlineNodeInterface
             $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
         }
 
+        $xhtmlRenderer = p_get_renderer('xhtml');
+        $xhtmlRenderer->internalmedia($src, $title, $align, $width, $height, $cache, $linking);
+        $initialHtml = $xhtmlRenderer->doc;
+        $node->attr('data-resolvedHtml', $initialHtml);
+
         $renderer->addToNodestack($node);
     }
 

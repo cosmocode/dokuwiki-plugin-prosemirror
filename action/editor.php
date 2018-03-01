@@ -92,6 +92,38 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $linkForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
 
         echo $linkForm->toHTML();
+
+        $mediaForm = new dokuwiki\Form\Form(
+            ['class' => 'plugin_prosemirror_mediaform', 'id' => 'prosemirror-mediaform']
+        );
+        $mediaForm->addFieldsetOpen('Media');
+        $mediaForm->addTextInput('mediatarget', 'Media')->attr('required', 'required');
+        $mediaForm->addTextInput('mediacaption', 'Caption');
+        $mediaForm->addTextInput('width', 'Width (px)')->attr('type', 'number');
+        $mediaForm->addTextInput('height', 'Height (px)')->attr('type', 'number');
+        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addRadioButton('alignment', 'default')->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('alignment', 'float left')->val('left');
+        $mediaForm->addRadioButton('alignment', 'center')->val('center');
+        $mediaForm->addRadioButton('alignment', 'float right')->val('right');
+        $mediaForm->addTagClose('div');
+        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addRadioButton('linktype', 'default')->val('details')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('linktype', 'direct')->val('direct');
+        $mediaForm->addRadioButton('linktype', 'nolink')->val('nolink');
+        $mediaForm->addRadioButton('linktype', 'linkonly')->val('linkonly');
+        $mediaForm->addTagClose('div');
+        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addRadioButton('caching', 'default')->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('caching', 'recache')->val('recache');
+        $mediaForm->addRadioButton('caching', 'nocache')->val('nocache');
+        $mediaForm->addTagClose('div');
+        $mediaForm->addButton('ok-button', 'OK')->attr('type', 'submit');
+        $mediaForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
+
+        // dynamic image hack? https://www.dokuwiki.org/images#dynamic_images
+
+        echo $mediaForm->toHTML();
     }
 }
 
