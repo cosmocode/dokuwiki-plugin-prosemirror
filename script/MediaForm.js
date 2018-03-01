@@ -47,13 +47,13 @@ class MediaForm extends NodeForm {
         return this.$form.find('[name="alignment"]:checked').val();
     }
 
-    setLinking(linktype) {
-        this.$form.find('[name="linktype"]').prop('checked', '');
-        this.$form.find(`[name="linktype"][value="${linktype}"]`).prop('checked', 'checked');
+    setLinking(linking) {
+        this.$form.find('[name="linking"]').prop('checked', '');
+        this.$form.find(`[name="linking"][value="${linking}"]`).prop('checked', 'checked');
     }
 
     getLinking() {
-        return this.$form.find('[name="linktype"]:checked').val();
+        return this.$form.find('[name="linking"]:checked').val();
     }
 
     setCache(cache) {

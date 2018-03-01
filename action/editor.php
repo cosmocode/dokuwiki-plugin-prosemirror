@@ -108,10 +108,10 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $mediaForm->addRadioButton('alignment', 'float right')->val('right');
         $mediaForm->addTagClose('div');
         $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
-        $mediaForm->addRadioButton('linktype', 'default')->val('details')->attr('checked', 'checked');
-        $mediaForm->addRadioButton('linktype', 'direct')->val('direct');
-        $mediaForm->addRadioButton('linktype', 'nolink')->val('nolink');
-        $mediaForm->addRadioButton('linktype', 'linkonly')->val('linkonly');
+        $mediaForm->addRadioButton('linking', 'default')->val('details')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('linking', 'direct')->val('direct');
+        $mediaForm->addRadioButton('linking', 'nolink')->val('nolink');
+        $mediaForm->addRadioButton('linking', 'linkonly')->val('linkonly');
         $mediaForm->addTagClose('div');
         $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
         $mediaForm->addRadioButton('caching', 'default')->val('')->attr('checked', 'checked');
