@@ -123,32 +123,6 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
             return dokuwiki\plugin\prosemirror\parser\LocalLinkNode::resolveLocalLink($inner, $curId);
         }
 
-        // FIXME: move this to parser/InternalLinkNode ?
-        $params = '';
-        $parts  = explode('?', $inner, 2);
-        $resolvedPageId = $parts[0];
-        if(count($parts) === 2) {
-            $params = $parts[1];
-        }
-        $ns = getNS($curId);
-        $xhtml_renderer = p_get_renderer('xhtml');
-        $default = $xhtml_renderer->_simpleTitle($inner);
-        resolve_pageid($ns, $resolvedPageId, $exists);
-
-        if(useHeading('content')) {
-            $heading = p_get_first_heading($resolvedPageId);
-        }
-        if (empty($heading)) {
-            $heading = $default;
-        }
-
-        $url = wl($resolvedPageId, $params);
-
-        return [
-            'id' => $resolvedPageId,
-            'exists' => $exists,
-            'heading' => $heading,
-            'url' => $url,
-        ];
+       return \dokuwiki\plugin\prosemirror\parser\InternalLinkNode::resolveLink($inner, $curId);
     }
 }
