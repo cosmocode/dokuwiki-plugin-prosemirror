@@ -72,7 +72,9 @@
                         "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
                         "image-class": "media",
                         "image-width": "20",
-                        "image-id": "wiki:dokuwiki-128.png"
+                        "image-id": "wiki:dokuwiki-128.png",
+                        "data-resolvedImage": "<img src=\"\/.\/lib\/exe\/fetch.php?w=20&amp;tok=f7cc2c&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" width=\"20\" \/>"
+
                     }
                 },
                 {
