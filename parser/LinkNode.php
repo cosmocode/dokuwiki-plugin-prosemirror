@@ -53,7 +53,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
 
         if (!empty($this->attrs['data-name'])) {
             $title = '|' . $this->attrs['data-name'];
-        } else if (!empty($this->attrs['image-src'])) {
+        } else if (!empty($this->attrs['image-id'])) {
             $imageAttrs = [];
             foreach ($this->attrs as $key => $value) {
                 @list ($keyPrefix, $attrKey) = explode('-', $key, 2);
@@ -100,6 +100,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
         $name,
         $additionalAttributes = []
     ) {
+        global $ID;
         $isImage = is_array($name);
         $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node('link');
         $linkNode->attr('data-type', $linktype);
@@ -116,6 +117,16 @@ abstract class LinkNode extends Node implements InlineNodeInterface
                 null,
                 'image-'
             );
+
+            $linkNode->attr('data-resolvedImage', self::resolveImageTitle(
+                $ID,
+                $name['src'],
+                $name['title'],
+                $name['align'],
+                $name['width'],
+                $name['height'],
+                $name['cache']
+            ));
         } else {
             $linkNode->attr('data-name', $name);
         }
@@ -126,6 +137,25 @@ abstract class LinkNode extends Node implements InlineNodeInterface
             $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
         }
         $renderer->addToNodestack($linkNode);
+    }
+
+    public static function resolveImageTitle($pageId, $imageId, $title = null, $align = null, $width = null,
+        $height = null, $cache = null)
+    {
+        /** @var \Doku_Renderer_xhtml $xhtml_renderer */
+        $xhtml_renderer = p_get_renderer('xhtml');
+        $src = $imageId;
+        if (!media_isexternal($src)) {
+            resolve_mediaid(getNS($pageId), $src, $exists);
+        }
+        return $xhtml_renderer->_media(
+            $src,
+            $title ?: $imageId,
+            $align,
+            $width,
+            $height,
+            $cache
+        );
     }
 
     /**

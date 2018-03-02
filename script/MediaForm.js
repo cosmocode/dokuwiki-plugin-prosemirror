@@ -1,8 +1,8 @@
 const { NodeForm } = require('./NodeForm');
 
 class MediaForm extends NodeForm {
-    constructor() {
-        super('prosemirror-mediaform');
+    constructor(id = 'prosemirror-mediaform') {
+        super(id);
     }
 
     setSource(id = '') {

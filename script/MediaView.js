@@ -57,13 +57,13 @@ class MediaView extends AbstractNodeView {
                 `${DOKU_BASE}/lib/exe/ajax.php`,
                 {
                     call: 'plugin_prosemirror',
-                    action: 'resolveMedia',
+                    actions: ['resolveMedia'],
                     attrs: newAttrs,
                     id: JSINFO.id,
                 },
             ).done((data) => {
                 const parsedData = JSON.parse(data);
-                newAttrs['data-resolvedHtml'] = parsedData['data-resolvedHtml'];
+                newAttrs['data-resolvedHtml'] = parsedData.resolveMedia['data-resolvedHtml'];
                 console.log(newAttrs);
                 this.renderNode(newAttrs);
 

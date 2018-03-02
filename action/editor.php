@@ -67,7 +67,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         }
 
         $linkForm = new dokuwiki\Form\Form(['class' => 'plugin_prosemirror_linkform', 'id' => 'prosemirror-linkform']);
-        $linkForm->addFieldsetOpen('Links');
+        $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
         $linkForm->addTextInput('linktarget', 'Link target')->attr('required', 'required');
@@ -83,11 +83,11 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');
         $linkForm->addRadioButton('nametype', 'automatic')->val('automatic')->attr('checked', 'checked');
         $linkForm->addRadioButton('nametype', 'custom')->val('custom');
-        $linkForm->addRadioButton('nametype', 'internalmedia')->val('wiki image')->attr('disabled', 'disabled');
-        $linkForm->addRadioButton('nametype', 'externalmedia')->val('external image')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('nametype', 'image')->val('image');
         $linkForm->addTagClose('div');
 
         $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', '(automatic)');
+        $linkForm->addFieldsetClose();
         $linkForm->addButton('ok-button', 'OK')->attr('type', 'submit');
         $linkForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
 
@@ -96,7 +96,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $mediaForm = new dokuwiki\Form\Form(
             ['class' => 'plugin_prosemirror_mediaform', 'id' => 'prosemirror-mediaform']
         );
-        $mediaForm->addFieldsetOpen('Media');
+        $mediaForm->addFieldsetOpen('Media')->addClass('js-media-fieldset');
         $mediaForm->addTextInput('mediatarget', 'Media')->attr('required', 'required');
         $mediaForm->addTextInput('mediacaption', 'Caption');
         $mediaForm->addTextInput('width', 'Width (px)')->attr('type', 'number');
@@ -118,6 +118,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $mediaForm->addRadioButton('caching', 'recache')->val('recache');
         $mediaForm->addRadioButton('caching', 'nocache')->val('nocache');
         $mediaForm->addTagClose('div');
+        $mediaForm->addFieldsetClose();
         $mediaForm->addButton('ok-button', 'OK')->attr('type', 'submit');
         $mediaForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
 

@@ -8,6 +8,8 @@
 
 // must be run within Dokuwiki
 
+use dokuwiki\plugin\prosemirror\parser\LinkNode;
+
 if (!defined('DOKU_INC')) {
     die();
 }
@@ -44,33 +46,54 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         $event->stopPropagation();
 
         global $INPUT;
-        switch ($INPUT->str('action')) {
-            case 'resolveInternalLink':
-                {
-                    $inner = $INPUT->str('inner');
-                    $id = $INPUT->str('id');
-                    echo json_encode($this->resolveInternalLink($inner, $id));
-                    break;
-                }
-            case 'resolveInterWikiLink':
-                {
-                    $inner = $INPUT->str('inner');
-                    list($shortcut, $reference) = explode('>', $inner);
-                    echo json_encode($this->resolveInterWikiLink($shortcut, $reference));
-                    break;
-                }
-            case 'resolveMedia':
-                {
-                    $attrs = $INPUT->arr('attrs');
-                    echo json_encode($this->resolveMedia($attrs));
-                    break;
-                }
-            default:
-                {
-                    dbglog('Unknown action: ' . $INPUT->str('action'), __FILE__ . ': ' . __LINE__);
-                    http_status(400, 'unknown action');
-                }
+        $id = $INPUT->str('id');
+        $responseData = [];
+        foreach ($INPUT->arr('actions') as $action) {
+            switch ($action) {
+                case 'resolveInternalLink':
+                    {
+                        $inner = $INPUT->str('inner');
+                        $responseData[$action] = $this->resolveInternalLink($inner, $id);
+                        break;
+                    }
+                case 'resolveInterWikiLink':
+                    {
+                        $inner = $INPUT->str('inner');
+                        list($shortcut, $reference) = explode('>', $inner);
+                        $responseData[$action] = $this->resolveInterWikiLink($shortcut, $reference);
+                        break;
+                    }
+                case 'resolveMedia':
+                    {
+                        $attrs = $INPUT->arr('attrs');
+                        $responseData[$action] = $this->resolveMedia($attrs);
+                        break;
+                    }
+                case 'resolveImageTitle':
+                    {
+                        $image = $INPUT->arr('image');
+                        $responseData[$action] = [];
+                        $responseData[$action]['data-resolvedImage'] = LinkNode::resolveImageTitle(
+                            $id,
+                            $image['id'],
+                            $image['title'],
+                            $image['align'],
+                            $image['width'],
+                            $image['height'],
+                            $image['cache']
+                        );
+                        break;
+                    }
+                default:
+                    {
+                        dbglog('Unknown action: ' . $INPUT->str('action'), __FILE__ . ': ' . __LINE__);
+                        http_status(400, 'unknown action');
+                        return;
+                    }
+            }
         }
+
+        echo json_encode($responseData);
     }
 
     protected function resolveMedia($attrs)
@@ -118,7 +141,6 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         if ($inner[0] === '#') {
             return dokuwiki\plugin\prosemirror\parser\LocalLinkNode::resolveLocalLink($inner, $curId);
         }
-
 
         // FIXME: move this to parser/InternalLinkNode ?
         $params = '';
