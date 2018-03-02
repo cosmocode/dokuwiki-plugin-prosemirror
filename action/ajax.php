@@ -45,15 +45,15 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         $event->preventDefault();
         $event->stopPropagation();
 
-        global $INPUT;
-        $id = $INPUT->str('id');
+        global $INPUT, $ID;
+        $ID = $INPUT->str('id');
         $responseData = [];
         foreach ($INPUT->arr('actions') as $action) {
             switch ($action) {
                 case 'resolveInternalLink':
                     {
                         $inner = $INPUT->str('inner');
-                        $responseData[$action] = $this->resolveInternalLink($inner, $id);
+                        $responseData[$action] = $this->resolveInternalLink($inner, $ID);
                         break;
                     }
                 case 'resolveInterWikiLink':
@@ -66,7 +66,17 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                 case 'resolveMedia':
                     {
                         $attrs = $INPUT->arr('attrs');
-                        $responseData[$action] = $this->resolveMedia($attrs);
+                        $responseData[$action] = [
+                            'data-resolvedHtml' => \dokuwiki\plugin\prosemirror\parser\ImageNode::resolveMedia(
+                                $attrs['id'],
+                                $attrs['title'],
+                                $attrs['align'],
+                                $attrs['width'],
+                                $attrs['height'],
+                                $attrs['cache'],
+                                $attrs['linking']
+                            )
+                        ];
                         break;
                     }
                 case 'resolveImageTitle':
@@ -74,7 +84,7 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                         $image = $INPUT->arr('image');
                         $responseData[$action] = [];
                         $responseData[$action]['data-resolvedImage'] = LinkNode::resolveImageTitle(
-                            $id,
+                            $ID,
                             $image['id'],
                             $image['title'],
                             $image['align'],
@@ -94,35 +104,6 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         }
 
         echo json_encode($responseData);
-    }
-
-    protected function resolveMedia($attrs)
-    {
-        $xhtml_renderer = p_get_renderer('xhtml');
-        if (media_isexternal($attrs['id']) || link_isinterwiki($attrs['id'])) {
-            $xhtml_renderer->externalmedia(
-                $attrs['id'],
-                $attrs['title'],
-                $attrs['align'],
-                $attrs['width'],
-                $attrs['height'],
-                $attrs['cache'],
-                $attrs['linking']
-            );
-        } else {
-            $xhtml_renderer->internalmedia(
-                $attrs['id'],
-                $attrs['title'],
-                $attrs['align'],
-                $attrs['width'],
-                $attrs['height'],
-                $attrs['cache'],
-                $attrs['linking']
-            );
-        }
-        return [
-            'data-resolvedHtml' => $xhtml_renderer->doc,
-        ];
     }
 
     protected function resolveInterWikiLink($shortcut, $reference)

@@ -89,10 +89,9 @@ class ImageNode extends Node implements InlineNodeInterface
             $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
         }
 
-        $xhtmlRenderer = p_get_renderer('xhtml');
-        $xhtmlRenderer->internalmedia($src, $title, $align, $width, $height, $cache, $linking);
-        $initialHtml = $xhtmlRenderer->doc;
-        $node->attr('data-resolvedHtml', $initialHtml);
+        global $ID;
+        $node->attr('data-resolvedHtml',
+            self::resolveMedia($src, $title, $align, $width, $height, $cache, $linking));
 
         $renderer->addToNodestack($node);
     }
@@ -131,6 +130,40 @@ class ImageNode extends Node implements InlineNodeInterface
         $node->attr($prefix . 'id', $src);
         $node->attr($prefix . 'cache', $cache);
         $node->attr($prefix . 'linking', $linking);
+    }
+
+    public static function resolveMedia(
+        $src,
+        $title = null,
+        $align = null,
+        $width = null,
+        $height = null,
+        $cache = null,
+        $linking = null
+    ) {
+        $xhtml_renderer = p_get_renderer('xhtml');
+        if (media_isexternal($src) || link_isinterwiki($src)) {
+            $xhtml_renderer->externalmedia(
+                $src,
+                $title ?: $src,
+                $align,
+                $width,
+                $height,
+                $cache,
+                $linking
+            );
+        } else {
+            $xhtml_renderer->internalmedia(
+                $src,
+                $title ?: $src,
+                $align,
+                $width,
+                $height,
+                $cache,
+                $linking
+            );
+        }
+        return $xhtml_renderer->doc;
     }
 
     /**
