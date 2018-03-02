@@ -8,12 +8,12 @@ class EmailLinkNode extends LinkNode
 
     public function toSyntax()
     {
-        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
+        return $this->getDefaultLinkSyntax($this->attrs['data-inner']);
     }
 
     public static function render($renderer, $address, $name)
     {
-        self::renderToJSON2(
+        self::renderToJSON(
             $renderer,
             'emaillink',
             $address,

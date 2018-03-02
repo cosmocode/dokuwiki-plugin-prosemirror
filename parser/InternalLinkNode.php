@@ -7,7 +7,7 @@ class InternalLinkNode extends LinkNode
 {
     public function toSyntax()
     {
-        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
+        return $this->getDefaultLinkSyntax($this->attrs['data-inner']);
     }
 
     public static function render(\renderer_plugin_prosemirror $renderer, $originalId, $name)
@@ -44,7 +44,7 @@ class InternalLinkNode extends LinkNode
             $additionalAttributes['data-resolvedClass'] = $class;
         }
 
-        self::renderToJSON2(
+        self::renderToJSON(
             $renderer,
             'internallink',
             $originalId,

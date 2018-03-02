@@ -8,9 +8,7 @@ class LocalLinkNode extends LinkNode
 
     public function toSyntax()
     {
-        $hash = $this->attrs['href'];
-
-        return $this->getDefaultLinkSyntax($hash, substr($hash, 1));
+        return $this->getDefaultLinkSyntax($this->attrs['href']);
     }
 
     public static function render($renderer, $hash, $name)
@@ -24,7 +22,7 @@ class LocalLinkNode extends LinkNode
             'data-resolvedClass' => 'wikilink1',
         ];
 
-        self::renderToJSON2(
+        self::renderToJSON(
             $renderer,
             'internallink',
             '#' . $hash,

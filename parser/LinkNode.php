@@ -45,7 +45,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
         return $this->textNode->getStartingNodeMarkScore($markType);
     }
 
-    protected function getDefaultLinkSyntax2($inner)
+    protected function getDefaultLinkSyntax($inner)
     {
         $title = '';
         $prefix = $this->textNode->getPrefixSyntax();;
@@ -71,29 +71,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
         return $prefix . '[[' . $inner . $title . ']]' . $postfix;
     }
 
-
-    protected function getDefaultLinkSyntax($inner, $defaultTitle)
-    {
-        $title = '';
-        $prefix = '';
-        $postfix = '';
-
-        if (is_a($this->contentNode, ImageNode::class)) {
-            $title = '|' . $this->contentNode->toSyntax();
-        } else {
-            $prefix = $this->contentNode->getPrefixSyntax();
-            $innerSyntax = $this->contentNode->getInnerSyntax();
-            if ($defaultTitle !== $innerSyntax) {
-                $title = '|' . $innerSyntax;
-            }
-
-            $postfix = $this->contentNode->getPostfixSyntax();
-        }
-
-        return $prefix . '[[' . $inner . $title . ']]' . $postfix;
-    }
-
-    protected static function renderToJSON2(
+    protected static function renderToJSON(
         \renderer_plugin_prosemirror $renderer,
         $linktype,
         $inner,
@@ -156,57 +134,5 @@ abstract class LinkNode extends Node implements InlineNodeInterface
             $height,
             $cache
         );
-    }
-
-    /**
-     * @param \renderer_plugin_prosemirror $renderer
-     * @param string $linktype
-     * @param string $href
-     * @param string|array $name
-     * @param string $title
-     * @param string $defaultClass
-     * @param array $additionalAttributes
-     */
-    protected static function renderToJSON(
-        \renderer_plugin_prosemirror $renderer,
-        $linktype,
-        $href,
-        $name,
-        $title,
-        $defaultClass,
-        $additionalAttributes = []
-    ) {
-        $isImage = is_array($name);
-        if ($isImage) {
-            $class = 'media';
-        } else {
-            $class = $defaultClass;
-        }
-        $linkNode = new \dokuwiki\plugin\prosemirror\schema\Node($linktype);
-        $linkNode->attr('href', $href);
-        $linkNode->attr('class', $class);
-        if ($isImage) {
-            ImageNode::addAttributes(
-                $linkNode,
-                $name['src'],
-                $name['title'],
-                $name['align'],
-                $name['width'],
-                $name['height'],
-                $name['cache'],
-                null,
-                'image-'
-            );
-        } else {
-            $linkNode->attr('data-name', $name);
-        }
-        $linkNode->attr('title', $title);
-        foreach ($additionalAttributes as $attributeName => $attributeValue) {
-            $linkNode->attr($attributeName, $attributeValue);
-        }
-        foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
-            $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
-        }
-        $renderer->addToNodestack($linkNode);
     }
 }
