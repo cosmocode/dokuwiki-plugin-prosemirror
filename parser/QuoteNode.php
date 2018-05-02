@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class QuoteNode extends Node
 {
     /** @var Node[] */

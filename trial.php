@@ -18,7 +18,8 @@
 <div id="prosemirror__editor"></div>
 
 
-<textarea id="prosemirror_json" style="width: 100%; height: 300px"><?php
+<textarea id="prosemirror_json" style="width: 100%; height: 300px">
+    <?php
     if (!defined('DOKU_INC')) {
         define('DOKU_INC', dirname(__FILE__) . '/../../../');
     }
@@ -27,7 +28,8 @@
     $id = $INPUT->str('id', 'wiki:syntax');
     $doc = p_cached_output(wikiFN($id), 'prosemirror', $id);
     echo $doc;
-    ?></textarea>
+    ?>
+</textarea>
 
 <script src="lib/bundle.js"></script>
 <pre><?php print_r(p_get_instructions(io_readWikiPage(wikiFN($id), $id))) ?></pre>

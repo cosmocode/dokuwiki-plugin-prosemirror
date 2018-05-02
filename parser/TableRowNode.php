@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class TableRowNode extends Node
 {
 

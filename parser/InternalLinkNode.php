@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class InternalLinkNode extends LinkNode
 {
     public function toSyntax()
@@ -33,7 +32,11 @@ class InternalLinkNode extends LinkNode
         $additionalAttributes['data-resolvedID'] = $resolvedId;
 
         if (!is_array($name)) {
-            $additionalAttributes['data-resolvedName'] = self::getLinkTitle($name, $renderer->_simpleTitle($id), $resolvedId);
+            $additionalAttributes['data-resolvedName'] = self::getLinkTitle(
+                $name,
+                $renderer->_simpleTitle($id),
+                $resolvedId
+            );
 
             if ($exists) {
                 $class = 'wikilink1';

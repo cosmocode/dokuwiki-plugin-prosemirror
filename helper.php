@@ -21,21 +21,20 @@ class helper_plugin_prosemirror extends DokuWiki_Plugin
      */
     public function getMethods()
     {
-        return array(
-            array(
+        return [
+            [
                 'name' => 'getThreads',
                 'desc' => 'returns pages with discussion sections, sorted by recent comments',
-                'params' => array(
+                'params' => [
                     'namespace' => 'string',
-                    'number (optional)' => 'integer'
-                ),
-                'return' => array('pages' => 'array')
-            ),
-            array(// and more supported methods...
-            )
-        );
+                    'number (optional)' => 'integer',
+                ],
+                'return' => ['pages' => 'array'],
+            ],
+            [// and more supported methods...
+            ],
+        ];
     }
-
 }
 
 // vim:ts=4:sw=4:et:

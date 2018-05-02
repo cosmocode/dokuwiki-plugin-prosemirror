@@ -172,5 +172,4 @@ class TextNode extends Node implements InlineNodeInterface
         }
         return $earlierMarkScore;
     }
-
 }

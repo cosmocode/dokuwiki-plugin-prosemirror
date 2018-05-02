@@ -87,9 +87,9 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
 
         // FIXME: move this to parser/InternalLinkNode ?
         $params = '';
-        $parts  = explode('?', $inner, 2);
+        $parts = explode('?', $inner, 2);
         $resolvedPageId = $parts[0];
-        if(count($parts) === 2) {
+        if (count($parts) === 2) {
             $params = $parts[1];
         }
         $ns = getNS($curId);
@@ -97,7 +97,7 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
         $default = $xhtml_renderer->_simpleTitle($inner);
         resolve_pageid($ns, $resolvedPageId, $exists);
 
-        if(useHeading('content')) {
+        if (useHeading('content')) {
             $heading = p_get_first_heading($resolvedPageId);
         }
         if (empty($heading)) {

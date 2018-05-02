@@ -1,7 +1,6 @@
 <?php
 
 use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
-use dokuwiki\plugin\prosemirror\schema\Node;
 
 /**
  * Node tests for the prosemirror plugin
@@ -11,7 +10,7 @@ use dokuwiki\plugin\prosemirror\schema\Node;
  */
 class jsonParser_plugin_prosemirror_test extends DokuWikiTest
 {
-    protected $pluginsEnabled = array('prosemirror');
+    protected $pluginsEnabled = ['prosemirror'];
 
     /**
      * @dataProvider rendererProvider
@@ -32,14 +31,14 @@ class jsonParser_plugin_prosemirror_test extends DokuWikiTest
      */
     public function rendererProvider()
     {
-        $data = array();
+        $data = [];
 
         $files = glob(__DIR__ . '/json/*.json');
         foreach ($files as $file) {
             $name = basename($file, '.json');
             $json = file_get_contents(__DIR__ . '/json/' . $name . '.json');
             $wiki = file_get_contents(__DIR__ . '/json/' . $name . '.txt');
-            $data[] = array($json, $wiki, $name);
+            $data[] = [$json, $wiki, $name];
         }
 
         return $data;

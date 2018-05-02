@@ -51,6 +51,4 @@ abstract class Node
     }
 
     abstract public function toSyntax();
-
-
 }

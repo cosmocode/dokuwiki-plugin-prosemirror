@@ -75,8 +75,9 @@ class Mark
     }
 
     /**
-     * @param Mark $newPrevious
+     * @param Mark      $newPrevious
      * @param null|Mark $newNext
+     *
      * @return Mark
      */
     public function switchPlaces(Mark $newPrevious, $newNext)
@@ -182,6 +183,7 @@ class Mark
      * Handle the edge case that %% is wrapped in nowiki syntax
      *
      * @param string $type
+     *
      * @return string
      */
     protected function getUnformattedSyntax($type)

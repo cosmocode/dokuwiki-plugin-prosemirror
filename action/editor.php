@@ -18,6 +18,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      * Registers a callback function for a given event
      *
      * @param Doku_Event_Handler $controller DokuWiki's event controller object
+     *
      * @return void
      */
     public function register(Doku_Event_Handler $controller)
@@ -29,9 +30,10 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     /**
      * [Custom event handler which performs action]
      *
-     * @param Doku_Event $event event object
-     * @param mixed $param [the parameters passed as fifth argument to register_hook() when this
+     * @param Doku_Event $event  event object
+     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
+     *
      * @return void
      */
     public function output_editor(Doku_Event $event, $param)

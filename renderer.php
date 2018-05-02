@@ -24,7 +24,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     protected $nodestack;
 
     /** @var array list of currently active formatting marks */
-    protected $marks = array();
+    protected $marks = [];
 
     /** @var int column counter for table handling */
     protected $colcount = 0;
@@ -278,7 +278,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     public function code($text, $lang = null, $file = null)
-    { // FIXME add support for file and lang
+    {
+        // FIXME add support for file and lang
         $this->clearBlock();
         $node = new Node('code_block');
         $node->attr('class', 'code ' . $lang);
@@ -377,7 +378,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     ) {
 
         // FIXME how do we handle non-images, e.g. pdfs or audio?
-        \dokuwiki\plugin\prosemirror\parser\ImageNode::render($this,
+        \dokuwiki\plugin\prosemirror\parser\ImageNode::render(
+            $this,
             $src,
             $title,
             $align,
@@ -386,7 +388,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer
             $cache,
             $linking
         );
-
     }
 
     /**
@@ -401,7 +402,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $cache = null,
         $linking = null
     ) {
-        \dokuwiki\plugin\prosemirror\parser\ImageNode::render($this,
+        \dokuwiki\plugin\prosemirror\parser\ImageNode::render(
+            $this,
             $src,
             $title,
             $align,
@@ -645,6 +647,4 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
 
     #endregion formatter marks
-
 }
-

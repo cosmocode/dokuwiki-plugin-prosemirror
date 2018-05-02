@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class WindowsShareLinkNode extends LinkNode
 {
     public function toSyntax()

@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 abstract class LinkNode extends Node implements InlineNodeInterface
 {
 
@@ -48,12 +47,12 @@ abstract class LinkNode extends Node implements InlineNodeInterface
     protected function getDefaultLinkSyntax2($inner)
     {
         $title = '';
-        $prefix = $this->textNode->getPrefixSyntax();;
+        $prefix = $this->textNode->getPrefixSyntax();
         $postfix = $this->textNode->getPostfixSyntax();
 
         if (!empty($this->attrs['data-name'])) {
             $title = '|' . $this->attrs['data-name'];
-        } else if (!empty($this->attrs['image-src'])) {
+        } elseif (!empty($this->attrs['image-src'])) {
             $imageAttrs = [];
             foreach ($this->attrs as $key => $value) {
                 @list ($keyPrefix, $attrKey) = explode('-', $key, 2);
@@ -130,12 +129,12 @@ abstract class LinkNode extends Node implements InlineNodeInterface
 
     /**
      * @param \renderer_plugin_prosemirror $renderer
-     * @param string $linktype
-     * @param string $href
-     * @param string|array $name
-     * @param string $title
-     * @param string $defaultClass
-     * @param array $additionalAttributes
+     * @param string                       $linktype
+     * @param string                       $href
+     * @param string|array                 $name
+     * @param string                       $title
+     * @param string                       $defaultClass
+     * @param array                        $additionalAttributes
      */
     protected static function renderToJSON(
         \renderer_plugin_prosemirror $renderer,

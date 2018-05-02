@@ -1,41 +1,41 @@
 {
-  "name": "prosemirror",
-  "version": "1.0.0",
-  "description": "prosemirror Plugin for DokuWiki",
-  "main": "index.js",
-  "dependencies": {
-    "prosemirror-commands": "^1.0.5",
-    "prosemirror-example-setup": "^1.0.1",
-    "prosemirror-history": "^1.0.0",
-    "prosemirror-keymap": "^1.0.0",
-    "prosemirror-menu": "^1.0.2",
-    "prosemirror-model": "^1.1.0",
-    "prosemirror-schema-basic": "^1.0.0",
-    "prosemirror-schema-list": "^1.0.0",
-    "prosemirror-state": "^1.1.0",
-    "prosemirror-tables": "^0.6.2",
-    "prosemirror-transform": "^1.0.2",
-    "prosemirror-view": "^1.0.10"
-  },
-  "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "eslint": "^4.12.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-loader": "^1.9.0",
-    "eslint-plugin-import": "^2.8.0",
-    "qunit": "^2.4.1",
-    "webpack": "^3.9.1"
-  },
-  "scripts": {
-    "dev": "webpack -d",
-    "watch": "webpack -dw",
-    "test": "qunit _jstest/**/*.js",
-    "build": "webpack -p",
-    "eslint": "NODE_ENV=production eslint script/main.js"
-  },
-  "author": "",
-  "license": "GPL-2.0"
+    "name": "prosemirror",
+    "version": "1.0.0",
+    "description": "prosemirror Plugin for DokuWiki",
+    "main": "index.js",
+    "dependencies": {
+        "prosemirror-commands": "^1.0.5",
+        "prosemirror-example-setup": "^1.0.1",
+        "prosemirror-history": "^1.0.0",
+        "prosemirror-keymap": "^1.0.0",
+        "prosemirror-menu": "^1.0.2",
+        "prosemirror-model": "^1.1.0",
+        "prosemirror-schema-basic": "^1.0.0",
+        "prosemirror-schema-list": "^1.0.0",
+        "prosemirror-state": "^1.1.0",
+        "prosemirror-tables": "^0.6.2",
+        "prosemirror-transform": "^1.0.2",
+        "prosemirror-view": "^1.0.10"
+    },
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
+        "babel-preset-env": "^1.6.1",
+        "babel-preset-stage-2": "^6.24.1",
+        "eslint": "^4.12.1",
+        "eslint-config-airbnb-base": "^12.1.0",
+        "eslint-loader": "^1.9.0",
+        "eslint-plugin-import": "^2.8.0",
+        "qunit": "^2.4.1",
+        "webpack": "^3.9.1"
+    },
+    "scripts": {
+        "dev": "webpack -d",
+        "watch": "webpack -dw",
+        "test": "qunit _jstest/**/*.js",
+        "build": "webpack -p",
+        "eslint": "NODE_ENV=production eslint script/main.js"
+    },
+    "author": "",
+    "license": "GPL-2.0"
 }

@@ -6,7 +6,7 @@ class NodeStack
 {
 
     /** @var Node[] */
-    protected $stack = array();
+    protected $stack = [];
 
     /** @var int index to the top of the stack */
     protected $stacklength = -1;
@@ -69,7 +69,9 @@ class NodeStack
     /**
      * Pop the current node off the stack
      *
-     * @param string $type The type of node that is expected. A RuntimeException is thrown if the current nod does not match
+     * @param string $type The type of node that is expected. A RuntimeException is thrown if the current nod does not
+     *                     match
+     *
      * @return Node
      */
     public function drop($type)
@@ -92,6 +94,4 @@ class NodeStack
     {
         $this->current()->addChild($node);
     }
-
-
 }

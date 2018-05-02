@@ -8,7 +8,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class ListItemNode extends Node
 {
 
@@ -29,7 +28,6 @@ class ListItemNode extends Node
         foreach ($data['content'] as $node) {
             $this->subnodes[] = new self::$nodeclass[$node['type']]($node, $this);
         }
-
     }
 
     public function toSyntax()

@@ -4,8 +4,9 @@ namespace dokuwiki\plugin\prosemirror\schema;
 
 /**
  * Class Mark
+ *
  * @package dokuwiki\plugin\prosemirror\schema
- * @link http://prosemirror.net/ref.html#model.Mark
+ * @link    http://prosemirror.net/ref.html#model.Mark
  */
 class Mark implements \JsonSerializable
 {
@@ -27,8 +28,9 @@ class Mark implements \JsonSerializable
     }
 
     /**
-     * @param string $key Attribute key to get or set
-     * @param null $value Attribute value to set, null to get
+     * @param string $key   Attribute key to get or set
+     * @param null   $value Attribute value to set, null to get
+     *
      * @return $this|mixed Either the wanted value or the Mark itself
      */
     public function attr($key, $value = null)
@@ -47,16 +49,17 @@ class Mark implements \JsonSerializable
 
     /**
      * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     *
+     * @link  http://php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
     function jsonSerialize()
     {
-        $json = array(
-            'type' => $this->type
-        );
+        $json = [
+            'type' => $this->type,
+        ];
         if ($this->attrs) {
             $json['attrs'] = $this->attrs;
         }

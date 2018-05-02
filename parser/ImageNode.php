@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class ImageNode extends Node implements InlineNodeInterface
 {
 
@@ -33,9 +32,9 @@ class ImageNode extends Node implements InlineNodeInterface
         $rightAlign = '';
         if ($this->attrs['align'] === 'left') {
             $rightAlign = ' ';
-        } else if ($this->attrs['align'] === 'right') {
+        } elseif ($this->attrs['align'] === 'right') {
             $leftAlign = ' ';
-        } else if ($this->attrs['align'] === 'center') {
+        } elseif ($this->attrs['align'] === 'center') {
             $leftAlign = ' ';
             $rightAlign = ' ';
         }
@@ -43,7 +42,7 @@ class ImageNode extends Node implements InlineNodeInterface
         $query = [];
         if ($this->attrs['height']) {
             $query[] = $this->attrs['width'] . 'x' . $this->attrs['height'];
-        } else if ($this->attrs['width']) {
+        } elseif ($this->attrs['width']) {
             $query[] = $this->attrs['width'];
         }
         if ($this->attrs['linking'] && $this->attrs['linking'] !== 'details') {
@@ -109,9 +108,9 @@ class ImageNode extends Node implements InlineNodeInterface
         $class = 'media';
         if ($align === 'right') {
             $class = 'mediaright';
-        } else if ($align === 'left') {
+        } elseif ($align === 'left') {
             $class = 'medialeft';
-        } else if ($align === 'center') {
+        } elseif ($align === 'center') {
             $class = 'mediacenter';
         }
 

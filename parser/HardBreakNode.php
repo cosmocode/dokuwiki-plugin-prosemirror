@@ -8,7 +8,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class HardBreakNode extends Node
 {
 

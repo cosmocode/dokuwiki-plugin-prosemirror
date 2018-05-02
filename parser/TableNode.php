@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class TableNode extends Node
 {
 
@@ -36,5 +35,4 @@ class TableNode extends Node
     {
         $this->rowSpans = $rowSpans;
     }
-
 }
