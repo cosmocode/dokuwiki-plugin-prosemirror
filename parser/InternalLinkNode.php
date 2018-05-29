@@ -6,54 +6,63 @@ class InternalLinkNode extends LinkNode
 {
     public function toSyntax()
     {
-        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
+        return $this->getDefaultLinkSyntax($this->attrs['data-inner']);
     }
 
     public static function render(\renderer_plugin_prosemirror $renderer, $originalId, $name)
     {
-
-
         global $ID;
         $additionalAttributes = [];
-        @list($id,) = explode('?', $originalId, 2);
 
-        // For empty $id we need to know the current $ID
-        // We need this check because _simpleTitle needs
-        // correct $id and resolve_pageid() use cleanID($id)
-        // (some things could be lost)
-        if ($id === '') {
-            $id = $ID;
-        }
-
-
-        $resolvedId = $id;
-        resolve_pageid(getNS($ID), $resolvedId, $exists);
-        $additionalAttributes['data-resolvedTitle'] = $resolvedId;
-        $additionalAttributes['data-resolvedID'] = $resolvedId;
-
+        $resolvedAttributes = self::resolveLink($originalId, $ID);
+        $additionalAttributes['data-resolvedTitle'] = $resolvedAttributes['id'];
+        $additionalAttributes['data-resolvedID'] = $resolvedAttributes['id'];
         if (!is_array($name)) {
-            $additionalAttributes['data-resolvedName'] = self::getLinkTitle(
-                $name,
-                $renderer->_simpleTitle($id),
-                $resolvedId
-            );
-
-            if ($exists) {
+            $additionalAttributes['data-resolvedName'] = $name ?: $resolvedAttributes['heading'];
+            if ($resolvedAttributes['exists']) {
                 $class = 'wikilink1';
             } else {
                 $class = 'wikilink2';
             }
-
             $additionalAttributes['data-resolvedClass'] = $class;
         }
 
-        self::renderToJSON2(
+        self::renderToJSON(
             $renderer,
             'internallink',
             $originalId,
             $name,
             $additionalAttributes
         );
+    }
+
+    public static function resolveLink($inner, $curId) {
+        $params = '';
+        $parts = explode('?', $inner, 2);
+        $resolvedPageId = $parts[0];
+        if (count($parts) === 2) {
+            $params = $parts[1];
+        }
+        $ns = getNS($curId);
+        $xhtml_renderer = p_get_renderer('xhtml');
+        $default = $xhtml_renderer->_simpleTitle($parts[0]);
+        resolve_pageid($ns, $resolvedPageId, $exists);
+
+        if (useHeading('content')) {
+            $heading = p_get_first_heading($resolvedPageId);
+        }
+        if (empty($heading)) {
+            $heading = $default;
+        }
+
+        $url = wl($resolvedPageId, $params);
+
+        return [
+            'id' => $resolvedPageId,
+            'exists' => $exists,
+            'heading' => $heading,
+            'url' => $url,
+        ];
     }
 
     protected static function getLinkTitle($title, $default, $id)

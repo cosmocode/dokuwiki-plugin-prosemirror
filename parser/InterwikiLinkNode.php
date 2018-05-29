@@ -7,7 +7,7 @@ class InterwikiLinkNode extends LinkNode
 
     public function toSyntax()
     {
-        return $this->getDefaultLinkSyntax2($this->attrs['data-inner']);
+        return $this->getDefaultLinkSyntax($this->attrs['data-inner']);
     }
 
     public static function render(\renderer_plugin_prosemirror $renderer, $name, $wikiName, $wikiUri)
@@ -18,7 +18,7 @@ class InterwikiLinkNode extends LinkNode
             'data-resolvedUrl' => $url,
             'data-resolvedClass' => 'interwikilink interwiki iw_' . $shortcut,
         ];
-        self::renderToJSON2(
+        self::renderToJSON(
             $renderer,
             'interwikilink',
             "$wikiName>$wikiUri",
