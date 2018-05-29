@@ -9,7 +9,8 @@ if (process.argv.indexOf('-p') !== -1) {
 module.exports = {
     entry: './script/main.js',
     output: {
-        filename: 'lib/bundle.js',
+        path: __dirname +  '/lib',
+        filename: 'bundle.js',
     },
     module: {
         rules: [
