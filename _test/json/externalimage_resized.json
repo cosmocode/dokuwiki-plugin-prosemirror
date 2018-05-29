@@ -1,0 +1,22 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "image",
+                    "attrs": {
+                        "src": "\/.\/lib\/exe\/fetch.php?tok=289769&amp;media=http%3A%2F%2Fphp.net%2Fimages%2Fphp.gif",
+                        "class": "media",
+                        "width": "200",
+                        "height": "50",
+                        "id": "http:\/\/php.net\/images\/php.gif",
+                        "linking": "details",
+                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/fetch.php?tok=289769&amp;media=http%3A%2F%2Fphp.net%2Fimages%2Fphp.gif\" class=\"media\" title=\"http:\/\/php.net\/images\/php.gif\"><img src=\"\/.\/lib\/exe\/fetch.php?w=200&amp;h=50&amp;tok=5e3b7e&amp;media=http%3A%2F%2Fphp.net%2Fimages%2Fphp.gif\" class=\"media\" title=\"http:\/\/php.net\/images\/php.gif\" alt=\"http:\/\/php.net\/images\/php.gif\" width=\"200\" height=\"50\" \/><\/a>"
+                    }
+                }
+            ]
+        }
+    ]
+}

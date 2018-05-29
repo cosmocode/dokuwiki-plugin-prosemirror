@@ -148,11 +148,12 @@ nodes = nodes.addToEnd('quote', {
 });
 
 const imageNode = nodes.get('image');
-imageNode.attrs.width = { default: null };
-imageNode.attrs.height = { default: null };
-imageNode.attrs.align = { default: null };
-imageNode.attrs.linking = { default: null };
-imageNode.attrs.cache = { default: null };
+imageNode.attrs.width = { default: '' };
+imageNode.attrs.height = { default: '' };
+imageNode.attrs.align = { default: '' };
+imageNode.attrs.linking = { default: '' };
+imageNode.attrs.cache = { default: '' };
+imageNode.attrs['data-resolvedHtml'] = { default: '' };
 imageNode.attrs.class = {};
 imageNode.attrs.id = {};
 nodes = nodes.update('image', imageNode);
@@ -174,6 +175,7 @@ nodes = nodes.addToEnd('link', {
         'data-resolvedName': { default: null },
         'data-resolvedClass': { default: null },
         'data-resolvedTitle': { default: null },
+        'data-resolvedImage': { default: '' },
         ...imageAttrs,
     },
     toDOM(node) {

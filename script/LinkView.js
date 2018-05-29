@@ -1,8 +1,9 @@
 // FIXME: prevent XSS!
 
 const { LinkForm } = require('./LinkForm');
+const { AbstractNodeView } = require('./AbstractNodeView');
 
-class LinkView {
+class LinkView extends AbstractNodeView {
     /**
      *
      * @param {Node} node
@@ -10,16 +11,12 @@ class LinkView {
      * @param {function} getPos
      */
     constructor(node, view, getPos) {
-        this.node = node;
-        this.outerView = view;
-        this.getPos = getPos;
-
-        this.renderLink(node.attrs);
+        super(node, view, getPos);
 
         this.linkForm = new LinkForm();
     }
 
-    renderLink(attributes) {
+    renderNode(attributes) {
         if (!this.dom) {
             this.dom = document.createElement('a');
             jQuery(this.dom).on('click', (event) => {
@@ -60,20 +57,13 @@ class LinkView {
         });
         this.dom.setAttribute('style', 'cursor: text;');
 
-        const isImage = attributes['image-src'] && attributes['image-src'].length > 0;
-
+        const isImage = attributes['image-id'] && attributes['image-id'].length > 0;
+        console.log(`isImage: ${isImage}`);
         // name
         if (attributes['data-name']) {
             this.dom.textContent = attributes['data-name'];
         } else if (isImage) {
-            this.dom.innerHTML = '';
-            const image = document.createElement('img');
-            Object.entries(attributes).forEach(([name, value]) => {
-                if (name.substr(0, 'image-'.length) === 'image-' && value !== null) {
-                    image.setAttribute(name.substr('image-'.length), value);
-                }
-            });
-            this.dom.appendChild(image);
+            this.dom.innerHTML = attributes['data-resolvedImage']; // FIXME: XSS?
         } else if (attributes['data-resolvedName']) {
             this.dom.textContent = attributes['data-resolvedName'];
         } else {
@@ -98,6 +88,13 @@ class LinkView {
 
         if (this.node.attrs['data-name']) {
             this.linkForm.setLinkNameType('custom', this.node.attrs['data-name']);
+        } else if (this.node.attrs['image-id']) {
+            this.linkForm.setLinkNameType(
+                'image',
+                Object.entries(this.node.attrs)
+                    .filter(([key, value]) => key.substr(0, 'image-'.length) === 'image-' && value)
+                    .reduce((carry, [key, value]) => ({ ...carry, [key.substr('image-'.length)]: value }), {}),
+            );
         }
 
         this.linkForm.show();
@@ -112,65 +109,77 @@ class LinkView {
             newAttrs['data-inner'] = this.linkForm.getLinkTarget();
             newAttrs['data-type'] = this.linkForm.getLinkType();
             const nameType = this.linkForm.getLinkNameType();
+            newAttrs = LinkView.unsetPrefixAttributes('image-', newAttrs);
             if (nameType === 'custom') {
                 newAttrs['data-name'] = this.linkForm.getLinkName();
-                newAttrs = LinkView.unsetPrefixAttributes('image-', newAttrs);
             }
             if (nameType === 'automatic') {
                 delete newAttrs['data-name'];
-                newAttrs = LinkView.unsetPrefixAttributes('image-', newAttrs);
+            }
+            const actions = [];
+            const params = {};
+            const image = {};
+            if (nameType === 'image') {
+                delete newAttrs['data-name'];
+                actions.push('resolveImageTitle');
+                // image caption?
+                image.id = this.linkForm.MediaForm.getSource();
+                image.title = this.linkForm.MediaForm.getCaption();
+                image.width = this.linkForm.MediaForm.getWidth();
+                image.height = this.linkForm.MediaForm.getHeight();
+                image.align = this.linkForm.MediaForm.getAlignment();
+                image.cache = this.linkForm.MediaForm.getCache();
+                params.image = image;
+                newAttrs = Object.entries(image)
+                    .reduce((carry, [key, value]) => ({ ...carry, [`image-${key}`]: value }), newAttrs);
             }
 
             if (newAttrs['data-type'] === 'internallink') {
-                jQuery.get(
-                    `${DOKU_BASE}/lib/exe/ajax.php`,
-                    {
-                        call: 'plugin_prosemirror',
-                        action: 'resolveInternalLink',
-                        inner: newAttrs['data-inner'],
-                        id: JSINFO.id,
-                    },
-                ).done((data) => {
-                    const {
-                        id, exists, heading,
-                    } = JSON.parse(data);
-                    newAttrs['data-resolvedID'] = id;
-                    newAttrs['data-resolvedTitle'] = id;
-                    newAttrs['data-resolvedClass'] = exists ? 'wikilink1' : 'wikilink2';
-                    if (nameType === 'automatic') {
-                        newAttrs['data-resolvedName'] = heading;
-                    }
-                    this.renderLink(newAttrs);
-
-                    const nodeStartPos = this.getPos();
-                    this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
-                        nodeStartPos,
-                        null,
-                        newAttrs,
-                        this.node.marks,
-                    ));
-                });
-
-                return;
+                actions.push('resolveInternalLink');
             }
 
             if (newAttrs['data-type'] === 'interwikilink') {
+                actions.push('resolveInterWikiLink');
+            }
+
+            if (actions.length) {
                 jQuery.get(
                     `${DOKU_BASE}/lib/exe/ajax.php`,
                     {
                         call: 'plugin_prosemirror',
-                        action: 'resolveInterWikiLink',
+                        actions,
                         inner: newAttrs['data-inner'],
                         id: JSINFO.id,
+                        ...params,
                     },
                 ).done((data) => {
-                    const {
-                        url, resolvedClass,
-                    } = JSON.parse(data);
-                    newAttrs['data-resolvedUrl'] = url;
-                    newAttrs['data-resolvedClass'] = resolvedClass;
-                    this.renderLink(newAttrs);
+                    console.log(JSON.parse(data));
 
+                    // FIXME handle aggregated data
+                    const parsedData = JSON.parse(data);
+                    if (parsedData.resolveInternalLink) {
+                        const {
+                            id, exists, heading,
+                        } = parsedData.resolveInternalLink;
+                        newAttrs['data-resolvedID'] = id;
+                        newAttrs['data-resolvedTitle'] = id;
+                        newAttrs['data-resolvedClass'] = exists ? 'wikilink1' : 'wikilink2';
+                        if (nameType === 'automatic') {
+                            newAttrs['data-resolvedName'] = heading;
+                        }
+                    }
+                    if (parsedData.resolveInterWikiLink) {
+                        const {
+                            url, resolvedClass,
+                        } = parsedData.resolveInterWikiLink;
+                        newAttrs['data-resolvedUrl'] = url;
+                        newAttrs['data-resolvedClass'] = resolvedClass;
+                    }
+                    if (parsedData.resolveImageTitle) {
+                        newAttrs['data-resolvedImage'] = parsedData.resolveImageTitle['data-resolvedImage'];
+                    }
+
+                    this.renderNode(newAttrs);
                     const nodeStartPos = this.getPos();
                     this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
                         nodeStartPos,
@@ -183,7 +192,7 @@ class LinkView {
                 return;
             }
 
-            this.renderLink(newAttrs);
+            this.renderNode(newAttrs);
             const nodeStartPos = this.getPos();
             this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
                 nodeStartPos,
@@ -200,6 +209,10 @@ class LinkView {
         this.linkForm.off('submit');
         this.linkForm.hide();
         this.linkForm.resetForm();
+    }
+
+    destroy() {
+        this.linkForm.destroy();
     }
 
     static unsetPrefixAttributes($prefix, attributes) {

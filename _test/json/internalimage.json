@@ -10,7 +10,8 @@
                         "src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
                         "class": "media",
                         "id": "wiki:dokuwiki-128.png",
-                        "linking": "details"
+                        "linking": "details",
+                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/detail.php?id=wiki%3Asyntax&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" \/><\/a>"
                     }
                 }
             ]

@@ -12,7 +12,8 @@
                         "id": "wiki:dokuwiki-128.png",
                         "align": "right",
                         "width": "50",
-                        "linking": "details"
+                        "linking": "details",
+                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/detail.php?id=wiki%3Asyntax&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?w=50&amp;tok=8cbae1&amp;media=wiki:dokuwiki-128.png\" class=\"mediaright\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" width=\"50\" \/><\/a>"
                     }
                 }
             ]

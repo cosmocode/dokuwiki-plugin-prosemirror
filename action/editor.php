@@ -69,31 +69,96 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         }
 
         $linkForm = new dokuwiki\Form\Form(['class' => 'plugin_prosemirror_linkform', 'id' => 'prosemirror-linkform']);
-        $linkForm->addFieldsetOpen('Links');
+        $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
         $linkForm->addTextInput('linktarget', 'Link target')->attr('required', 'required');
 
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');
+        $linkForm->addTagOpen('fieldset');
+        $linkForm->addTagOpen('legend');
+        $linkForm->addHTML('Link Type');
+        $linkForm->addTagClose('legend');
         $linkForm->addRadioButton('linktype', 'Wiki page')->val('internallink');
         $linkForm->addRadioButton('linktype', 'Interwiki')->val('interwikilink');
         $linkForm->addRadioButton('linktype', 'email')->val('emaillink');
         $linkForm->addRadioButton('linktype', 'external')->val('externallink')->attr('checked', 'checked');
         $linkForm->addRadioButton('linktype', 'Other')->val('other');
+        $linkForm->addTagClose('fieldset');
         $linkForm->addTagClose('div');
 
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');
+        $linkForm->addTagOpen('fieldset');
+        $linkForm->addTagOpen('legend');
+        $linkForm->addHTML('Link Name Type');
+        $linkForm->addTagClose('legend');
         $linkForm->addRadioButton('nametype', 'automatic')->val('automatic')->attr('checked', 'checked');
         $linkForm->addRadioButton('nametype', 'custom')->val('custom');
-        $linkForm->addRadioButton('nametype', 'internalmedia')->val('wiki image')->attr('disabled', 'disabled');
-        $linkForm->addRadioButton('nametype', 'externalmedia')->val('external image')->attr('disabled', 'disabled');
+        $linkForm->addRadioButton('nametype', 'image')->val('image');
+        $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', '(automatic)');
+        $linkForm->addTagOpen('div')->addClass('js-media-wrapper');
+        $linkForm->addTagClose('div');
+        $linkForm->addTagClose('fieldset');
         $linkForm->addTagClose('div');
 
-        $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', '(automatic)');
+
+        $linkForm->addFieldsetClose();
         $linkForm->addButton('ok-button', 'OK')->attr('type', 'submit');
         $linkForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
 
         echo $linkForm->toHTML();
+
+        $mediaForm = new dokuwiki\Form\Form(
+            ['class' => 'plugin_prosemirror_mediaform', 'id' => 'prosemirror-mediaform']
+        );
+        $mediaForm->addFieldsetOpen('Media')->addClass('js-media-fieldset');
+        $mediaForm->addTextInput('mediatarget', 'Media')->attr('required', 'required');
+        $mediaForm->addTextInput('mediacaption', 'Caption');
+        $mediaForm->addTextInput('width', 'Width (px)')->attr('type', 'number');
+        $mediaForm->addTextInput('height', 'Height (px)')->attr('type', 'number');
+
+        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addTagOpen('fieldset');
+        $mediaForm->addTagOpen('legend');
+        $mediaForm->addHTML('Alignment');
+        $mediaForm->addTagClose('legend');
+        $mediaForm->addRadioButton('alignment', 'default')->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('alignment', 'float left')->val('left');
+        $mediaForm->addRadioButton('alignment', 'center')->val('center');
+        $mediaForm->addRadioButton('alignment', 'float right')->val('right');
+        $mediaForm->addTagClose('fieldset');
+        $mediaForm->addTagClose('div');
+
+        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addTagOpen('fieldset');
+        $mediaForm->addTagOpen('legend');
+        $mediaForm->addHTML('Linking');
+        $mediaForm->addTagClose('legend');
+        $mediaForm->addRadioButton('linking', 'default')->val('details')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('linking', 'direct')->val('direct');
+        $mediaForm->addRadioButton('linking', 'nolink')->val('nolink');
+        $mediaForm->addRadioButton('linking', 'linkonly')->val('linkonly');
+        $mediaForm->addTagClose('fieldset');
+        $mediaForm->addTagClose('div');
+
+        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addTagOpen('fieldset');
+        $mediaForm->addTagOpen('legend');
+        $mediaForm->addHTML('Caching');
+        $mediaForm->addTagClose('legend');
+        $mediaForm->addRadioButton('caching', 'default')->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('caching', 'recache')->val('recache');
+        $mediaForm->addRadioButton('caching', 'nocache')->val('nocache');
+        $mediaForm->addTagClose('fieldset');
+        $mediaForm->addTagClose('div');
+
+        $mediaForm->addFieldsetClose();
+        $mediaForm->addButton('ok-button', 'OK')->attr('type', 'submit');
+        $mediaForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
+
+        // dynamic image hack? https://www.dokuwiki.org/images#dynamic_images
+
+        echo $mediaForm->toHTML();
     }
 }
 
