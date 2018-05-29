@@ -3,6 +3,7 @@ const { toggleMark, setBlockType, wrapIn } = require('prosemirror-commands');
 const { MenuPlugin } = require('./MenuPlugin');
 const { MenuItem } = require('./MenuItem');
 const { schema } = require('./schema');
+const { NodeSelection } = require('prosemirror-state');
 
 // Helper function to create menu icons
 function icon(text, name) {
@@ -27,8 +28,14 @@ const underline = new MenuItem({
 });
 
 const link = new MenuItem({
-    command: (state, dispatch, editorView) => {
+    command: (state, dispatch) => {
         const { $from } = state.selection;
+        let textContent = '';
+        state.selection.content().content.descendants((node) => {
+            textContent += node.textContent;
+            return false;
+        });
+
         const index = $from.index();
         if (!$from.parent.canReplaceWith(index, index, schema.nodes.link)) {
             return false;
@@ -37,14 +44,15 @@ const link = new MenuItem({
             dispatch(state.tr
                 .replaceSelectionWith(schema.nodes.link.create({
                     'data-type': 'internallink',
-                    'data-inner': 'FIXME',
-                })));
+                    'data-inner': textContent || 'FIXME',
+                    'data-name': textContent,
+                }))
+                .setSelection(new NodeSelection($from)));
         }
         return true;
     },
     dom: icon('L', 'Link'),
 });
-
 
 const menu = MenuPlugin([
     { command: toggleMark(schema.marks.strong), dom: icon('B', 'strong') },

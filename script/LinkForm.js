@@ -1,5 +1,10 @@
 class LinkForm {
     constructor() {
+        if (jQuery('#prosemirror-linkform').length) {
+            this.initializeLinkForm();
+            return;
+        }
+
         jQuery(this.initializeLinkForm.bind(this));
     }
 
