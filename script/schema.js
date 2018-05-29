@@ -181,51 +181,51 @@ nodes = nodes.addToEnd('link', {
     },
 });
 
-nodes = nodes.addToEnd('interwikilink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        'data-shortcut': {},
-        'data-reference': {},
-        title: { default: null },
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-    parseDom: [
-        {
-            tag: 'a[href].interwikilink',
-            getAttrs(dom) {
-                return {
-                    href: dom.getAttribute('href'),
-                    title: dom.getAttribute('title'),
-                    'data-shortcut': dom.getAttribute('data-shortcut'),
-                    'data-reference': dom.getAttribute('data-reference'),
-                    class: dom.getAttribute('class'),
-                };
-            },
-        },
-    ],
-});
-
-nodes = nodes.addToEnd('windowssharelink', {
-    content: 'text|image',
-    group: 'inline', // fixme should later be changed to substition? or add substitution?
-    inline: true,
-    atom: true,
-    attrs: {
-        class: {},
-        href: {},
-        title: {},
-    },
-    toDOM(node) {
-        return ['a', node.attrs, 0];
-    },
-});
+// nodes = nodes.addToEnd('interwikilink', {
+//     content: 'text|image',
+//     group: 'inline', // fixme should later be changed to substition? or add substitution?
+//     inline: true,
+//     atom: true,
+//     attrs: {
+//         class: {},
+//         href: {},
+//         'data-shortcut': {},
+//         'data-reference': {},
+//         title: { default: null },
+//     },
+//     toDOM(node) {
+//         return ['a', node.attrs, 0];
+//     },
+//     parseDom: [
+//         {
+//             tag: 'a[href].interwikilink',
+//             getAttrs(dom) {
+//                 return {
+//                     href: dom.getAttribute('href'),
+//                     title: dom.getAttribute('title'),
+//                     'data-shortcut': dom.getAttribute('data-shortcut'),
+//                     'data-reference': dom.getAttribute('data-reference'),
+//                     class: dom.getAttribute('class'),
+//                 };
+//             },
+//         },
+//     ],
+// });
+//
+// nodes = nodes.addToEnd('windowssharelink', {
+//     content: 'text|image',
+//     group: 'inline', // fixme should later be changed to substition? or add substitution?
+//     inline: true,
+//     atom: true,
+//     attrs: {
+//         class: {},
+//         href: {},
+//         title: {},
+//     },
+//     toDOM(node) {
+//         return ['a', node.attrs, 0];
+//     },
+// });
 
 nodes = nodes.addToEnd('footnote', {
     content: 'inline',
@@ -251,7 +251,7 @@ nodes = nodes.addToEnd('rss', {
 });
 
 nodes = nodes.addToEnd('dwplugin', {
-    content: 'text',
+    // content: 'text*',
     marks: '_',
     attrs: {
         class: { default: 'dwplugin' },
