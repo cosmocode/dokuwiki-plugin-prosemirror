@@ -54,11 +54,40 @@ const link = new MenuItem({
     dom: icon('L', 'Link'),
 });
 
+const image = new MenuItem({
+    command: (state, dispatch) => {
+        const { $from } = state.selection; let textContent = '';
+        state.selection.content().content.descendants((node) => {
+            textContent += node.textContent;
+            return false;
+        });
+
+        const index = $from.index();
+        if (!$from.parent.canReplaceWith(index, index, schema.nodes.image)) {
+            return false;
+        }
+        if (dispatch) {
+            dispatch(state.tr
+                .replaceSelectionWith(schema.nodes.image.create({
+                    class: 'media',
+                    id: textContent || 'FIXME',
+                    title: textContent,
+                    src: `${DOKU_BASE}/lib/exe/fetch.php?media=`,
+                    linking: 'details',
+                }))
+                .setSelection(new NodeSelection($from)));
+        }
+        return true;
+    },
+    dom: icon('🖼️', 'Insert Image'),
+});
+
 const menu = MenuPlugin([
     { command: toggleMark(schema.marks.strong), dom: icon('B', 'strong') },
     { command: toggleMark(schema.marks.em), dom: icon('i', 'em') },
     underline,
     link,
+    image,
     { command: setBlockType(schema.nodes.paragraph), dom: icon('p', 'paragraph') },
     heading(1), heading(2), heading(3),
     { command: wrapIn(schema.nodes.blockquote), dom: icon('>', 'blockquote') },

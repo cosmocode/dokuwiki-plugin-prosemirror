@@ -23,7 +23,8 @@ class MediaView extends AbstractNodeView {
             return;
         }
 
-        this.dom = '';
+        // FIXME this needs to be something meaningful -- maybe a spinner?
+        this.dom = jQuery('<span>⌚</span>').get(0);
     }
 
     selectNode() {
