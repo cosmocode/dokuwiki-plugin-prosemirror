@@ -113,7 +113,7 @@ class LinkForm extends NodeForm {
             this.$form.find('[name="linkname"]').val('').attr('type', 'hidden').closest('label')
                 .hide();
             const $imageFields = jQuery('#prosemirror-mediaform').find('.js-media-fieldset').clone();
-            this.$form.find('.js-link-fieldset').after($imageFields);
+            this.$form.find('.js-media-wrapper').html($imageFields);
             this.MediaForm = new MediaForm('prosemirror-linkform');
             break;
         }

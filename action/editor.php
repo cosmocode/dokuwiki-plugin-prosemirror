@@ -88,6 +88,8 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 
         $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', '(automatic)');
         $linkForm->addFieldsetClose();
+        $linkForm->addTagOpen('div')->addClass('js-media-wrapper');
+        $linkForm->addTagClose('div');
         $linkForm->addButton('ok-button', 'OK')->attr('type', 'submit');
         $linkForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
 
