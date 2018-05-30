@@ -38,26 +38,33 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      */
     public function output_editor(Doku_Event $event, $param)
     {
-        global $TEXT;
+        global $INPUT;
 
-        // fixme: somehow make sure that we want to actually use the editor
-        if (!$this->getConf('use_editor')) {
-            msg('prosemirror editor deactivated in conf', 0);
+        /** @var Doku_Form $form */
+        $form =& $event->data;
+        $useWYSIWYG = get_doku_pref('plugin_prosemirror_useWYSIWYG', false);
+
+        if (!$useWYSIWYG) {
+            $attr = [
+                'class' => 'button plugin_prosemirror_useWYSIWYG'
+            ];
+            $form->addElement(form_makeButton('submit', 'preview', 'Preview and use WYSIWYG-Editor', $attr));
             return;
         }
-        msg('prosemirror editor active!', 2);
 
         $event->stopPropagation();
         $event->preventDefault();
 
+        $attr = [
+            'class' => 'button plugin_prosemirror_useWYSIWYG'
+        ];
+        $form->addElement(form_makeButton('submit', 'preview', 'Preview and use Syntax-Editor', $attr));
+
+
+        global $TEXT;
         $instructions = p_get_instructions($TEXT);
 
         // output data and editor field
-
-        /** @var Doku_Form $form */
-        $form =& $event->data;
-
-        // data for handsontable
         $form->addHidden('prosemirror_json', p_render('prosemirror', $instructions, $info));
         $form->insertElement(1, '<div id="prosemirror__editor"></div>');
     }
