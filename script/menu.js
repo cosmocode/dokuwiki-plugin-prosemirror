@@ -31,11 +31,6 @@ const underline = new MenuItem({
 const link = new MenuItem({
     command: (state, dispatch) => {
         const { $from } = state.selection;
-        let textContent = '';
-        state.selection.content().content.descendants((node) => {
-            textContent += node.textContent;
-            return false;
-        });
 
         const index = $from.index();
         if (!$from.parent.canReplaceWith(index, index, schema.nodes.link)) {
@@ -43,6 +38,11 @@ const link = new MenuItem({
         }
 
         if (dispatch) {
+            let textContent = '';
+            state.selection.content().content.descendants((node) => {
+                textContent += node.textContent;
+                return false;
+            });
             const linkForm = new LinkForm();
             linkForm.setLinkType('internallink');
             if (textContent) {
@@ -70,17 +70,19 @@ const link = new MenuItem({
 
 const image = new MenuItem({
     command: (state, dispatch) => {
-        const { $from } = state.selection; let textContent = '';
-        state.selection.content().content.descendants((node) => {
-            textContent += node.textContent;
-            return false;
-        });
+        const { $from } = state.selection;
 
         const index = $from.index();
         if (!$from.parent.canReplaceWith(index, index, schema.nodes.image)) {
             return false;
         }
         if (dispatch) {
+            let textContent = '';
+            state.selection.content().content.descendants((node) => {
+                textContent += node.textContent;
+                return false;
+            });
+
             dispatch(state.tr
                 .replaceSelectionWith(schema.nodes.image.create({
                     class: 'media',
