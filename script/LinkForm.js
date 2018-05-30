@@ -125,7 +125,7 @@ class LinkForm extends NodeForm {
     handleLinkTypeChange() {
         const linktype = this.$form.find('[name="linktype"]:checked').val();
         const $linkTargetInput = this.$form.find('[name="linktarget"]');
-        this.$form.find('[name="iwshortcut"]').hide();
+        this.$form.find('[name="iwshortcut"]').closest('label').hide();
         switch (linktype) {
         case 'externallink':
             $linkTargetInput
@@ -143,7 +143,7 @@ class LinkForm extends NodeForm {
                 .prop('placeholder', 'namespace:page');
             break;
         case 'interwikilink':
-            this.$form.find('[name="iwshortcut"]').show();
+            this.$form.find('[name="iwshortcut"]').closest('label').show();
             $linkTargetInput
                 .attr('type', 'text')
                 .prop('placeholder', '');
