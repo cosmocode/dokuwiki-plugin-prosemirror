@@ -154,8 +154,8 @@ imageNode.attrs.align = { default: '' };
 imageNode.attrs.linking = { default: '' };
 imageNode.attrs.cache = { default: '' };
 imageNode.attrs['data-resolvedHtml'] = { default: '' };
-imageNode.attrs.class = {};
 imageNode.attrs.id = {};
+delete imageNode.attrs.src;
 nodes = nodes.update('image', imageNode);
 
 const imageAttrs = {};

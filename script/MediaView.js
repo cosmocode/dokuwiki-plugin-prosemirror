@@ -40,34 +40,14 @@ class MediaView extends AbstractNodeView {
         this.MediaForm.setLinking(this.node.attrs.linking);
 
         this.MediaForm.show();
-        this.MediaForm.on('submit', (event) => {
-            event.preventDefault();
 
-            // const newAttrs = this.node.copy().attrs;
-            const newAttrs = AbstractNodeView.unsetPrefixAttributes('data-resolved', this.node.copy().attrs);
 
-            newAttrs.id = this.MediaForm.getSource();
-            newAttrs.title = this.MediaForm.getCaption();
-            newAttrs.width = this.MediaForm.getWidth();
-            newAttrs.height = this.MediaForm.getHeight();
-            newAttrs.align = this.MediaForm.getAlignment();
-            newAttrs.linking = this.MediaForm.getLinking();
-            newAttrs.cache = this.MediaForm.getCache();
-
-            jQuery.get(
-                `${DOKU_BASE}/lib/exe/ajax.php`,
-                {
-                    call: 'plugin_prosemirror',
-                    actions: ['resolveMedia'],
-                    attrs: newAttrs,
-                    id: JSINFO.id,
-                },
-            ).done((data) => {
-                const parsedData = JSON.parse(data);
-                newAttrs['data-resolvedHtml'] = parsedData.resolveMedia['data-resolvedHtml'];
-                console.log(newAttrs);
+        const cleanAttrs = AbstractNodeView.unsetPrefixAttributes('data-resolved', { ...this.node.attrs });
+        this.MediaForm.on('submit', MediaForm.resolveSubmittedLinkData(
+            cleanAttrs,
+            this.MediaForm,
+            (newAttrs) => {
                 this.renderNode(newAttrs);
-
                 const nodeStartPos = this.getPos();
                 this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
                     nodeStartPos,
@@ -75,10 +55,8 @@ class MediaView extends AbstractNodeView {
                     newAttrs,
                     this.node.marks,
                 ));
-            });
-
-            console.log(this.MediaForm.getCache());
-        });
+            },
+        ));
     }
 
     deselectNode() {

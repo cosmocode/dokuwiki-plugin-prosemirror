@@ -73,5 +73,34 @@ class MediaForm extends NodeForm {
         this.setLinking();
         this.setCache();
     }
+
+    static resolveSubmittedLinkData(initialAttrs, $mediaForm, callback) {
+        return (event) => {
+            event.preventDefault();
+            const newAttrs = { ...initialAttrs };
+            newAttrs.id = $mediaForm.getSource();
+            newAttrs.title = $mediaForm.getCaption();
+            newAttrs.width = $mediaForm.getWidth();
+            newAttrs.height = $mediaForm.getHeight();
+            newAttrs.align = $mediaForm.getAlignment();
+            newAttrs.linking = $mediaForm.getLinking();
+            newAttrs.cache = $mediaForm.getCache();
+
+            jQuery.get(
+                `${DOKU_BASE}/lib/exe/ajax.php`,
+                {
+                    call: 'plugin_prosemirror',
+                    actions: ['resolveMedia'],
+                    attrs: newAttrs,
+                    id: JSINFO.id,
+                },
+            ).done((data) => {
+                const parsedData = JSON.parse(data);
+                newAttrs['data-resolvedHtml'] = parsedData.resolveMedia['data-resolvedHtml'];
+                console.log(newAttrs);
+                callback(newAttrs);
+            });
+        };
+    }
 }
 exports.MediaForm = MediaForm;

@@ -1,9 +1,8 @@
-
 const { toggleMark, setBlockType, wrapIn } = require('prosemirror-commands');
 const { MenuPlugin } = require('./MenuPlugin');
 const { MenuItem } = require('./MenuItem');
 const { schema } = require('./schema');
-const { NodeSelection } = require('prosemirror-state');
+const { MediaForm } = require('./MediaForm');
 const { LinkForm } = require('./LinkForm');
 
 // Helper function to create menu icons
@@ -83,15 +82,24 @@ const image = new MenuItem({
                 return false;
             });
 
-            dispatch(state.tr
-                .replaceSelectionWith(schema.nodes.image.create({
-                    class: 'media',
-                    id: textContent || 'FIXME',
-                    title: textContent,
-                    src: `${DOKU_BASE}/lib/exe/fetch.php?media=`,
-                    linking: 'details',
-                }))
-                .setSelection(new NodeSelection($from)));
+            const mediaForm = new MediaForm();
+            if (textContent) {
+                mediaForm.setCaption(textContent);
+                mediaForm.setSource(textContent);
+            }
+
+            mediaForm.show();
+
+            mediaForm.on('submit', MediaForm.resolveSubmittedLinkData(
+                {},
+                mediaForm,
+                (newAttrs) => {
+                    dispatch(state.tr.replaceSelectionWith(schema.nodes.image.create(newAttrs)));
+                    mediaForm.off('submit');
+                    mediaForm.hide();
+                    mediaForm.resetForm();
+                },
+            ));
         }
         return true;
     },
