@@ -5,6 +5,8 @@ class LinkForm extends NodeForm {
     constructor() {
         super('prosemirror-linkform');
 
+        this.name = 'Link Configuration';
+
         if (jQuery('#prosemirror-linkform').length) {
             this.initializeLinkForm();
             return;

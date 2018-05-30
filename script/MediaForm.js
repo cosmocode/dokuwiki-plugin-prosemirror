@@ -3,6 +3,8 @@ const { NodeForm } = require('./NodeForm');
 class MediaForm extends NodeForm {
     constructor(id = 'prosemirror-mediaform') {
         super(id);
+
+        this.name = 'Image Configuration';
     }
 
     setSource(id = '') {

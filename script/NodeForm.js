@@ -4,11 +4,13 @@ class NodeForm {
     }
 
     show() {
-        this.$form.show();
+        jQuery(this.$form).dialog({
+            title: this.name,
+        });
     }
 
     hide() {
-        this.$form.hide();
+        jQuery(this.$form).dialog('close');
     }
 
     on(eventName, callback) {
