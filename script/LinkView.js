@@ -98,109 +98,24 @@ class LinkView extends AbstractNodeView {
         }
 
         this.linkForm.show();
+        let cleanedAttrs = this.node.copy().attrs;
+        cleanedAttrs = LinkView.unsetPrefixAttributes('data-resolved', cleanedAttrs);
+        cleanedAttrs = LinkView.unsetPrefixAttributes('image-', cleanedAttrs);
 
-        this.linkForm.on('submit', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-
-            let newAttrs = this.node.copy().attrs;
-            newAttrs = LinkView.unsetPrefixAttributes('data-resolved', newAttrs);
-
-            newAttrs['data-inner'] = this.linkForm.getLinkTarget();
-            newAttrs['data-type'] = this.linkForm.getLinkType();
-            const nameType = this.linkForm.getLinkNameType();
-            newAttrs = LinkView.unsetPrefixAttributes('image-', newAttrs);
-            if (nameType === 'custom') {
-                newAttrs['data-name'] = this.linkForm.getLinkName();
-            }
-            if (nameType === 'automatic') {
-                delete newAttrs['data-name'];
-            }
-            const actions = [];
-            const params = {};
-            const image = {};
-            if (nameType === 'image') {
-                delete newAttrs['data-name'];
-                actions.push('resolveImageTitle');
-                // image caption?
-                image.id = this.linkForm.MediaForm.getSource();
-                image.title = this.linkForm.MediaForm.getCaption();
-                image.width = this.linkForm.MediaForm.getWidth();
-                image.height = this.linkForm.MediaForm.getHeight();
-                image.align = this.linkForm.MediaForm.getAlignment();
-                image.cache = this.linkForm.MediaForm.getCache();
-                params.image = image;
-                newAttrs = Object.entries(image)
-                    .reduce((carry, [key, value]) => ({ ...carry, [`image-${key}`]: value }), newAttrs);
-            }
-
-            if (newAttrs['data-type'] === 'internallink') {
-                actions.push('resolveInternalLink');
-            }
-
-            if (newAttrs['data-type'] === 'interwikilink') {
-                actions.push('resolveInterWikiLink');
-            }
-
-            if (actions.length) {
-                jQuery.get(
-                    `${DOKU_BASE}/lib/exe/ajax.php`,
-                    {
-                        call: 'plugin_prosemirror',
-                        actions,
-                        inner: newAttrs['data-inner'],
-                        id: JSINFO.id,
-                        ...params,
-                    },
-                ).done((data) => {
-                    console.log(JSON.parse(data));
-
-                    // FIXME handle aggregated data
-                    const parsedData = JSON.parse(data);
-                    if (parsedData.resolveInternalLink) {
-                        const {
-                            id, exists, heading,
-                        } = parsedData.resolveInternalLink;
-                        newAttrs['data-resolvedID'] = id;
-                        newAttrs['data-resolvedTitle'] = id;
-                        newAttrs['data-resolvedClass'] = exists ? 'wikilink1' : 'wikilink2';
-                        if (nameType === 'automatic') {
-                            newAttrs['data-resolvedName'] = heading;
-                        }
-                    }
-                    if (parsedData.resolveInterWikiLink) {
-                        const {
-                            url, resolvedClass,
-                        } = parsedData.resolveInterWikiLink;
-                        newAttrs['data-resolvedUrl'] = url;
-                        newAttrs['data-resolvedClass'] = resolvedClass;
-                    }
-                    if (parsedData.resolveImageTitle) {
-                        newAttrs['data-resolvedImage'] = parsedData.resolveImageTitle['data-resolvedImage'];
-                    }
-
-                    this.renderNode(newAttrs);
-                    const nodeStartPos = this.getPos();
-                    this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
-                        nodeStartPos,
-                        null,
-                        newAttrs,
-                        this.node.marks,
-                    ));
-                });
-
-                return;
-            }
-
-            this.renderNode(newAttrs);
-            const nodeStartPos = this.getPos();
-            this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
-                nodeStartPos,
-                null,
-                newAttrs,
-                this.node.marks,
-            ));
-        });
+        this.linkForm.on('submit', LinkForm.resolveSubmittedLinkData(
+            this.linkForm,
+            cleanedAttrs,
+            (newAttrs) => {
+                this.renderNode(newAttrs);
+                const nodeStartPos = this.getPos();
+                this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
+                    nodeStartPos,
+                    null,
+                    newAttrs,
+                    this.node.marks,
+                ));
+            },
+        ));
     }
 
     deselectNode() {

@@ -157,6 +157,91 @@ class LinkForm extends NodeForm {
             console.warn(`unknown / unhandled linktype ${linktype}`);
         }
     }
+
+    static resolveSubmittedLinkData(linkForm, initialAttributes, callback) {
+        return function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            let newAttrs = initialAttributes;
+            newAttrs['data-inner'] = linkForm.getLinkTarget();
+            newAttrs['data-type'] = linkForm.getLinkType();
+            const nameType = linkForm.getLinkNameType();
+            if (nameType === 'custom') {
+                newAttrs['data-name'] = linkForm.getLinkName();
+            }
+            if (nameType === 'automatic') {
+                delete newAttrs['data-name'];
+            }
+            const actions = [];
+            const params = {};
+            const image = {};
+            if (nameType === 'image') {
+                delete newAttrs['data-name'];
+                actions.push('resolveImageTitle');
+                // image caption?
+                image.id = linkForm.MediaForm.getSource();
+                image.title = linkForm.MediaForm.getCaption();
+                image.width = linkForm.MediaForm.getWidth();
+                image.height = linkForm.MediaForm.getHeight();
+                image.align = linkForm.MediaForm.getAlignment();
+                image.cache = linkForm.MediaForm.getCache();
+                params.image = image;
+                newAttrs = Object.entries(image)
+                    .reduce((carry, [key, value]) => ({ ...carry, [`image-${key}`]: value }), newAttrs);
+            }
+
+            if (newAttrs['data-type'] === 'internallink') {
+                actions.push('resolveInternalLink');
+            }
+
+            if (newAttrs['data-type'] === 'interwikilink') {
+                actions.push('resolveInterWikiLink');
+            }
+
+            if (actions.length) {
+                jQuery.get(
+                    `${DOKU_BASE}/lib/exe/ajax.php`,
+                    {
+                        call: 'plugin_prosemirror',
+                        actions,
+                        inner: newAttrs['data-inner'],
+                        id: JSINFO.id,
+                        ...params,
+                    },
+                ).done((data) => {
+                    // FIXME handle aggregated data
+                    const parsedData = JSON.parse(data);
+                    if (parsedData.resolveInternalLink) {
+                        const {
+                            id, exists, heading: linkName,
+                        } = parsedData.resolveInternalLink;
+                        newAttrs['data-resolvedID'] = id;
+                        newAttrs['data-resolvedTitle'] = id;
+                        newAttrs['data-resolvedClass'] = exists ? 'wikilink1' : 'wikilink2';
+                        if (nameType === 'automatic') {
+                            newAttrs['data-resolvedName'] = linkName;
+                        }
+                    }
+                    if (parsedData.resolveInterWikiLink) {
+                        const {
+                            url, resolvedClass,
+                        } = parsedData.resolveInterWikiLink;
+                        newAttrs['data-resolvedUrl'] = url;
+                        newAttrs['data-resolvedClass'] = resolvedClass;
+                    }
+                    if (parsedData.resolveImageTitle) {
+                        newAttrs['data-resolvedImage'] = parsedData.resolveImageTitle['data-resolvedImage'];
+                    }
+
+                    callback(newAttrs);
+                });
+
+                return;
+            }
+            callback(newAttrs);
+        };
+    }
 }
 
 exports.LinkForm = LinkForm;

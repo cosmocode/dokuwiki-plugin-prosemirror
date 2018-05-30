@@ -4,6 +4,7 @@ const { MenuPlugin } = require('./MenuPlugin');
 const { MenuItem } = require('./MenuItem');
 const { schema } = require('./schema');
 const { NodeSelection } = require('prosemirror-state');
+const { LinkForm } = require('./LinkForm');
 
 // Helper function to create menu icons
 function icon(text, name) {
@@ -40,14 +41,27 @@ const link = new MenuItem({
         if (!$from.parent.canReplaceWith(index, index, schema.nodes.link)) {
             return false;
         }
+
         if (dispatch) {
-            dispatch(state.tr
-                .replaceSelectionWith(schema.nodes.link.create({
-                    'data-type': 'internallink',
-                    'data-inner': textContent || 'FIXME',
-                    'data-name': textContent,
-                }))
-                .setSelection(new NodeSelection($from)));
+            const linkForm = new LinkForm();
+            linkForm.setLinkType('internallink');
+            if (textContent) {
+                linkForm.setLinkTarget(false, textContent);
+                linkForm.setLinkNameType('custom', textContent);
+            }
+
+            linkForm.on('submit', LinkForm.resolveSubmittedLinkData(
+                linkForm,
+                {},
+                (newAttrs) => {
+                    const linkNode = schema.nodes.link.create(newAttrs);
+                    dispatch(state.tr.replaceSelectionWith(linkNode));
+                    linkForm.off('submit');
+                    linkForm.hide();
+                    linkForm.resetForm();
+                },
+            ));
+            linkForm.show();
         }
         return true;
     },
