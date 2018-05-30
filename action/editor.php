@@ -79,7 +79,12 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
-        $linkForm->addTextInput('linktarget', 'Link target')->attr('required', 'required');
+        $linkForm->addTextInput('linktarget', 'Link target')->attrs(
+            [
+            'required'=> 'required',
+            'autofocus' => 'autofocus',
+            ]
+        );
 
         $linkForm->addTagOpen('div')->addClass('radio-wrapper');
         $linkForm->addTagOpen('fieldset');
@@ -119,7 +124,12 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             ['class' => 'plugin_prosemirror_mediaform', 'id' => 'prosemirror-mediaform']
         );
         $mediaForm->addFieldsetOpen('Media')->addClass('js-media-fieldset');
-        $mediaForm->addTextInput('mediatarget', 'Media')->attr('required', 'required');
+        $mediaForm->addTextInput('mediatarget', 'Media')->attrs(
+            [
+                'required'=> 'required',
+                'autofocus' => 'autofocus',
+            ]
+        );
         $mediaForm->addTextInput('mediacaption', 'Caption');
         $mediaForm->addTextInput('width', 'Width (px)')->attr('type', 'number');
         $mediaForm->addTextInput('height', 'Height (px)')->attr('type', 'number');
