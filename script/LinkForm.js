@@ -96,12 +96,6 @@ class LinkForm extends NodeForm {
         this.resetForm();
     }
 
-    destroy() {
-        console.log('destroy called');
-        this.$form.find('[name="nametype"]').off('change');
-        this.$form.find('[name="linktype"]').off('change');
-    }
-
     handleNameTypeChange() {
         const nametype = this.$form.find('[name="nametype"]:checked').val();
         switch (nametype) {

@@ -211,8 +211,15 @@ class LinkView extends AbstractNodeView {
         this.linkForm.resetForm();
     }
 
-    destroy() {
-        this.linkForm.destroy();
+    /**
+     * It is not clear when this method is actually called by ProseMirror
+     * However, it is clear that this does not necesarily mean that this javascript object
+     * is destroyed or no longer in use. Specifically we have to ensure that
+     * this.linkForm remains usable
+     *
+     * https://prosemirror.net/docs/ref/#state.PluginSpec.view^returns.destroy
+     */
+    destroy() { // eslint-disable-line class-methods-use-this
     }
 
     static unsetPrefixAttributes($prefix, attributes) {
