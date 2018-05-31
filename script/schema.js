@@ -253,7 +253,7 @@ nodes = nodes.addToEnd('rss', {
 });
 
 nodes = nodes.addToEnd('dwplugin', {
-    // content: 'text*',
+    content: 'text*',
     marks: '_',
     attrs: {
         class: { default: 'dwplugin' },

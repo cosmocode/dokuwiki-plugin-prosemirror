@@ -1,0 +1,18 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "dwplugin",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "~~INFO:syntaxplugins~~"
+                }
+            ],
+            "attrs": {
+                "class": "dwplugin",
+                "data-pluginname": "info"
+            }
+        }
+    ]
+}
