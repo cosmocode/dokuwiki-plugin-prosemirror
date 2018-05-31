@@ -16,7 +16,12 @@ class TableCellNode extends Node
 
         $previousNode = false;
         foreach ($data['content'] as $nodeData) {
-            $newNode = new self::$nodeclass[$nodeData['type']]($nodeData, $this, $previousNode);
+            try {
+                $newNode = static::getSubNode($nodeData, $this, $previousNode);
+            } catch (\Throwable $e) {
+                var_dump($nodeData);
+                throw $e;
+            }
             $this->subnodes[] = $newNode;
             $previousNode = $newNode;
         }

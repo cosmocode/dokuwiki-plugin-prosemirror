@@ -5,7 +5,7 @@ namespace dokuwiki\plugin\prosemirror\parser;
 abstract class Node
 {
 
-    protected static $nodeclass = [
+    private static $nodeclass = [
         'text' => TextNode::class,
         'paragraph' => ParagraphNode::class,
         'bullet_list' => ListNode::class,
@@ -31,7 +31,7 @@ abstract class Node
     ];
 
 
-    protected static $linkClasses = [
+    private static $linkClasses = [
         'interwikilink' => InterwikiLinkNode::class,
         'internallink' => InternalLinkNode::class,
         'emaillink' => EmailLinkNode::class,
