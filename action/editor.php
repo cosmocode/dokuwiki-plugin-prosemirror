@@ -52,6 +52,24 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             return;
         }
 
+        global $TEXT;
+        $instructions = p_get_instructions($TEXT);
+        try {
+            $prosemirrorJSON =  p_render('prosemirror', $instructions, $info);
+        } catch (Throwable $e) {
+            $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed';
+
+            /** @var helper_plugin_sentry $sentry */
+            $sentry = plugin_load('helper', 'sentry');
+            if ($sentry) {
+                $sentry->logException($e);
+                $errorMsg .= ' Error has been logged to Sentry.';
+            }
+
+            msg($errorMsg, -1);
+            return;
+        }
+
         $event->stopPropagation();
         $event->preventDefault();
 
@@ -61,11 +79,8 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $form->addElement(form_makeButton('submit', 'preview', 'Preview and use Syntax-Editor', $attr));
 
 
-        global $TEXT;
-        $instructions = p_get_instructions($TEXT);
-
         // output data and editor field
-        $form->addHidden('prosemirror_json', p_render('prosemirror', $instructions, $info));
+        $form->addHidden('prosemirror_json',$prosemirrorJSON);
         $form->insertElement(1, '<div id="prosemirror__editor"></div>');
     }
 

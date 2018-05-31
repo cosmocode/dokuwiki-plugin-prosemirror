@@ -51,7 +51,20 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
             msg('Error decoding prosemirror data', -1);
             return;
         }
-        $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($unparsedJSON);
+        try {
+            $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($unparsedJSON);
+        } catch (Throwable $e) {
+            $errorMsg = 'Parsing the data provided by the WYSIWYG editor failed with message: ' . hsc($e->getMessage());
+            /** @var helper_plugin_sentry $sentry */
+            $sentry = plugin_load('helper', 'sentry');
+            if ($sentry) {
+                $sentry->logException($e);
+                $errorMsg .= ' Error has been logged to Sentry.';
+            }
+
+            msg($errorMsg, -1);
+            return;
+        }
         $syntax = $rootNode->toSyntax();
         if (!empty($syntax)) {
             $TEXT = $syntax;
