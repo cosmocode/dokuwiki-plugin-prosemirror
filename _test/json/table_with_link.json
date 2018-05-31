@@ -1,0 +1,101 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "table",
+            "content": [
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " A1 "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": true,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " B1 "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": true,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 2
+                    }
+                },
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " A2 "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " B2 "
+                                },
+                                {
+                                    "type": "link",
+                                    "attrs": {
+                                        "data-type": "internallink",
+                                        "data-inner": "some:page",
+                                        "data-resolvedTitle": "some:page",
+                                        "data-resolvedID": "some:page",
+                                        "data-resolvedName": "page",
+                                        "data-resolvedClass": "wikilink2"
+                                    }
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " foo "
+                                }
+                            ],
+                            "attrs": {
+                                "is_header": false,
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 2
+                    }
+                }
+            ]
+        }
+    ]
+}
