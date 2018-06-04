@@ -6,6 +6,7 @@ class NodeForm {
     show() {
         jQuery(this.$form).dialog({
             title: this.name,
+            width: 600,
         });
     }
 

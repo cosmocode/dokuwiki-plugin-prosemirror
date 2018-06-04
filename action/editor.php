@@ -104,7 +104,11 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             return;
         }
 
-        $linkForm = new dokuwiki\Form\Form(['class' => 'plugin_prosemirror_linkform', 'id' => 'prosemirror-linkform']);
+        $linkForm = new dokuwiki\Form\Form([
+            'class' => 'plugin_prosemirror_linkform',
+            'id' => 'prosemirror-linkform',
+            'style' => 'display: none;',
+        ]);
         $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
@@ -149,9 +153,11 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 
         echo $linkForm->toHTML();
 
-        $mediaForm = new dokuwiki\Form\Form(
-            ['class' => 'plugin_prosemirror_mediaform', 'id' => 'prosemirror-mediaform']
-        );
+        $mediaForm = new dokuwiki\Form\Form([
+            'class' => 'plugin_prosemirror_mediaform',
+            'id' => 'prosemirror-mediaform',
+            'style' => 'display: none;',
+        ]);
         $mediaForm->addFieldsetOpen('Media')->addClass('js-media-fieldset');
         $mediaForm->addTextInput('mediatarget', 'Media')->attrs(
             [

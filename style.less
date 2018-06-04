@@ -28,20 +28,24 @@
         top: 55px;
         right: 30px;
     }
+}
 
-    .plugin_prosemirror_linkform, .plugin_prosemirror_mediaform {
-        display: none;
-        background-color: white;
-        z-index: 500; // be above the default prosemirror menu bar
+.plugin_prosemirror_linkform, .plugin_prosemirror_mediaform {
+    background-color: white;
+    z-index: 500; // be above the default prosemirror menu bar
 
-        label {
-            display: block;
-            text-align: right;
-            font-weight: bold;
+    fieldset {
+        padding-top: 0;
+        padding-bottom: 0.2rem;
+    }
 
-            input, select {
-                width: 50%;
-            }
+    label {
+        display: block;
+        text-align: right;
+        font-weight: bold;
+
+        input, select {
+            width: 50%;
         }
     }
 }
