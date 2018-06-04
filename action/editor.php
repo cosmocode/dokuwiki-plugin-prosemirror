@@ -13,7 +13,6 @@ if (!defined('DOKU_INC')) {
 
 class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 {
-
     /**
      * Registers a callback function for a given event
      *
@@ -30,6 +29,8 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     /**
      * [Custom event handler which performs action]
      *
+     * Triggered by event: HTML_EDITFORM_OUTPUT
+     *
      * @param Doku_Event $event  event object
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
@@ -38,7 +39,10 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      */
     public function output_editor(Doku_Event $event, $param)
     {
-        global $INPUT;
+        if (!$this->allowWYSIWYG()) {
+            return;
+        }
+
 
         /** @var Doku_Form $form */
         $form =& $event->data;
@@ -84,8 +88,18 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $form->insertElement(1, '<div id="prosemirror__editor"></div>');
     }
 
+    protected function allowWYSIWYG()
+    {
+        global $INPUT;
+        return !$INPUT->has('target') || $INPUT->str('target') === 'section';
+    }
+
     public function addAddtionalForms(Doku_Event $event)
     {
+        if (!$this->allowWYSIWYG()) {
+            return;
+        }
+
         if (!in_array($event->data, ['edit', 'preview'])) {
             return;
         }
