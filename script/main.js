@@ -13,6 +13,8 @@ const { Node } = require('prosemirror-model');
 const { schema } = require('./schema');
 const { LinkView } = require('./LinkView');
 const { MediaView } = require('./MediaView');
+const { menu } = require('./menu');
+const { customKeymapPlugin } = require('./keymap');
 
 
 //
@@ -69,12 +71,10 @@ const { MediaView } = require('./MediaView');
 //     menuContent: content,
 // });
 
-
-// import {schema} from "prosemirror-schema-basic"
-const { menu } = require('./menu');
-
+// PLUGIN ORDER IS IMPORTANT!
 const plugins = [
     menu,
+    customKeymapPlugin,
     keymap(baseKeymap),
 ];
 

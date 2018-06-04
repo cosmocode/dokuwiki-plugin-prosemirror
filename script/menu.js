@@ -1,4 +1,5 @@
 const { toggleMark, setBlockType, wrapIn } = require('prosemirror-commands');
+const { wrapInList, liftListItem, sinkListItem } = require('prosemirror-schema-list');
 const { MenuPlugin } = require('./MenuPlugin');
 const { MenuItem } = require('./MenuItem');
 const { schema } = require('./schema');
@@ -106,12 +107,35 @@ const image = new MenuItem({
     dom: icon('🖼️', 'Insert Image'),
 });
 
+const bulletList = new MenuItem({
+    dom: icon('⚫️', 'Wrap in bullet list'),
+    command: wrapInList(schema.nodes.bullet_list, {}),
+});
+
+const orderedList = new MenuItem({
+    dom: icon('¹', 'Wrap in ordered list'),
+    command: wrapInList(schema.nodes.ordered_list, {}),
+});
+
+const liftListItemMenuItem = new MenuItem({
+    dom: icon('⬅️️', 'Lift list item'),
+    command: liftListItem(schema.nodes.list_item),
+});
+const sinkListItemMenuItem = new MenuItem({
+    dom: icon('️➡️', 'Sink list item'),
+    command: sinkListItem(schema.nodes.list_item),
+});
+
 const menu = MenuPlugin([
     { command: toggleMark(schema.marks.strong), dom: icon('B', 'strong') },
     { command: toggleMark(schema.marks.em), dom: icon('i', 'em') },
     underline,
     link,
     image,
+    bulletList,
+    orderedList,
+    liftListItemMenuItem,
+    sinkListItemMenuItem,
     { command: setBlockType(schema.nodes.paragraph), dom: icon('p', 'paragraph') },
     heading(1), heading(2), heading(3),
     { command: wrapIn(schema.nodes.blockquote), dom: icon('>', 'blockquote') },
