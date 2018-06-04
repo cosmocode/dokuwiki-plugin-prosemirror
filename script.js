@@ -17,8 +17,8 @@ jQuery(() => {
     } catch (e) {
         const $textArea = jQuery('#wiki__text');
         let message = 'There was an error in the WYSIWYG editor. You will be redirected to the syntax editor in 5 seconds.';
-        if (window.logSentryException) {
-            logSentryException(e, {
+        if (window.SentryPlugin) {
+            SentryPlugin.logSentryException(e, {
                 tags: {
                     plugin: 'prosemirror',
                     'id': JSINFO.id,
