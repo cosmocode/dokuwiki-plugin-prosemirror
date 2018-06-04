@@ -11,6 +11,9 @@ php:
 env:
   - DOKUWIKI=master
   - DOKUWIKI=stable
+branches:
+  except:
+    - release
 matrix:
   allow_failures:
     - php: "nightly"
@@ -28,3 +31,13 @@ script:
   - cd ../lib/plugins/prosemirror
   - yarn run eslint
   - yarn test
+before_deploy:
+  - yarn build
+  - git add -f lib/bundle.js
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $DEPLOYTOKEN
+  target-branch: release
+  on:
+    branch: master
