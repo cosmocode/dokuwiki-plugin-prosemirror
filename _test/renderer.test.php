@@ -9,7 +9,7 @@
 class renderer_plugin_prosemirror_test extends DokuWikiTest
 {
 
-    protected $pluginsEnabled = ['prosemirror'];
+    protected $pluginsEnabled = ['prosemirror', 'wrap'];
 
     /**
      * @dataProvider rendererProvider
@@ -23,6 +23,7 @@ class renderer_plugin_prosemirror_test extends DokuWikiTest
         global $ID;
         $ID = 'wiki:syntax';
         $instructions = p_get_instructions($dokuwikiMarkup);
+//        print_r($instructions);
         $doc = p_render('prosemirror', $instructions, $info);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $doc, $msg);
     }

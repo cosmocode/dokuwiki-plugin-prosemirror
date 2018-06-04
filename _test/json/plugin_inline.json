@@ -1,0 +1,53 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Lorem "
+                },
+                {
+                    "type": "dwplugin_inline",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "<wrap hi>"
+                        }
+                    ],
+                    "attrs": {
+                        "class": "dwplugin",
+                        "data-pluginname": "wrap_spanwrap"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": "inline",
+                    "marks": [
+                        {
+                            "type": "em"
+                        }
+                    ]
+                },
+                {
+                    "type": "dwplugin_inline",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "<\/wrap>"
+                        }
+                    ],
+                    "attrs": {
+                        "class": "dwplugin",
+                        "data-pluginname": "wrap_spanwrap"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": " ipsum"
+                }
+            ]
+        }
+    ]
+}

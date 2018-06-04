@@ -1,0 +1,1 @@
+Lorem <wrap hi>//inline//</wrap> ipsum

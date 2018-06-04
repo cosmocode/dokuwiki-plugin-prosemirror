@@ -10,7 +10,7 @@ use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
  */
 class jsonParser_plugin_prosemirror_test extends DokuWikiTest
 {
-    protected $pluginsEnabled = ['prosemirror'];
+    protected $pluginsEnabled = ['prosemirror', 'wrap'];
 
     /**
      * @dataProvider rendererProvider

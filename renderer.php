@@ -465,12 +465,17 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         if (empty($match)) {
             return;
         }
-        $node = new Node('dwplugin');
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $nodetype = 'dwplugin_inline';
+        } else {
+            $nodetype = 'dwplugin_block';
+        }
+        $node = new Node($nodetype);
         $node->attr('class', 'dwplugin');
         $node->attr('data-pluginname', $name);
         $this->nodestack->addTop($node);
         $this->cdata($match);
-        $this->nodestack->drop('dwplugin');
+        $this->nodestack->drop($nodetype);
     }
 
     function smiley($smiley)

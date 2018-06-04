@@ -252,11 +252,31 @@ nodes = nodes.addToEnd('rss', {
     },
 });
 
-nodes = nodes.addToEnd('dwplugin', {
+nodes = nodes.addToEnd('dwplugin_block', {
     content: 'text*',
     marks: '_',
     attrs: {
         class: { default: 'dwplugin' },
+        'data-pluginname': {},
+    },
+    draggable: true,
+    inline: false,
+    group: 'block',
+    defining: true,
+    isolating: true,
+    code: true,
+    toDOM(node) {
+        return ['pre', node.attrs, 0];
+    },
+});
+
+
+nodes = nodes.addToEnd('dwplugin_inline', {
+    content: 'text*',
+    marks: '_',
+    attrs: {
+        class: { default: 'dwplugin' },
+        'data-pluginname': {},
     },
     draggable: true,
     inline: true,

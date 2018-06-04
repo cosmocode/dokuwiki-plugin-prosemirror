@@ -1,0 +1,2 @@
+# we need additional plugin(s) for testing
+https://github.com/selfthinker/dokuwiki_plugin_wrap.git                         lib/plugins/wrap

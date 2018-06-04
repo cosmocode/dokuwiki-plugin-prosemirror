@@ -2,7 +2,7 @@
     "type": "doc",
     "content": [
         {
-            "type": "dwplugin",
+            "type": "dwplugin_block",
             "content": [
                 {
                     "type": "text",

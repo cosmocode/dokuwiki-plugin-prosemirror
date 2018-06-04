@@ -1,9 +1,0 @@
-Lorem <wrap hi>//inline//</wrap> ipsum
-
-<WRAP important round>
-
-  * Wichtige Box
-
-</WRAP>
-
-bar
