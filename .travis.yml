@@ -33,11 +33,14 @@ script:
   - yarn test
 before_deploy:
   - yarn build
-  - git add -f lib/bundle.js
+  - rm -f .gitignore
 deploy:
   provider: pages
   skip-cleanup: true
   github-token: $DEPLOYTOKEN
   target-branch: release
+  local-dir: lib/plugins/prosemirror
   on:
     branch: master
+    condition: $DOKUWIKI = master
+    php: '7.2'
