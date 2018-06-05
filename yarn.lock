@@ -3199,9 +3199,15 @@ prosemirror-menu@^1.0.0, prosemirror-menu@^1.0.4:
     prosemirror-history "^1.0.0"
     prosemirror-state "^1.0.0"
 
-prosemirror-model@^1.0.0, prosemirror-model@^1.1.0, prosemirror-model@^1.4.4:
+prosemirror-model@^1.0.0, prosemirror-model@^1.1.0:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/prosemirror-model/-/prosemirror-model-1.4.4.tgz#2752d3e16e8bec604751208d16fad4a7e678cd4e"
+  dependencies:
+    orderedmap "^1.0.0"
+
+prosemirror-model@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/prosemirror-model/-/prosemirror-model-1.5.0.tgz#4fa5498ed08eaabafec3e88ea2dcba149d5d458a"
   dependencies:
     orderedmap "^1.0.0"
 
