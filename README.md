@@ -20,15 +20,15 @@ Use yarn to install the dependecies
 
 Create a develoment bundle:
 
-    yarn run dev
+    yarn dev
 
 Automatically recreate the bundle during development:
 
-    yarn run watch
+    yarn watch
 
 Build a release
 
-    yarn run build
+    yarn build
 
 We really recommend yarn, but npm should work, too.
 
