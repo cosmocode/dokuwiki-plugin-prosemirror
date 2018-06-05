@@ -41,7 +41,14 @@ abstract class Node
         'other' => ExternalLinkNode::class,
     ];
 
-    public static function getSubNode($node, $parent, $previous = null)
+    /**
+     * @param array     $node
+     * @param Node      $parent
+     * @param Node|null $previous
+     *
+     * @return Node
+     */
+    public static function getSubNode($node, Node $parent, Node $previous = null)
     {
         if ($node['type'] === 'link') {
             $linkType = $node['attrs']['data-type'];

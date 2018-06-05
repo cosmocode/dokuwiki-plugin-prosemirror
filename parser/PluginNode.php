@@ -7,7 +7,7 @@ class PluginNode extends Node implements InlineNodeInterface
 
     protected $textNode;
 
-    public function __construct($data, $parent, $previous = false)
+    public function __construct($data, Node $parent, Node $previous = null)
     {
         $this->textNode = new TextNode($data['content'][0], $this, $previous);
     }

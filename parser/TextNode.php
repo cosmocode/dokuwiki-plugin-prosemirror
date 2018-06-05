@@ -16,7 +16,7 @@ class TextNode extends Node implements InlineNodeInterface
 
     protected $text = '';
 
-    public function __construct($data, $parent, $previous = false)
+    public function __construct($data, Node $parent, Node $previous = null)
     {
         $this->parent = &$parent;
         if ($previous !== false) {
