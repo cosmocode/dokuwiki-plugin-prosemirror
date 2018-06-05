@@ -90,6 +90,9 @@ in `_test/json/`. This data is used for three sets of tests:
 The rendering and parsing tests are run as usual DokuWiki tests.
 The javascript tests are run with `yarn test`
 
+The scripts in `script/` are also checked when building with eslint.
+Eslint can also be run on its own with `yarn eslint`.
+
 ## Copyright
 Copyright (C) Andreas Gohr <gohr@cosmocode.de>
 
