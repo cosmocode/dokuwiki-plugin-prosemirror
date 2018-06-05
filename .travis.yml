@@ -33,7 +33,7 @@ script:
   - yarn test
 before_deploy:
   - yarn build
-  - rm -f .gitignore
+  - rm -rf script _test _jstest node_modules .travis.yml webpack.config.js yarn.lock requirements.txt .gitignore package.json
 deploy:
   provider: pages
   skip-cleanup: true
