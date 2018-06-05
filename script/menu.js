@@ -5,13 +5,20 @@ const { MenuItem } = require('./MenuItem');
 const { schema } = require('./schema');
 const { MediaForm } = require('./MediaForm');
 const { LinkForm } = require('./LinkForm');
+const { getSvg } = require('./MDI');
 
-// Helper function to create menu icons
-function icon(text, name) {
+/**
+ * Use an SVG for an Icon
+ *
+ * @param {string} mdi Icon identifier
+ * @param {string} title Title to display
+ * @return {HTMLSpanElement}
+ */
+function svgIcon(mdi, title) {
     const span = document.createElement('span');
-    span.className = `menuicon ${name}`;
-    span.title = name;
-    span.textContent = text;
+    span.className = `menuicon ${title}`;
+    span.title = title;
+    span.innerHTML = getSvg(mdi);
     return span;
 }
 
@@ -19,13 +26,13 @@ function icon(text, name) {
 function heading(level) {
     return {
         command: setBlockType(schema.nodes.heading, { level }),
-        dom: icon(`H${level}`, 'heading'),
+        dom: svgIcon(`format-header-${level}`, 'heading'),
     };
 }
 
 const underline = new MenuItem({
     command: toggleMark(schema.marks.underline),
-    dom: icon('u', 'underline'),
+    dom: svgIcon('format-underline', 'underline'),
 });
 
 const link = new MenuItem({
@@ -65,7 +72,7 @@ const link = new MenuItem({
         }
         return true;
     },
-    dom: icon('L', 'Link'),
+    dom: svgIcon('link-variant', 'Link'),
 });
 
 const image = new MenuItem({
@@ -104,31 +111,31 @@ const image = new MenuItem({
         }
         return true;
     },
-    dom: icon('🖼️', 'Insert Image'),
+    dom: svgIcon('image', 'Insert Image'),
 });
 
 const bulletList = new MenuItem({
-    dom: icon('⚫️', 'Wrap in bullet list'),
+    dom: svgIcon('format-list-bulleted', 'Wrap in bullet list'),
     command: wrapInList(schema.nodes.bullet_list, {}),
 });
 
 const orderedList = new MenuItem({
-    dom: icon('¹', 'Wrap in ordered list'),
+    dom: svgIcon('format-list-numbers', 'Wrap in ordered list'),
     command: wrapInList(schema.nodes.ordered_list, {}),
 });
 
 const liftListItemMenuItem = new MenuItem({
-    dom: icon('⬅️️', 'Lift list item'),
+    dom: svgIcon('arrow-expand-left', 'Lift list item'),
     command: liftListItem(schema.nodes.list_item),
 });
 const sinkListItemMenuItem = new MenuItem({
-    dom: icon('️➡️', 'Sink list item'),
+    dom: svgIcon('arrow-expand-right', 'Sink list item'),
     command: sinkListItem(schema.nodes.list_item),
 });
 
 const menu = MenuPlugin([
-    { command: toggleMark(schema.marks.strong), dom: icon('B', 'strong') },
-    { command: toggleMark(schema.marks.em), dom: icon('i', 'em') },
+    { command: toggleMark(schema.marks.strong), dom: svgIcon('format-bold', 'strong') },
+    { command: toggleMark(schema.marks.em), dom: svgIcon('format-italic', 'em') },
     underline,
     link,
     image,
@@ -136,9 +143,9 @@ const menu = MenuPlugin([
     orderedList,
     liftListItemMenuItem,
     sinkListItemMenuItem,
-    { command: setBlockType(schema.nodes.paragraph), dom: icon('p', 'paragraph') },
+    { command: setBlockType(schema.nodes.paragraph), dom: svgIcon('format-paragraph', 'paragraph') },
     heading(1), heading(2), heading(3),
-    { command: wrapIn(schema.nodes.blockquote), dom: icon('>', 'blockquote') },
+    { command: wrapIn(schema.nodes.blockquote), dom: svgIcon('format-quote-close', 'blockquote') },
 ]);
 
 exports.menu = menu;
