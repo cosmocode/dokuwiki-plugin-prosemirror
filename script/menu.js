@@ -30,11 +30,6 @@ function heading(level) {
     };
 }
 
-const underline = new MenuItem({
-    command: toggleMark(schema.marks.underline),
-    dom: svgIcon('format-underline', 'underline'),
-});
-
 const link = new MenuItem({
     command: (state, dispatch) => {
         const { $from } = state.selection;
@@ -133,10 +128,36 @@ const sinkListItemMenuItem = new MenuItem({
     command: sinkListItem(schema.nodes.list_item),
 });
 
+function createMarkItem(markType, iconName, title) {
+    /**
+     * taken from prosemirror-example-setup
+     *
+     * @param state
+     * @param type
+     * @return {boolean|*}
+     */
+    function markActive(state, type) {
+        const {
+            from, $from, to, empty,
+        } = state.selection;
+        if (empty) {
+            return type.isInSet(state.storedMarks || $from.marks());
+        }
+        return state.doc.rangeHasMark(from, to, type);
+    }
+
+    return new MenuItem({
+        command: toggleMark(markType),
+        dom: svgIcon(iconName, title),
+        isActive: editorState => markActive(editorState, markType),
+    });
+}
+
+
 const menu = MenuPlugin([
-    { command: toggleMark(schema.marks.strong), dom: svgIcon('format-bold', 'strong') },
-    { command: toggleMark(schema.marks.em), dom: svgIcon('format-italic', 'em') },
-    underline,
+    createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
+    createMarkItem(schema.marks.em, 'format-italic', 'em'),
+    createMarkItem(schema.marks.underline, 'format-underline', 'underline'),
     link,
     image,
     bulletList,

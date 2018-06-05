@@ -18,13 +18,18 @@ class MenuView {
     }
 
     update() {
-        this.items.forEach(({ command, dom }) => {
+        this.items.forEach(({ command, dom, isActive }) => {
             const enabled = command(this.editorView.state, null, this.editorView);
             if (!enabled) {
                 dom.style.display = 'none'; // eslint-disable-line no-param-reassign
                 return;
             }
             dom.style.display = ''; // eslint-disable-line no-param-reassign
+            if (isActive && isActive(this.editorView.state, this.editorView)) {
+                dom.classList.add('is-active');
+            } else {
+                dom.classList.remove('is-active');
+            }
         });
     }
 
