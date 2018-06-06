@@ -52,7 +52,6 @@ nodes = nodes.addToEnd('preformatted', {
     },
 });
 
-// fixme we may want an explizit preformatted node so can tell preformatted and <code> apart
 const codeBlock = nodes.get('code_block');
 codeBlock.attrs = {
     class: { default: 'code' },
