@@ -37,5 +37,6 @@ jQuery(() => {
     }
 
     jQuery('#wiki__text').hide();
+    jQuery('#size__ctl').hide();
     jQuery('.editBox > .toolbar').hide();
 });
