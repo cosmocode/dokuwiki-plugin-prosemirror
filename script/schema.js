@@ -23,14 +23,13 @@ heading.marks = '';
 nodes.update('heading', heading);
 
 orderedList.group = 'listblock';
-orderedList.content = 'listitem+';
+orderedList.content = 'list_item+';
 nodes = nodes.update('ordered_list', orderedList);
 
 bulletList.group = 'listblock';
-bulletList.content = 'listitem+';
+bulletList.content = 'list_item+';
 nodes = nodes.update('bullet_list', bulletList);
 
-listItem.group = 'listitem';
 listItem.content = 'block+ listblock?';
 nodes = nodes.update('list_item', listItem);
 
