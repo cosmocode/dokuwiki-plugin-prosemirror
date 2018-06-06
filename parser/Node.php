@@ -58,5 +58,10 @@ abstract class Node
         return new self::$nodeclass[$node['type']]($node, $parent, $previous);
     }
 
+    /**
+     * Get the node's representation as DokuWiki Syntax
+     *
+     * @return string
+     */
     abstract public function toSyntax();
 }

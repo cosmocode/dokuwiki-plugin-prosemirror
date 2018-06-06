@@ -61,8 +61,16 @@ the resolved html to be rendered into Prosemirror
   - The main challenge is that Prosemirror operates on a flat array, whereas DokuWiki-Syntax is usually a tree
   - This means that the Syntax `**bold __underlined and bold__**` is represented in Prosemirror's data as
   `[{text: "bold ", marks: [bold]}, {text: "underlined and bold", marks: [bold, underlined]}]`
-  - Hence, handling marks is complex and subtle
   - The creation of that syntax tree is started in `parser/SyntaxTreeBuilder.php`
+  - Handling marks is complex and subtle:
+    - To know in which order we have to open/close marks we need to know which start
+    earlier or end later
+    - for this purpose, `InlineNodeInterface::getStartingNodeMarkScore($markType)`
+    and `Mark::tailLength` play together
+    - for `getStartingNodeMarkScore()` to work, it needs the inline nodes inside a block node to be
+    chained together, so we can ask the previous node whether it has a given node or not
+    - If the marks on a node have the same start/end than they need a stable order in which they appear.
+    That is defined in `Mark::markOrder`
 
 ### Our Prosemirror JS setup
 Currently all our prosemirror scripts are in `script/`.

@@ -12,5 +12,10 @@ interface InlineNodeInterface
      */
     public function increaseMark($markType);
 
+    /**
+     * @param $markType
+     *
+     * @return mixed
+     */
     public function getStartingNodeMarkScore($markType);
 }
