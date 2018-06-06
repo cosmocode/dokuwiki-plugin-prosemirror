@@ -8,6 +8,7 @@ abstract class Node
     private static $nodeclass = [
         'text' => TextNode::class,
         'paragraph' => ParagraphNode::class,
+        'list_paragraph' => ParagraphNode::class,
         'bullet_list' => ListNode::class,
         'ordered_list' => ListNode::class,
         'heading' => HeadingNode::class,
@@ -30,7 +31,6 @@ abstract class Node
         'dwplugin_inline' => PluginNode::class,
         'dwplugin_block' => PluginNode::class,
     ];
-
 
     private static $linkClasses = [
         'interwikilink' => InterwikiLinkNode::class,

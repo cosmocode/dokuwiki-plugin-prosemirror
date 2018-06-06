@@ -26,6 +26,13 @@ class ListItemNode extends Node
         $this->parent = &$parent;
 
         foreach ($data['content'] as $node) {
+            if ($node['type'] === 'list_content') {
+                foreach ($node['content'] as $subnode) {
+                    $this->subnodes[] = self::getSubNode($subnode, $this);
+                }
+                continue;
+            }
+
             $this->subnodes[] = self::getSubNode($node, $this);
         }
     }

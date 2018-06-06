@@ -8,11 +8,16 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "paragraph",
+                            "type": "list_content",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " single list item"
+                                    "type": "list_paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": " single list item"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -22,11 +27,16 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "paragraph",
+                            "type": "list_content",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " another first lvl li"
+                                    "type": "list_paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": " another first lvl li"
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -37,11 +47,16 @@
                                     "type": "list_item",
                                     "content": [
                                         {
-                                            "type": "paragraph",
+                                            "type": "list_content",
                                             "content": [
                                                 {
-                                                    "type": "text",
-                                                    "text": " second level li"
+                                                    "type": "list_paragraph",
+                                                    "content": [
+                                                        {
+                                                            "type": "text",
+                                                            "text": " second level li"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -55,11 +70,16 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "paragraph",
+                            "type": "list_content",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " again first level li"
+                                    "type": "list_paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": " again first level li"
+                                        }
+                                    ]
                                 }
                             ]
                         }
