@@ -63,7 +63,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     protected function clearBlock()
     {
         $parentNode = $this->nodestack->current()->getType();
-        if (in_array($parentNode, ['paragraph'])) {
+        if (in_array($parentNode, ['paragraph', 'list_paragraph'])) {
             $this->nodestack->drop($parentNode);
         }
     }
@@ -149,12 +149,22 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->nodestack->addTop(new Node('list_item'));
     }
 
+    function listcontent_open()
+    {
+        $this->nodestack->addTop(new Node('list_content'));
+    }
+
+    function listcontent_close()
+    {
+        if ($this->nodestack->current()->getType() == 'list_paragraph') {
+            $this->nodestack->drop('list_paragraph');
+        }
+        $this->nodestack->drop('list_content');
+    }
+
     /** @inheritDoc */
     function listitem_close()
     {
-        if ($this->nodestack->current()->getType() == 'paragraph') {
-            $this->nodestack->drop('paragraph');
-        }
         $this->nodestack->drop('list_item');
     }
 
@@ -254,9 +264,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
             $text = str_replace("\n", ' ', $text);
         }
 
-        // list items need a paragraph before adding text
-        if (in_array($parentNode, ['list_item', 'quote'])) {
-            $node = new Node('paragraph'); // FIXME we probably want a special list item wrapper here instead
+        if ($parentNode === 'list_content') {
+            $node = new Node('list_paragraph');
+            $this->nodestack->addTop($node);
+        }
+
+        if ($parentNode === 'quote') {
+            $node = new Node('paragraph');
             $this->nodestack->addTop($node);
         }
 
