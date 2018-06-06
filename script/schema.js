@@ -19,6 +19,7 @@ nodes = nodes.update('doc', doc);
 // heading shall only contain unmarked text
 const heading = nodes.get('heading');
 heading.content = 'text*';
+heading.marks = '';
 nodes.update('heading', heading);
 
 orderedList.group = 'listblock';
