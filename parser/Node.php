@@ -42,6 +42,8 @@ abstract class Node
     ];
 
     /**
+     * Get a Node instance of the correct type
+     *
      * @param array     $node
      * @param Node      $parent
      * @param Node|null $previous
