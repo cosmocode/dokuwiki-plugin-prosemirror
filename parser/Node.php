@@ -41,7 +41,16 @@ abstract class Node
         'other' => ExternalLinkNode::class,
     ];
 
-    public static function getSubNode($node, $parent, $previous = null)
+    /**
+     * Get a Node instance of the correct type
+     *
+     * @param array     $node
+     * @param Node      $parent
+     * @param Node|null $previous
+     *
+     * @return Node
+     */
+    public static function getSubNode($node, Node $parent, Node $previous = null)
     {
         if ($node['type'] === 'link') {
             $linkType = $node['attrs']['data-type'];
@@ -51,5 +60,10 @@ abstract class Node
         return new self::$nodeclass[$node['type']]($node, $parent, $previous);
     }
 
+    /**
+     * Get the node's representation as DokuWiki Syntax
+     *
+     * @return string
+     */
     abstract public function toSyntax();
 }

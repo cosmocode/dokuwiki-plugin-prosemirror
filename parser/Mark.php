@@ -182,7 +182,7 @@ class Mark
     /**
      * Handle the edge case that %% is wrapped in nowiki syntax
      *
-     * @param string $type
+     * @param string $type 'opening' or 'closing'
      *
      * @return string
      */

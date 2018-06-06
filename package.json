@@ -35,7 +35,7 @@
         "watch": "webpack -dw",
         "test": "qunit _jstest/**/*.js",
         "build": "webpack -p",
-        "eslint": "NODE_ENV=production eslint script/main.js"
+        "eslint": "NODE_ENV=production eslint script/"
     },
     "author": "",
     "license": "GPL-2.0"

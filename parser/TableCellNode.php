@@ -14,7 +14,7 @@ class TableCellNode extends Node
     {
         $this->data = $data;
 
-        $previousNode = false;
+        $previousNode = null;
         foreach ($data['content'] as $nodeData) {
             try {
                 $newNode = static::getSubNode($nodeData, $this, $previousNode);

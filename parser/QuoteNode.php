@@ -13,7 +13,7 @@ class QuoteNode extends Node
     {
         $this->parent = &$parent;
 
-        $previousNode = false;
+        $previousNode = null;
         foreach ($data['content'] as $nodeData) {
             try {
                 $newNode = self::getSubNode($nodeData, $this, $previousNode);
