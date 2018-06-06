@@ -17,27 +17,20 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "paragraph",
+                            "type": "list_content",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " For security reasons direct browsing of windows shares only works in Microsoft Internet Explorer per default (and only in the "
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "\""
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "local zone"
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "\""
-                                },
-                                {
-                                    "type": "text",
-                                    "text": ")."
+                                    "type": "list_paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": " For security reasons"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "..."
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -47,39 +40,58 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "paragraph",
+                            "type": "list_content",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " For Mozilla and Firefox it can be enabled through different workaround mentioned in the Mozilla Knowledge Base. However, there will still be a JavaScript warning about trying to open a Windows Share. To remove this warning (for all users), put the following line in "
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "conf\/lang\/en\/lang.php",
-                                    "marks": [
+                                    "type": "list_paragraph",
+                                    "content": [
                                         {
-                                            "type": "code"
+                                            "type": "text",
+                                            "text": " For Mozilla and Firefox"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "..."
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": " "
                                         }
                                     ]
                                 },
                                 {
-                                    "type": "text",
-                                    "text": " (more details at localization): "
+                                    "type": "code_block",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "<?php\n\/**\n * Customization of the english language file\n * Copy only the strings that needs to be modified\n *\/\n$lang['js']['nosmblinks'] = '';"
+                                        }
+                                    ],
+                                    "attrs": {
+                                        "class": "code ",
+                                        "data-filename": "conf\/lang\/en\/lang.php"
+                                    }
                                 }
                             ]
-                        },
+                        }
+                    ]
+                },
+                {
+                    "type": "list_item",
+                    "content": [
                         {
-                            "type": "code_block",
+                            "type": "list_content",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "<?php\n\/**\n * Customization of the english language file\n * Copy only the strings that needs to be modified\n *\/\n$lang['js']['nosmblinks'] = '';"
+                                    "type": "list_paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": " final list item"
+                                        }
+                                    ]
                                 }
-                            ],
-                            "attrs": {
-                                "class": "code ",
-                                "data-filename": "conf\/lang\/en\/lang.php"
-                            }
+                            ]
                         }
                     ]
                 }
