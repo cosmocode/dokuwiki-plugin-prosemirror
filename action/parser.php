@@ -59,7 +59,7 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
     protected function isAjax()
     {
         global $INPUT;
-        return substr($INPUT->server->str('SCRIPT_NAME'), -8) === 'ajax.php';
+        return basename($INPUT->server->str('SCRIPT_NAME')) === 'ajax.php';
     }
 
     /**
