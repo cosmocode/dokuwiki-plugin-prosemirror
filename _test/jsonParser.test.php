@@ -21,7 +21,7 @@ class jsonParser_plugin_prosemirror_test extends DokuWikiTest
      */
     public function test_parser($json, $expectedDokuWikiMarkup, $msg)
     {
-        $rootNode = SyntaxTreeBuilder::parseJsonIntoTree($json);
+        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($json);
         $actualMarkup = $rootNode->toSyntax();
         $this->assertEquals(rtrim($expectedDokuWikiMarkup), rtrim($actualMarkup), $msg);
     }
