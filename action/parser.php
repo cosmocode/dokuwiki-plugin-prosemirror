@@ -38,13 +38,28 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
      */
     public function handle_draft(Doku_Event $event, $param)
     {
-        global $INPUT;
+        global $INPUT, $MSG;
         $unparsedJSON = $INPUT->post->str('prosemirror_json');
         if (empty($unparsedJSON)) {
             return;
         }
         $syntax = $this->getSyntaxFromProsemirrorData($unparsedJSON);
+
+        if (!empty($MSG) && $this->isAjax()) {
+            echo '<div class="js-prosemirror-draft-errors" style="display: none;">';
+            html_msgarea();
+            echo '</div>';
+        }
         $event->data['text'] = $syntax;
+    }
+
+    /**
+     * @return bool true if this is a ajax request, false if it is not
+     */
+    protected function isAjax()
+    {
+        global $INPUT;
+        return substr($INPUT->server->str('SCRIPT_NAME'), -8) === 'ajax.php';
     }
 
     /**
