@@ -31,6 +31,8 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
     /**
      * [Custom event handler which performs action]
      *
+     * Triggered by: ACTION_ACT_PREPROCESS
+     *
      * @param Doku_Event $event  event object by reference
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
@@ -41,11 +43,12 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
     {
         global $TEXT, $INPUT;
         if ($INPUT->server->str('REQUEST_METHOD') !== 'POST'
-            || ($event->data !== 'save' && $event->data !== 'preview')
+            || !in_array($event->data, ['save', 'preview'])
             || !$INPUT->post->has('prosemirror_json')
         ) {
             return;
         }
+
         $unparsedJSON = $INPUT->post->str('prosemirror_json');
         if (json_decode($unparsedJSON, true) === null) {
             msg('Error decoding prosemirror data', -1);
