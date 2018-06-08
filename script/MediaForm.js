@@ -5,7 +5,45 @@ class MediaForm extends NodeForm {
         super(id);
 
         this.name = 'Image Configuration';
+
+        this.$form.find('.js-open-mediamanager').on('click', MediaForm.openMediaManager);
+        window.pmMediaSelect = this.mediaSelect.bind(this);
     }
+
+    /**
+     * on click handler for the mediamanager button
+     */
+    static openMediaManager() {
+        window.open(
+            `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=pmMediaSelect`,
+            'mediaselect',
+            'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes',
+        );
+    }
+
+    /**
+     * Callback for the media manager
+     *
+     * @param edid ignored
+     * @param {string} mediaid id of the media file
+     * @param {string} opts query string the may contain linking param and width in px
+     * @param {string} align the alignment specified as number
+     */
+    mediaSelect(edid, mediaid, opts, align) {
+        this.setSource(mediaid);
+        const [, linking, width] = /\?([a-z]+)?&?(\d+)?/.exec(opts);
+        this.setWidth(width);
+        this.setHeight();
+        this.setLinking(linking);
+        const alignValue = {
+            1: '',
+            2: 'left',
+            3: 'center',
+            4: 'right',
+        };
+        this.setAlignment(alignValue[align]);
+    }
+
 
     setSource(id = '') {
         this.$form.find('[name="mediatarget"]').val(id);
