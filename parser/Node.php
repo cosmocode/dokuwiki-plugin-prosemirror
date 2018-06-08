@@ -2,6 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
+use dokuwiki\plugin\prosemirror\ProsemirrorException;
+
 abstract class Node
 {
 
@@ -52,12 +54,20 @@ abstract class Node
      */
     public static function getSubNode($node, Node $parent, Node $previous = null)
     {
-        if ($node['type'] === 'link') {
-            $linkType = $node['attrs']['data-type'];
-            return new self::$linkClasses[$linkType]($node, $parent, $previous);
-        }
+        try {
+            if ($node['type'] === 'link') {
+                $linkType = $node['attrs']['data-type'];
+                return new self::$linkClasses[$linkType]($node, $parent, $previous);
+            }
 
-        return new self::$nodeclass[$node['type']]($node, $parent, $previous);
+            return new self::$nodeclass[$node['type']]($node, $parent, $previous);
+        } catch (\Error $e) {
+            $exception = new ProsemirrorException('Invalid node type received: ' . $node['type'], 0, $e);
+            $exception->addExtraData('nodeData', $node);
+            $exception->addExtraData('parentNodeType', get_class($parent));
+
+            throw $exception;
+        }
     }
 
     /**
