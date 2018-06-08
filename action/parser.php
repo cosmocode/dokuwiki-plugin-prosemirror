@@ -27,7 +27,7 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handle_preprocess');
-        $controller->register_hook('COMMON_DRAFT_SAVE', 'BEFORE', $this, 'handle_draft');
+        $controller->register_hook('DRAFT_SAVE', 'BEFORE', $this, 'handle_draft');
     }
 
     /**
@@ -38,28 +38,34 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
      */
     public function handle_draft(Doku_Event $event, $param)
     {
-        global $INPUT, $MSG;
+        global $INPUT;
         $unparsedJSON = $INPUT->post->str('prosemirror_json');
         if (empty($unparsedJSON)) {
             return;
         }
-        $syntax = $this->getSyntaxFromProsemirrorData($unparsedJSON);
+        try {
+            $syntax = $this->getSyntaxFromProsemirrorData($unparsedJSON);
+        } catch (\Throwable $e) {
+            $event->preventDefault();
+            $event->stopPropagation();
 
-        if (!empty($MSG) && $this->isAjax()) {
-            echo '<div class="js-prosemirror-draft-errors" style="display: none;">';
-            html_msgarea();
-            echo '</div>';
+            $errorMsg = $e->getMessage();
+
+            /** @var helper_plugin_sentry $sentry */
+            $sentry = plugin_load('helper', 'sentry');
+            if ($sentry) {
+                $sentryEvent = new Event(['extra' => ['json' => $unparsedJSON]]);
+                $sentryEvent->addException($e);
+                $sentry->logEvent($sentryEvent);
+
+                $errorMsg .= ' -- The error has been logged to Sentry.';
+            }
+
+            $event->data['errors'][] = $errorMsg;
+            return;
         }
-        $event->data['text'] = $syntax;
-    }
 
-    /**
-     * @return bool true if this is a ajax request, false if it is not
-     */
-    protected function isAjax()
-    {
-        global $INPUT;
-        return basename($INPUT->server->str('SCRIPT_NAME')) === 'ajax.php';
+        $event->data['text'] = $syntax;
     }
 
     /**
@@ -98,36 +104,11 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
     {
         $prosemirrorData = json_decode($unparsedJSON, true);
         if ($prosemirrorData === null) {
-            $errorMsg = 'Error decoding prosemirror data ' . json_last_error_msg();
-
-            /** @var helper_plugin_sentry $sentry */
-            $sentry = plugin_load('helper', 'sentry');
-            if ($sentry) {
-                $event = new Event(['extra' => ['json' => $unparsedJSON]]);
-                $exception = new ErrorException($errorMsg); // ToDo: create unique prosemirror exceptions?
-                $event->addException($exception);
-                $sentry->logEvent($event);
-
-                $errorMsg .= ' Error has been logged to Sentry.';
-            }
-
-            msg($errorMsg, -1);
-            return null;
+            $errorMsg = 'Error decoding prosemirror json ' . json_last_error_msg();
+            throw new RuntimeException($errorMsg);
         }
-        try {
-            $rootNode = SyntaxTreeBuilder::parseDataIntoTree($prosemirrorData);
-        } catch (Throwable $e) {
-            $errorMsg = 'Parsing the data provided by the WYSIWYG editor failed with message: ' . hsc($e->getMessage());
-            /** @var helper_plugin_sentry $sentry */
-            $sentry = plugin_load('helper', 'sentry');
-            if ($sentry) {
-                $sentry->logException($e);
-                $errorMsg .= ' Error has been logged to Sentry.';
-            }
 
-            msg($errorMsg, -1);
-            return null;
-        }
+        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($prosemirrorData);
         $syntax = $rootNode->toSyntax();
         return $syntax;
     }

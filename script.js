@@ -37,13 +37,6 @@ jQuery(() => {
     }
     dw_locktimer.init(dw_locktimer.timeout, dw_locktimer.draft, 'prosemirror__editor');
     dw_locktimer.addField('input[name=prosemirror_json]');
-    dw_locktimer.addRefreshCallback(function prosemirrorCallback() {
-        const $errors = jQuery('#draft__status .js-prosemirror-draft-errors');
-        if ($errors.length) {
-            jQuery('#draft__status').before($errors.html());
-            $errors.remove();
-        }
-    });
 
     jQuery('#wiki__text').hide();
     jQuery('#size__ctl').hide();
