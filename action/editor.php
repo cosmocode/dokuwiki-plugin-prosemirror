@@ -112,6 +112,11 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
+
+        $linkForm->addButton('linkwiz', '⛓️')->attrs([
+            'type' => 'button',
+            'class' => 'js-open-linkwiz linkform_linkwiz'
+        ]);
         $linkForm->addTextInput('linktarget', 'Link target')->attrs(
             [
             'required'=> 'required',

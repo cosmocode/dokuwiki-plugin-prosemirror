@@ -95,7 +95,22 @@ class LinkForm extends NodeForm {
         this.$form.find('[name="nametype"]').on('change', this.handleNameTypeChange.bind(this));
         this.$form.find('[name="linktype"]').on('change', this.handleLinkTypeChange.bind(this));
 
+        this.$form.find('.js-open-linkwiz').on('click', () => {
+            window.dw_linkwiz.insertLink = this.insertLink.bind(this);
+            window.dw_linkwiz.toggle();
+        });
+
         this.resetForm();
+    }
+
+    /**
+     * Function used by the linkwizard to insert the link into the linktarget input field
+     */
+    insertLink() {
+        const link = window.dw_linkwiz.$entry.val();
+        this.setLinkTarget(null, link);
+        window.dw_linkwiz.toggle();
+        window.dw_linkwiz.$entry.val(window.dw_linkwiz.$entry.val().replace(/[^:]*$/, ''));
     }
 
     handleNameTypeChange() {
@@ -125,6 +140,7 @@ class LinkForm extends NodeForm {
     }
 
     handleLinkTypeChange() {
+        const $linkWizButton = this.$form.find('.js-open-linkwiz').hide();
         const linktype = this.$form.find('[name="linktype"]:checked').val();
         const $linkTargetInput = this.$form.find('[name="linktarget"]');
         this.$form.find('[name="iwshortcut"]').closest('label').hide();
@@ -140,6 +156,7 @@ class LinkForm extends NodeForm {
                 .prop('placeholder', 'mail@example.com');
             break;
         case 'internallink':
+            $linkWizButton.show();
             $linkTargetInput
                 .attr('type', 'text')
                 .prop('placeholder', 'namespace:page');
