@@ -159,6 +159,10 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             'style' => 'display: none;',
         ]);
         $mediaForm->addFieldsetOpen('Media')->addClass('js-media-fieldset');
+        $mediaForm->addButton('mediamanager', '🖼️')->attrs([
+            'type' => 'button',
+            'class' => 'js-open-mediamanager mediaform_mediamanager'
+        ]);
         $mediaForm->addTextInput('mediatarget', 'Media')->attrs(
             [
                 'required'=> 'required',
