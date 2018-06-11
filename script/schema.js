@@ -139,14 +139,11 @@ nodes = nodes.addToEnd('php_inline', {
     },
 });
 
-nodes = nodes.addToEnd('quote', {
-    content: 'block | quote | protected_block', // FIXME
-    group: 'container',
-    inline: false,
-    toDOM() {
-        return ['blockquote', {}, ['div', { class: 'no' }, 0]];
-    },
-});
+const quote = nodes.get('blockquote');
+quote.content = '(block | blockquote | protected_block)+';
+quote.group = 'container';
+quote.toDom = () => ['blockquote', {}, ['div', { class: 'no' }, 0]];
+nodes.update('blockquote', quote);
 
 const imageNode = nodes.get('image');
 imageNode.attrs.width = { default: '' };

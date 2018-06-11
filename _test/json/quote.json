@@ -11,7 +11,7 @@
             ]
         },
         {
-            "type": "quote",
+            "type": "blockquote",
             "content": [
                 {
                     "type": "paragraph",
@@ -25,10 +25,10 @@
             ]
         },
         {
-            "type": "quote",
+            "type": "blockquote",
             "content": [
                 {
-                    "type": "quote",
+                    "type": "blockquote",
                     "content": [
                         {
                             "type": "paragraph",
@@ -44,7 +44,7 @@
             ]
         },
         {
-            "type": "quote",
+            "type": "blockquote",
             "content": [
                 {
                     "type": "paragraph",
@@ -58,10 +58,10 @@
             ]
         },
         {
-            "type": "quote",
+            "type": "blockquote",
             "content": [
                 {
-                    "type": "quote",
+                    "type": "blockquote",
                     "content": [
                         {
                             "type": "paragraph",
@@ -77,13 +77,13 @@
             ]
         },
         {
-            "type": "quote",
+            "type": "blockquote",
             "content": [
                 {
-                    "type": "quote",
+                    "type": "blockquote",
                     "content": [
                         {
-                            "type": "quote",
+                            "type": "blockquote",
                             "content": [
                                 {
                                     "type": "paragraph",

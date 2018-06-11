@@ -29,9 +29,10 @@ class QuoteNode extends Node
     public function toSyntax()
     {
         $doc = '>';
+        $subnodes = [];
         foreach ($this->subnodes as $subnode) {
-            $doc .= $subnode->toSyntax();
+            $subnodes[] = $subnode->toSyntax();
         }
-        return $doc;
+        return $doc . implode("\n>", $subnodes);
     }
 }

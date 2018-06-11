@@ -21,7 +21,7 @@ abstract class Node
         'html_block' => HtmlPhpNode::class,
         'php_inline' => HtmlPhpNode::class,
         'php_block' => HtmlPhpNode::class,
-        'quote' => QuoteNode::class,
+        'blockquote' => QuoteNode::class,
         'image' => ImageNode::class,
         'hard_break' => HardBreakNode::class,
         'horizontal_rule' => HruleNode::class,

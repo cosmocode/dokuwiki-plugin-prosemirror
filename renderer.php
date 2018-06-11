@@ -97,7 +97,10 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritDoc */
     function quote_open()
     {
-        $this->nodestack->addTop(new Node('quote'));
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+        $this->nodestack->addTop(new Node('blockquote'));
     }
 
     /** @inheritDoc */
@@ -106,7 +109,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
         }
-        $this->nodestack->drop('quote');
+        $this->nodestack->drop('blockquote');
     }
 
     #region lists
@@ -260,7 +263,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
             $this->nodestack->addTop($node);
         }
 
-        if ($parentNode === 'quote') {
+        if ($parentNode === 'blockquote') {
             $node = new Node('paragraph');
             $this->nodestack->addTop($node);
         }
