@@ -9,7 +9,8 @@
 // $lang['menu'] = 'Your menu entry';
 
 // custom language strings for the plugin
-// $lang['fixme'] = 'FIXME';
+ $lang['preview_and_syntax'] = 'Preview and use Syntax-Editor';
+ $lang['preview_and_wysiwyg'] = 'Preview and use WYSIWYG-Editor';
 
 
 //Setup VIM: ex: et ts=4 :
