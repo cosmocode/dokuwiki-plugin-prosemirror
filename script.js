@@ -1,4 +1,4 @@
-jQuery(() => {
+jQuery(function initializeProsemirror() {
 
     const $toggleEditorButton = jQuery('.plugin_prosemirror_useWYSIWYG');
     $toggleEditorButton.on('click', function() {

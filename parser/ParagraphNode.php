@@ -15,6 +15,9 @@ class ParagraphNode extends Node
         $this->parent = &$parent;
 
         $previousNode = null;
+        if (empty($data['content'])) {
+            return;
+        }
         foreach ($data['content'] as $nodeData) {
             $newNode = self::getSubNode($nodeData, $this, $previousNode);
             $this->subnodes[] = $newNode;
