@@ -10,7 +10,7 @@ namespace dokuwiki\plugin\prosemirror;
  * @package dokuwiki\plugin\prosemirror
  */
 class ProsemirrorException extends \RuntimeException {
-    protected $data = [];
+    public $data = [];
 
     /**
      * @param string $key
