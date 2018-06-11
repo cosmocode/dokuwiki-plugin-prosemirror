@@ -8,16 +8,11 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": " aaa"
-                                        }
-                                    ]
+                                    "type": "text",
+                                    "text": " aaa"
                                 }
                             ]
                         }
@@ -27,16 +22,11 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": " bbb"
-                                        }
-                                    ]
+                                    "type": "text",
+                                    "text": " bbb"
                                 }
                             ]
                         },
@@ -47,16 +37,11 @@
                                     "type": "list_item",
                                     "content": [
                                         {
-                                            "type": "list_content",
+                                            "type": "paragraph",
                                             "content": [
                                                 {
-                                                    "type": "list_paragraph",
-                                                    "content": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": " ccc"
-                                                        }
-                                                    ]
+                                                    "type": "text",
+                                                    "text": " ccc"
                                                 }
                                             ]
                                         }
@@ -70,16 +55,11 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": " ddd"
-                                        }
-                                    ]
+                                    "type": "text",
+                                    "text": " ddd"
                                 }
                             ]
                         }

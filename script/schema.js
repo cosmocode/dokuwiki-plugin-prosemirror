@@ -31,7 +31,7 @@ bulletList.group = 'container';
 bulletList.content = 'list_item+';
 nodes = nodes.update('bullet_list', bulletList);
 
-listItem.content = 'list_content (ordered_list | bullet_list)?';
+listItem.content = '(paragraph | protected_block | substitution_block)* (ordered_list | bullet_list)?';
 nodes = nodes.update('list_item', listItem);
 
 nodes = nodes.append(tableNodes({
@@ -41,18 +41,6 @@ nodes = nodes.append(tableNodes({
         is_header: {},
     },
 }));
-
-
-nodes = nodes.addToEnd('list_content', {
-    content: '(list_paragraph | protected_block | substitution_block)*',
-    toDOM() { return ['div', { class: 'li' }, 0]; },
-
-});
-
-nodes = nodes.addToEnd('list_paragraph', {
-    content: 'inline*',
-    toDOM() { return ['div', 0]; },
-});
 
 // Nodes: https://prosemirror.net/docs/ref/#model.NodeSpec
 nodes = nodes.addToEnd('preformatted', {

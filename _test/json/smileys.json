@@ -8,31 +8,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "8-)"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  8-)  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "8-)"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  8-)  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -44,31 +39,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "8-O"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  8-O  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "8-O"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  8-O  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -80,31 +70,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ":-("
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  :-(  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": ":-("
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  :-(  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -116,31 +101,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ":-)"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  :-)  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": ":-)"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  :-)  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -152,31 +132,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ";-)"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  ;-)  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": ";-)"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  ;-)  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -188,31 +163,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "^_^"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  ^_^  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "^_^"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  ^_^  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -224,31 +194,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ":?:"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  :?:  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": ":?:"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  :?:  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -260,31 +225,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "LOL"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  LOL  ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "LOL"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  LOL  ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -296,31 +256,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "FIXME"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "  FIXME ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "FIXME"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "  FIXME ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }
@@ -332,31 +287,26 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "DELETEME"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " DELETEME ",
+                                    "marks": [
                                         {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "DELETEME"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " DELETEME ",
-                                            "marks": [
-                                                {
-                                                    "type": "unformatted"
-                                                }
-                                            ]
+                                            "type": "unformatted"
                                         }
                                     ]
                                 }

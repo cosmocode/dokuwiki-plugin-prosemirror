@@ -63,7 +63,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     protected function clearBlock()
     {
         $parentNode = $this->nodestack->current()->getType();
-        if (in_array($parentNode, ['paragraph', 'list_paragraph'])) {
+        if (in_array($parentNode, ['paragraph'])) {
             $this->nodestack->drop($parentNode);
         }
     }
@@ -114,7 +114,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritDoc */
     function listu_open()
     {
-        if ($this->nodestack->current()->getType() == 'paragraph') {
+        if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
         }
 
@@ -130,7 +130,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritDoc */
     function listo_open()
     {
-        if ($this->nodestack->current()->getType() == 'paragraph') {
+        if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
         }
 
@@ -149,22 +149,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->nodestack->addTop(new Node('list_item'));
     }
 
-    function listcontent_open()
-    {
-        $this->nodestack->addTop(new Node('list_content'));
-    }
-
-    function listcontent_close()
-    {
-        if ($this->nodestack->current()->getType() == 'list_paragraph') {
-            $this->nodestack->drop('list_paragraph');
-        }
-        $this->nodestack->drop('list_content');
-    }
-
     /** @inheritDoc */
     function listitem_close()
     {
+
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
         $this->nodestack->drop('list_item');
     }
 
@@ -264,8 +255,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer
             $text = str_replace("\n", ' ', $text);
         }
 
-        if ($parentNode === 'list_content') {
-            $node = new Node('list_paragraph');
+        if ($parentNode === 'list_item') {
+            $node = new Node('paragraph');
             $this->nodestack->addTop($node);
         }
 

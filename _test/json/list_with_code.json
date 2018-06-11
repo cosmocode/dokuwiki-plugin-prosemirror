@@ -17,60 +17,15 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": " For security reasons"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "..."
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "list_item",
-                    "content": [
-                        {
-                            "type": "list_content",
-                            "content": [
-                                {
-                                    "type": "list_paragraph",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": " For Mozilla and Firefox"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": "..."
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": " "
-                                        }
-                                    ]
+                                    "type": "text",
+                                    "text": " For security reasons"
                                 },
                                 {
-                                    "type": "code_block",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": "<?php\n\/**\n * Customization of the english language file\n * Copy only the strings that needs to be modified\n *\/\n$lang['js']['nosmblinks'] = '';"
-                                        }
-                                    ],
-                                    "attrs": {
-                                        "class": "code ",
-                                        "data-filename": "conf\/lang\/en\/lang.php"
-                                    }
+                                    "type": "text",
+                                    "text": "..."
                                 }
                             ]
                         }
@@ -80,16 +35,46 @@
                     "type": "list_item",
                     "content": [
                         {
-                            "type": "list_content",
+                            "type": "paragraph",
                             "content": [
                                 {
-                                    "type": "list_paragraph",
-                                    "content": [
-                                        {
-                                            "type": "text",
-                                            "text": " final list item"
-                                        }
-                                    ]
+                                    "type": "text",
+                                    "text": " For Mozilla and Firefox"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "..."
+                                },
+                                {
+                                    "type": "text",
+                                    "text": " "
+                                }
+                            ]
+                        },
+                        {
+                            "type": "code_block",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "<?php\n\/**\n * Customization of the english language file\n * Copy only the strings that needs to be modified\n *\/\n$lang['js']['nosmblinks'] = '';"
+                                }
+                            ],
+                            "attrs": {
+                                "class": "code ",
+                                "data-filename": "conf\/lang\/en\/lang.php"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "list_item",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": " final list item"
                                 }
                             ]
                         }
