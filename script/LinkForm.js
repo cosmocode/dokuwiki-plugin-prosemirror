@@ -202,15 +202,17 @@ class LinkForm extends NodeForm {
             }
 
             if (actions.length) {
+                const ajaxEndpoint = `${DOKU_BASE}lib/exe/ajax.php`;
+                const ajaxParams = {
+                    call: 'plugin_prosemirror',
+                    actions,
+                    inner: newAttrs['data-inner'],
+                    id: JSINFO.id,
+                    ...params,
+                };
                 jQuery.get(
-                    `${DOKU_BASE}/lib/exe/ajax.php`,
-                    {
-                        call: 'plugin_prosemirror',
-                        actions,
-                        inner: newAttrs['data-inner'],
-                        id: JSINFO.id,
-                        ...params,
-                    },
+                    ajaxEndpoint,
+                    ajaxParams,
                 ).done((data) => {
                     // FIXME handle aggregated data
                     const parsedData = JSON.parse(data);
@@ -237,6 +239,25 @@ class LinkForm extends NodeForm {
                     }
 
                     callback(newAttrs);
+                }).fail((jqXHR, textStatus, errorThrown) => {
+                    let errorMsg = `There was an error resolving this link -- ${errorThrown}: ${textStatus}.`;
+                    if (window.SentryPlugin) {
+                        window.SentryPlugin.logSentryException(new Error('Ajax Request failed'), {
+                            tags: {
+                                plugin: 'prosemirror',
+                                id: JSINFO.id,
+                            },
+                            extra: {
+                                ajaxEndpoint,
+                                ajaxParams,
+                                textStatus,
+                                errorThrown,
+                            },
+                        });
+                        errorMsg += ' The error has been logged to Sentry.';
+                    }
+                    errorMsg += ' You may want to continue your work in the syntax editor.';
+                    jQuery('#draft__status').after(jQuery('<div class="error"></div>').text(errorMsg));
                 });
 
                 return;
