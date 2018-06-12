@@ -1,10 +1,17 @@
-.menuicon {
+.menubar {
+    display: flex;
+}
+
+.menuitem {
     border: 1px solid @ini_border;
     margin: 2px;
     display: inline-block;
     cursor: pointer;
-    width: 1.5em;
     height: 1.5em;
+}
+
+.menuicon {
+    width: 1.5em;
     text-align: center;
 
     svg {
@@ -18,4 +25,10 @@
             fill: @ini_link;
         }
     }
+}
+
+.menulabel {
+    min-width: 1.5em;
+    padding: 0 3px;
+    color: @ini_border;
 }

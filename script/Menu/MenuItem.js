@@ -26,7 +26,7 @@ class MenuItem {
             dom = MenuItem.renderSVGIcon(this.options.icon, this.options.label);
         } else if (typeof this.options.label === 'string') {
             dom = jQuery('<span>')
-                .addClass(`menuicon ${this.options.label}`)
+                .addClass('menuitem menulabel')
                 .attr('title', this.options.label)
                 .text(this.options.label[0])
                 .get(0);
@@ -63,7 +63,7 @@ class MenuItem {
      * @return {HTMLSpanElement}
      */
     static renderSVGIcon(icon, title = '') {
-        icon.className = `menuicon ${title}`;
+        icon.className = 'menuicon menuitem';
         icon.title = title;
         return icon;
     }
