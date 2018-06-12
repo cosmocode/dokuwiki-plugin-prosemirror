@@ -6,6 +6,7 @@ const { schema } = require('../schema');
 const { MediaForm } = require('../MediaForm');
 const { LinkForm } = require('../LinkForm');
 const { getSvg } = require('./MDI');
+const { Dropdown } = require('./Dropdown');
 
 /**
  * Use an SVG for an Icon
@@ -170,6 +171,14 @@ function createMarkItem(markType, iconName, title) {
     });
 }
 
+const headingDropdown = new Dropdown(
+    [
+        heading(1), heading(2), heading(3),
+    ],
+    {
+        label: 'Headings',
+    },
+);
 
 const menu = MenuPlugin([
     createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
@@ -182,8 +191,8 @@ const menu = MenuPlugin([
     liftListItemMenuItem,
     sinkListItemMenuItem,
     paragraphMenuItem,
-    heading(1), heading(2), heading(3),
     blockquoteMenuItem,
+    headingDropdown,
 ]);
 
 exports.menu = menu;
