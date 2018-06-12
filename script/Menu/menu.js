@@ -24,10 +24,10 @@ function svgIcon(mdi, title) {
 
 // Create an icon for a heading at the given level
 function heading(level) {
-    return {
+    return new MenuItem({
         command: setBlockType(schema.nodes.heading, { level }),
         dom: svgIcon(`format-header-${level}`, 'heading'),
-    };
+    });
 }
 
 const link = new MenuItem({
@@ -128,6 +128,16 @@ const sinkListItemMenuItem = new MenuItem({
     command: sinkListItem(schema.nodes.list_item),
 });
 
+const paragraphMenuItem = new MenuItem({
+    command: setBlockType(schema.nodes.paragraph),
+    dom: svgIcon('format-paragraph', 'paragraph'),
+});
+
+const blockquoteMenuItem = new MenuItem({
+    command: wrapIn(schema.nodes.blockquote),
+    dom: svgIcon('format-quote-close', 'blockquote'),
+});
+
 function createMarkItem(markType, iconName, title) {
     /**
      * taken from prosemirror-example-setup
@@ -164,9 +174,9 @@ const menu = MenuPlugin([
     orderedList,
     liftListItemMenuItem,
     sinkListItemMenuItem,
-    { command: setBlockType(schema.nodes.paragraph), dom: svgIcon('format-paragraph', 'paragraph') },
+    paragraphMenuItem,
     heading(1), heading(2), heading(3),
-    { command: wrapIn(schema.nodes.blockquote), dom: svgIcon('format-quote-close', 'blockquote') },
+    blockquoteMenuItem,
 ]);
 
 exports.menu = menu;
