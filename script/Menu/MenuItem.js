@@ -22,8 +22,8 @@ class MenuItem {
         let dom;
         if (typeof this.options.render === 'function') {
             dom = this.options.render(editorView);
-        } else if (this.options.dom instanceof Element) {
-            dom = this.options.dom;
+        } else if (this.options.icon instanceof Element) {
+            dom = this.options.icon;
         }
 
         dom.addEventListener('mousedown', (e) => {
