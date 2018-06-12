@@ -13,7 +13,7 @@ const { Node } = require('prosemirror-model');
 const { schema } = require('./schema');
 const { LinkView } = require('./LinkView');
 const { MediaView } = require('./MediaView');
-const { menu } = require('./menu');
+const { menu } = require('./Menu/menu');
 const { customKeymapPlugin } = require('./keymap');
 
 

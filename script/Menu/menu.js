@@ -2,9 +2,9 @@ const { toggleMark, setBlockType, wrapIn } = require('prosemirror-commands');
 const { wrapInList, liftListItem, sinkListItem } = require('prosemirror-schema-list');
 const { MenuPlugin } = require('./MenuPlugin');
 const { MenuItem } = require('./MenuItem');
-const { schema } = require('./schema');
-const { MediaForm } = require('./MediaForm');
-const { LinkForm } = require('./LinkForm');
+const { schema } = require('../schema');
+const { MediaForm } = require('../MediaForm');
+const { LinkForm } = require('../LinkForm');
 const { getSvg } = require('./MDI');
 
 /**
