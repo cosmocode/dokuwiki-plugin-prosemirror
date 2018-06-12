@@ -11,13 +11,10 @@ const { getSvg } = require('./MDI');
  * Use an SVG for an Icon
  *
  * @param {string} mdi Icon identifier
- * @param {string} title Title to display
  * @return {HTMLSpanElement}
  */
-function svgIcon(mdi, title) {
+function svgIcon(mdi) {
     const span = document.createElement('span');
-    span.className = `menuicon ${title}`;
-    span.title = title;
     span.innerHTML = getSvg(mdi);
     return span;
 }
@@ -26,7 +23,8 @@ function svgIcon(mdi, title) {
 function heading(level) {
     return new MenuItem({
         command: setBlockType(schema.nodes.heading, { level }),
-        icon: svgIcon(`format-header-${level}`, 'heading'),
+        icon: svgIcon(`format-header-${level}`),
+        label: `Heading ${level}`,
     });
 }
 
@@ -67,7 +65,8 @@ const link = new MenuItem({
         }
         return true;
     },
-    icon: svgIcon('link-variant', 'Link'),
+    icon: svgIcon('link-variant'),
+    label: 'Insert Link',
 });
 
 const image = new MenuItem({
@@ -106,36 +105,43 @@ const image = new MenuItem({
         }
         return true;
     },
-    icon: svgIcon('image', 'Insert Image'),
+    icon: svgIcon('image'),
+    label: 'Insert Image',
 });
 
 const bulletList = new MenuItem({
-    icon: svgIcon('format-list-bulleted', 'Wrap in bullet list'),
+    icon: svgIcon('format-list-bulleted'),
     command: wrapInList(schema.nodes.bullet_list, {}),
+    label: 'Wrap in bullet list',
 });
 
 const orderedList = new MenuItem({
-    icon: svgIcon('format-list-numbers', 'Wrap in ordered list'),
+    icon: svgIcon('format-list-numbers'),
     command: wrapInList(schema.nodes.ordered_list, {}),
+    label: 'Wrap in ordered list',
 });
 
 const liftListItemMenuItem = new MenuItem({
-    icon: svgIcon('arrow-expand-left', 'Lift list item'),
+    icon: svgIcon('arrow-expand-left'),
     command: liftListItem(schema.nodes.list_item),
+    label: 'Lift list item',
 });
 const sinkListItemMenuItem = new MenuItem({
-    icon: svgIcon('arrow-expand-right', 'Sink list item'),
+    icon: svgIcon('arrow-expand-right'),
     command: sinkListItem(schema.nodes.list_item),
+    label: 'Sink list item',
 });
 
 const paragraphMenuItem = new MenuItem({
     command: setBlockType(schema.nodes.paragraph),
-    icon: svgIcon('format-paragraph', 'paragraph'),
+    icon: svgIcon('format-paragraph'),
+    label: 'Paragraph',
 });
 
 const blockquoteMenuItem = new MenuItem({
     command: wrapIn(schema.nodes.blockquote),
-    icon: svgIcon('format-quote-close', 'blockquote'),
+    icon: svgIcon('format-quote-close'),
+    label: 'Blockquote',
 });
 
 function createMarkItem(markType, iconName, title) {
@@ -158,7 +164,8 @@ function createMarkItem(markType, iconName, title) {
 
     return new MenuItem({
         command: toggleMark(markType),
-        icon: svgIcon(iconName, title),
+        icon: svgIcon(iconName),
+        label: title,
         isActive: editorState => markActive(editorState, markType),
     });
 }

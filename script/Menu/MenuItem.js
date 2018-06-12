@@ -23,7 +23,13 @@ class MenuItem {
         if (typeof this.options.render === 'function') {
             dom = this.options.render(editorView);
         } else if (this.options.icon instanceof Element) {
-            dom = this.options.icon;
+            dom = MenuItem.renderSVGIcon(this.options.icon, this.options.label);
+        } else if (typeof this.options.label === 'string') {
+            dom = jQuery('<span>')
+                .addClass(`menuicon ${this.options.label}`)
+                .attr('title', this.options.label)
+                .text(this.options.label[0])
+                .get(0);
         }
 
         dom.addEventListener('mousedown', (e) => {
@@ -47,6 +53,19 @@ class MenuItem {
             }
         }
         this.dom.style.display = this.options.command(editorView.state, null, editorView) ? '' : 'none';
+    }
+
+    /**
+     * Add classes and title (if available) to the icon
+     *
+     * @param {HTMLSpanElement} icon <span>-element with the icon inside
+     * @param {string} title Title to display
+     * @return {HTMLSpanElement}
+     */
+    static renderSVGIcon(icon, title = '') {
+        icon.className = `menuicon ${title}`;
+        icon.title = title;
+        return icon;
     }
 }
 
