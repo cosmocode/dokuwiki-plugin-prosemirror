@@ -3,6 +3,7 @@ const { MenuItem } = require('./MenuItem');
 class Dropdown extends MenuItem {
     constructor(content, options) {
         super({
+            ...options,
             command: () => true,
             render: view => this.renderIcon(view, options),
         });
@@ -16,12 +17,9 @@ class Dropdown extends MenuItem {
 
         jQuery($dropdownLabel).on('mousedown', (e) => {
             e.preventDefault();
-            e.stopPropagation();
             if (this.open) {
-                this.open = false;
                 this.hideContent();
             } else {
-                this.open = true;
                 this.showContent();
             }
         });
@@ -33,14 +31,29 @@ class Dropdown extends MenuItem {
     }
 
     showContent() {
-        // TODO: add listener to close it by clicking anywhere else
+        this.open = true;
         this.contentDom.style.display = 'block';
+        jQuery(document).on(
+            `mousedown.prosemirror${btoa(this.options.label)}`,
+            this.closeOnNextClick.bind(this, Date.now()),
+        );
+    }
+
+    closeOnNextClick(timeAttached) {
+        const DELAY_TO_NEXT_CLICK = 10;
+        const timePassedSinceAttached = Date.now() - timeAttached;
+
+        if (timePassedSinceAttached < DELAY_TO_NEXT_CLICK) {
+            return;
+        }
+        this.hideContent();
     }
 
     hideContent() {
+        this.open = false;
         this.contentDom.style.display = 'none';
+        jQuery(document).off(`mousedown.prosemirror${btoa(this.options.label)}`);
     }
-
 
     renderDropdownItems(editorView, $menuItemContainer) {
         this.contentDom = document.createElement('div');
