@@ -56,12 +56,12 @@ class Dropdown extends MenuItem {
     }
 
     update(editorView) {
-        if (!this.open) {
-            return;
-        }
         this.content.forEach((item) => {
             item.update(editorView);
         });
+
+        const isAnyItemEnabled = this.content.some(item => item.options.command(editorView.state, null, editorView));
+        this.dom.style.display = isAnyItemEnabled ? '' : 'none';
     }
 }
 
