@@ -8,6 +8,10 @@
     display: inline-block;
     cursor: pointer;
     height: 1.5em;
+
+    .menulabel {
+        display: none;
+    }
 }
 
 .menuicon {
@@ -31,4 +35,16 @@
     min-width: 1.5em;
     padding: 0 3px;
     color: @ini_border;
+}
+
+.dropdown_content {
+    background-color: @ini_background;
+
+    .menuitem {
+        display: flex;
+
+        .menulabel {
+            display: inline;
+        }
+    }
 }

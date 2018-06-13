@@ -63,9 +63,13 @@ class MenuItem {
      * @return {HTMLSpanElement}
      */
     static renderSVGIcon(icon, title = '') {
-        icon.className = 'menuicon menuitem';
-        icon.title = title;
-        return icon;
+        const $span = jQuery('<span>');
+        $span.addClass('menuitem');
+        $span.append(jQuery(icon).addClass('menuicon').attr('title', title));
+        if (title) {
+            $span.append(jQuery('<span>').text(title).addClass('menulabel'));
+        }
+        return $span.get(0);
     }
 }
 
