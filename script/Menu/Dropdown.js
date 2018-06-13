@@ -22,20 +22,30 @@ class Dropdown extends MenuItem {
             e.stopPropagation();
             if (this.open) {
                 this.open = false;
+                this.hideContent();
             } else {
-                this.open = true; // TODO: add listener to close it by clicking anywhere else
+                this.open = true;
+                this.showContent();
             }
-            this.renderDropdownItems(editorView, $menuItemContainer);
         });
+
+        this.renderDropdownItems(editorView, $menuItemContainer);
+        this.hideContent();
 
         return $menuItemContainer.get(0);
     }
 
+    showContent() {
+        // TODO: add listener to close it by clicking anywhere else
+        this.contentDom.style.display = 'block';
+    }
+
+    hideContent() {
+        this.contentDom.style.display = 'none';
+    }
+
+
     renderDropdownItems(editorView, $menuItemContainer) {
-        if (!this.open) {
-            jQuery(this.contentDom).remove();
-            return;
-        }
         this.contentDom = document.createElement('div');
         this.contentDom.className = 'dropdown_content';
         this.content.forEach((item) => {
