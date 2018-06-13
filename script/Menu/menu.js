@@ -181,9 +181,11 @@ const headingDropdown = new Dropdown(
 );
 
 const menu = MenuPlugin([
-    createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
-    createMarkItem(schema.marks.em, 'format-italic', 'em'),
-    createMarkItem(schema.marks.underline, 'format-underline', 'underline'),
+    new Dropdown([
+        createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
+        createMarkItem(schema.marks.em, 'format-italic', 'em'),
+        createMarkItem(schema.marks.underline, 'format-underline', 'underline'),
+    ], { label: 'Marks' }),
     link,
     image,
     bulletList,
