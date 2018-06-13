@@ -2,8 +2,6 @@ const { MenuItem } = require('./MenuItem');
 
 class Dropdown extends MenuItem {
     constructor(content, options) {
-        console.log('constructing Dropdown');
-        console.log(options);
         super({
             command: () => true,
             render: view => this.renderIcon(view, options),
@@ -12,9 +10,8 @@ class Dropdown extends MenuItem {
     }
 
     renderIcon(editorView, options) {
-        console.log('rendering Dropdown Icon');
-        const $menuItemContainer = jQuery('<span>').addClass('dropdown');
-        const $dropdownLabel = jQuery('<span>').text(options.label).addClass('menuitem menulabel');
+        const $menuItemContainer = jQuery('<span>').addClass('dropdown menuitem');
+        const $dropdownLabel = jQuery('<span>').text(options.label).addClass('menulabel');
         $menuItemContainer.append($dropdownLabel);
 
         jQuery($dropdownLabel).on('mousedown', (e) => {
@@ -60,8 +57,18 @@ class Dropdown extends MenuItem {
             item.update(editorView);
         });
 
+        if (this.isActive(editorView.state)) {
+            this.dom.classList.add('is-active');
+        } else {
+            this.dom.classList.remove('is-active');
+        }
+
         const isAnyItemEnabled = this.content.some(item => item.options.command(editorView.state, null, editorView));
         this.dom.style.display = isAnyItemEnabled ? '' : 'none';
+    }
+
+    isActive(state) {
+        return this.content.some(item => item.isActive(state));
     }
 }
 

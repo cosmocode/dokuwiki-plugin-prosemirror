@@ -11,6 +11,18 @@
         .menulabel {
             display: none;
         }
+
+        &.is-active {
+            border-color: @ini_link;
+
+            > .menuicon svg {
+                fill: @ini_link;
+            }
+
+            > .menulabel {
+                color: @ini_link;
+            }
+        }
     }
 
     .menuicon {
@@ -22,12 +34,6 @@
             height: 1.5em;
             fill: @ini_border;
         }
-
-        &.is-active {
-            svg {
-                fill: @ini_link;
-            }
-        }
     }
 
     .menulabel {
@@ -36,7 +42,16 @@
         color: @ini_border;
     }
 
+    .dropdown {
+
+        .menulabel {
+            display: inline;
+        }
+    }
+
     .dropdown_content {
+        position: relative;
+        top: 3px;
         background-color: @ini_background;
 
         .menuitem {

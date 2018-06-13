@@ -6,6 +6,10 @@
  * command: must be command function created by prosemirror-commands or similar
  */
 class MenuItem {
+    isActive() { // eslint-disable-line class-methods-use-this
+        return false;
+    }
+
     constructor(options = {}) {
         if (typeof options.command !== 'function') {
             throw new Error('command is not a function!');
@@ -45,12 +49,12 @@ class MenuItem {
     update(editorView) {
         if (typeof this.options.update === 'function') {
             this.options.update(editorView);
-        } else if (typeof this.options.isActive === 'function') {
-            if (this.options.isActive(editorView.state)) {
-                this.dom.classList.add('is-active');
-            } else {
-                this.dom.classList.remove('is-active');
-            }
+        }
+
+        if (this.isActive(editorView.state)) {
+            this.dom.classList.add('is-active');
+        } else {
+            this.dom.classList.remove('is-active');
         }
         this.dom.style.display = this.options.command(editorView.state, null, editorView) ? '' : 'none';
     }
