@@ -17,7 +17,7 @@ class Dropdown extends MenuItem {
 
         jQuery($dropdownLabel).on('mousedown', (e) => {
             e.preventDefault();
-            if (this.open) {
+            if (this.contentDom.style.display !== 'none') {
                 this.hideContent();
             } else {
                 this.showContent();
@@ -31,7 +31,6 @@ class Dropdown extends MenuItem {
     }
 
     showContent() {
-        this.open = true;
         this.contentDom.style.display = 'block';
         jQuery(document).on(
             `mousedown.prosemirror${btoa(this.options.label)}`,
@@ -50,7 +49,6 @@ class Dropdown extends MenuItem {
     }
 
     hideContent() {
-        this.open = false;
         this.contentDom.style.display = 'none';
         jQuery(document).off(`mousedown.prosemirror${btoa(this.options.label)}`);
     }
