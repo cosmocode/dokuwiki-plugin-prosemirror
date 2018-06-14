@@ -6,28 +6,27 @@ const { schema } = require('../schema');
 const { MediaForm } = require('../MediaForm');
 const { LinkForm } = require('../LinkForm');
 const { getSvg } = require('./MDI');
+const { Dropdown } = require('./Dropdown');
 
 /**
  * Use an SVG for an Icon
  *
  * @param {string} mdi Icon identifier
- * @param {string} title Title to display
  * @return {HTMLSpanElement}
  */
-function svgIcon(mdi, title) {
+function svgIcon(mdi) {
     const span = document.createElement('span');
-    span.className = `menuicon ${title}`;
-    span.title = title;
     span.innerHTML = getSvg(mdi);
     return span;
 }
 
 // Create an icon for a heading at the given level
 function heading(level) {
-    return {
+    return new MenuItem({
         command: setBlockType(schema.nodes.heading, { level }),
-        dom: svgIcon(`format-header-${level}`, 'heading'),
-    };
+        icon: svgIcon(`format-header-${level}`),
+        label: `Heading ${level}`,
+    });
 }
 
 const link = new MenuItem({
@@ -67,7 +66,8 @@ const link = new MenuItem({
         }
         return true;
     },
-    dom: svgIcon('link-variant', 'Link'),
+    icon: svgIcon('link-variant'),
+    label: 'Insert Link',
 });
 
 const image = new MenuItem({
@@ -106,26 +106,43 @@ const image = new MenuItem({
         }
         return true;
     },
-    dom: svgIcon('image', 'Insert Image'),
+    icon: svgIcon('image'),
+    label: 'Insert Image',
 });
 
 const bulletList = new MenuItem({
-    dom: svgIcon('format-list-bulleted', 'Wrap in bullet list'),
+    icon: svgIcon('format-list-bulleted'),
     command: wrapInList(schema.nodes.bullet_list, {}),
+    label: 'Wrap in bullet list',
 });
 
 const orderedList = new MenuItem({
-    dom: svgIcon('format-list-numbers', 'Wrap in ordered list'),
+    icon: svgIcon('format-list-numbers'),
     command: wrapInList(schema.nodes.ordered_list, {}),
+    label: 'Wrap in ordered list',
 });
 
 const liftListItemMenuItem = new MenuItem({
-    dom: svgIcon('arrow-expand-left', 'Lift list item'),
+    icon: svgIcon('arrow-expand-left'),
     command: liftListItem(schema.nodes.list_item),
+    label: 'Lift list item',
 });
 const sinkListItemMenuItem = new MenuItem({
-    dom: svgIcon('arrow-expand-right', 'Sink list item'),
+    icon: svgIcon('arrow-expand-right'),
     command: sinkListItem(schema.nodes.list_item),
+    label: 'Sink list item',
+});
+
+const paragraphMenuItem = new MenuItem({
+    command: setBlockType(schema.nodes.paragraph),
+    icon: svgIcon('format-paragraph'),
+    label: 'Paragraph',
+});
+
+const blockquoteMenuItem = new MenuItem({
+    command: wrapIn(schema.nodes.blockquote),
+    icon: svgIcon('format-quote-close'),
+    label: 'Blockquote',
 });
 
 function createMarkItem(markType, iconName, title) {
@@ -148,25 +165,36 @@ function createMarkItem(markType, iconName, title) {
 
     return new MenuItem({
         command: toggleMark(markType),
-        dom: svgIcon(iconName, title),
+        icon: svgIcon(iconName),
+        label: title,
         isActive: editorState => markActive(editorState, markType),
     });
 }
 
+const headingDropdown = new Dropdown(
+    [
+        heading(1), heading(2), heading(3),
+    ],
+    {
+        label: 'Headings',
+    },
+);
 
 const menu = MenuPlugin([
-    createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
-    createMarkItem(schema.marks.em, 'format-italic', 'em'),
-    createMarkItem(schema.marks.underline, 'format-underline', 'underline'),
+    new Dropdown([
+        createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
+        createMarkItem(schema.marks.em, 'format-italic', 'em'),
+        createMarkItem(schema.marks.underline, 'format-underline', 'underline'),
+    ], { label: 'Marks' }),
     link,
     image,
     bulletList,
     orderedList,
     liftListItemMenuItem,
     sinkListItemMenuItem,
-    { command: setBlockType(schema.nodes.paragraph), dom: svgIcon('format-paragraph', 'paragraph') },
-    heading(1), heading(2), heading(3),
-    { command: wrapIn(schema.nodes.blockquote), dom: svgIcon('format-quote-close', 'blockquote') },
+    paragraphMenuItem,
+    blockquoteMenuItem,
+    headingDropdown,
 ]);
 
 exports.menu = menu;

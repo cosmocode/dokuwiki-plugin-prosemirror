@@ -1,21 +1,65 @@
-.menuicon {
-    border: 1px solid @ini_border;
-    margin: 2px;
-    display: inline-block;
-    cursor: pointer;
-    width: 1.5em;
-    height: 1.5em;
-    text-align: center;
+.menubar {
+    display: flex;
 
-    svg {
-        width: 1.5em;
+    .menuitem {
+        border: 1px solid @ini_border;
+        margin: 2px;
+        display: inline-block;
+        cursor: pointer;
         height: 1.5em;
-        fill: @ini_border;
+
+        .menulabel {
+            display: none;
+        }
+
+        &.is-active {
+            border-color: @ini_link;
+
+            > .menuicon svg {
+                fill: @ini_link;
+            }
+
+            > .menulabel {
+                color: @ini_link;
+            }
+        }
     }
 
-    &.is-active {
+    .menuicon {
+        width: 1.5em;
+        text-align: center;
+
         svg {
-            fill: @ini_link;
+            width: 1.5em;
+            height: 1.5em;
+            fill: @ini_border;
+        }
+    }
+
+    .menulabel {
+        min-width: 1.5em;
+        padding: 0 3px;
+        color: @ini_border;
+    }
+
+    .dropdown {
+
+        .menulabel {
+            display: block;
+        }
+    }
+
+    .dropdown_content {
+        position: relative;
+        top: 3px;
+        background-color: @ini_background;
+
+        .menuitem {
+            display: flex;
+
+            .menulabel {
+                display: inline;
+            }
         }
     }
 }
