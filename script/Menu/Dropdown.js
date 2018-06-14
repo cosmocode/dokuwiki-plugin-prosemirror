@@ -10,9 +10,16 @@ class Dropdown extends MenuItem {
         this.content = Array.isArray(content) ? content : [content];
     }
 
-    renderIcon(editorView, options) {
+    /**
+     * Render the dropdown icon/label
+     *
+     * @param {EditorView} editorView the current editorView, passed down to rendering the items
+     *
+     * @return {HTMLElement} A span containing both the label and a hidden element with the items
+     */
+    renderIcon(editorView) {
         const $menuItemContainer = jQuery('<span>').addClass('dropdown menuitem');
-        const $dropdownLabel = jQuery('<span>').text(options.label).addClass('menulabel');
+        const $dropdownLabel = jQuery('<span>').text(this.options.label).addClass('menulabel');
         $menuItemContainer.append($dropdownLabel);
 
         jQuery($dropdownLabel).on('mousedown', (e) => {
@@ -24,7 +31,8 @@ class Dropdown extends MenuItem {
             }
         });
 
-        this.renderDropdownItems(editorView, $menuItemContainer);
+        this.renderContentDom(editorView, $menuItemContainer);
+        $menuItemContainer.append(this.contentDom);
         this.hideContent();
 
         return $menuItemContainer.get(0);
@@ -53,14 +61,20 @@ class Dropdown extends MenuItem {
         jQuery(document).off(`mousedown.prosemirror${btoa(this.options.label)}`);
     }
 
-    renderDropdownItems(editorView, $menuItemContainer) {
+    /**
+     * Render the items into the contentDom
+     *
+     * @param {EditorView} editorView the current editor view
+     *
+     * @return {void}
+     */
+    renderContentDom(editorView) {
         this.contentDom = document.createElement('div');
         this.contentDom.className = 'dropdown_content';
         this.content.forEach((item) => {
             const itemDom = item.render(editorView);
             this.contentDom.appendChild(itemDom);
         });
-        $menuItemContainer.append(this.contentDom);
     }
 
     update(editorView) {
