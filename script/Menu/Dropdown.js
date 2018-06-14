@@ -1,6 +1,14 @@
 const { MenuItem } = require('./MenuItem');
 
 class Dropdown extends MenuItem {
+    /**
+     * Create a new dropdown MenuItem
+     *
+     * @param {[MenuItem]} content Array of MenuItems to be displayed in the dropdown
+     * @param {object}  options the command and render keys are overwritten, label key is required
+     *
+     * @returns {void}
+     */
     constructor(content, options) {
         super({
             ...options,
@@ -38,6 +46,11 @@ class Dropdown extends MenuItem {
         return $menuItemContainer.get(0);
     }
 
+    /**
+     * Show the content and attach a event to close it on the next click
+     *
+     * @return {void}
+     */
     showContent() {
         this.contentDom.style.display = 'block';
         jQuery(document).on(
@@ -46,6 +59,13 @@ class Dropdown extends MenuItem {
         );
     }
 
+    /**
+     * Close the dropdown on the next click, but prevent the current click form being counted twice
+     *
+     * @param {int} timeAttached the time when this event was attached
+     *
+     * @return {void}
+     */
     closeOnNextClick(timeAttached) {
         const DELAY_TO_NEXT_CLICK = 10;
         const timePassedSinceAttached = Date.now() - timeAttached;
@@ -56,6 +76,11 @@ class Dropdown extends MenuItem {
         this.hideContent();
     }
 
+    /**
+     * Hide the dropdown
+     *
+     * @return {void}
+     */
     hideContent() {
         this.contentDom.style.display = 'none';
         jQuery(document).off(`mousedown.prosemirror${btoa(this.options.label)}`);
@@ -77,6 +102,11 @@ class Dropdown extends MenuItem {
         });
     }
 
+    /**
+     * @param {EditorView} editorView the current editor view
+     *
+     * @return {void}
+     */
     update(editorView) {
         this.content.forEach((item) => {
             item.update(editorView);
@@ -92,6 +122,12 @@ class Dropdown extends MenuItem {
         this.dom.style.display = isAnyItemEnabled ? '' : 'none';
     }
 
+    /**
+     *
+     * @param {EditorState} state The current EditorView.state
+     *
+     * @return {boolean} true if any of the DropDowns Items are in an active state, false otherwise
+     */
     isActive(state) {
         return this.content.some(item => item.isActive(state));
     }
