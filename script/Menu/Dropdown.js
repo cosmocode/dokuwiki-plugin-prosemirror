@@ -47,6 +47,22 @@ class Dropdown extends MenuItem {
     }
 
     /**
+     * Render the items into the contentDom
+     *
+     * @param {EditorView} editorView the current editor view
+     *
+     * @return {void}
+     */
+    renderContentDom(editorView) {
+        this.contentDom = document.createElement('div');
+        this.contentDom.className = 'dropdown_content';
+        this.content.forEach((item) => {
+            const itemDom = item.render(editorView);
+            this.contentDom.appendChild(itemDom);
+        });
+    }
+
+    /**
      * Show the content and attach a event to close it on the next click
      *
      * @return {void}
@@ -84,22 +100,6 @@ class Dropdown extends MenuItem {
     hideContent() {
         this.contentDom.style.display = 'none';
         jQuery(document).off(`mousedown.prosemirror${btoa(this.options.label)}`);
-    }
-
-    /**
-     * Render the items into the contentDom
-     *
-     * @param {EditorView} editorView the current editor view
-     *
-     * @return {void}
-     */
-    renderContentDom(editorView) {
-        this.contentDom = document.createElement('div');
-        this.contentDom.className = 'dropdown_content';
-        this.content.forEach((item) => {
-            const itemDom = item.render(editorView);
-            this.contentDom.appendChild(itemDom);
-        });
     }
 
     /**
