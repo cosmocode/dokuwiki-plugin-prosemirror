@@ -1,5 +1,5 @@
-const { Plugin } = require('prosemirror-state');
-const { MenuView } = require('./MenuView');
+import { Plugin } from 'prosemirror-state';
+import MenuView from './MenuView';
 
 function MenuPlugin(items) {
     return new Plugin({
@@ -11,4 +11,4 @@ function MenuPlugin(items) {
     });
 }
 
-exports.MenuPlugin = MenuPlugin;
+export default MenuPlugin;

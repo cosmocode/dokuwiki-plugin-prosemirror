@@ -77,4 +77,4 @@ class MenuItem {
     }
 }
 
-exports.MenuItem = MenuItem;
+export default MenuItem;

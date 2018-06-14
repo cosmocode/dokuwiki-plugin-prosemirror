@@ -23,4 +23,4 @@ class NodeForm {
     }
 }
 
-exports.NodeForm = NodeForm;
+export default NodeForm;

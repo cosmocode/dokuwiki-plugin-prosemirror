@@ -1,4 +1,4 @@
-const { NodeForm } = require('./NodeForm');
+import NodeForm from './NodeForm';
 
 class MediaForm extends NodeForm {
     constructor(id = 'prosemirror-mediaform') {
@@ -127,4 +127,5 @@ class MediaForm extends NodeForm {
         };
     }
 }
-exports.MediaForm = MediaForm;
+
+export default MediaForm;

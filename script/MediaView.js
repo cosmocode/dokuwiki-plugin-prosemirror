@@ -1,5 +1,5 @@
-const { MediaForm } = require('./MediaForm');
-const { AbstractNodeView } = require('./AbstractNodeView');
+import MediaForm from './MediaForm';
+import AbstractNodeView from './AbstractNodeView';
 
 class MediaView extends AbstractNodeView {
     constructor(node, view, getPos) {
@@ -69,4 +69,4 @@ class MediaView extends AbstractNodeView {
     }
 }
 
-exports.MediaView = MediaView;
+export default MediaView;

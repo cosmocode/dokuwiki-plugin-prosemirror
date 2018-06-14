@@ -4,13 +4,13 @@
  * extends the basic schemas provided by ProseMirror
  */
 
-const { tableNodes } = require('prosemirror-tables');
-const { bulletList, listItem, orderedList } = require('prosemirror-schema-list');
-const { schema } = require('prosemirror-schema-basic'); // load default schema definitions
-const { Schema } = require('prosemirror-model');
+import { schema as schemaBasic } from 'prosemirror-schema-basic';
+import { tableNodes } from 'prosemirror-tables';
+import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
+import { Schema } from 'prosemirror-model';
 
 
-let { nodes, marks } = schema.spec;
+let { nodes, marks } = schemaBasic.spec;
 
 const doc = nodes.get('doc');
 doc.content = '(block | baseonly | container | protected_block | substitution_block)+';
@@ -312,7 +312,9 @@ marks = marks.addToEnd('unformatted', {
     },
 });
 
-exports.schema = new Schema({
+const schema = new Schema({
     nodes,
     marks,
 });
+
+export default schema;

@@ -1,5 +1,5 @@
-const { NodeForm } = require('./NodeForm');
-const { MediaForm } = require('./MediaForm');
+import NodeForm from './NodeForm';
+import MediaForm from './MediaForm';
 
 class LinkForm extends NodeForm {
     constructor() {
@@ -267,4 +267,4 @@ class LinkForm extends NodeForm {
     }
 }
 
-exports.LinkForm = LinkForm;
+export default LinkForm;

@@ -1,7 +1,7 @@
 // FIXME: prevent XSS!
 
-const { LinkForm } = require('./LinkForm');
-const { AbstractNodeView } = require('./AbstractNodeView');
+import LinkForm from './LinkForm';
+import AbstractNodeView from './AbstractNodeView';
 
 class LinkView extends AbstractNodeView {
     /**
@@ -222,4 +222,4 @@ class LinkView extends AbstractNodeView {
     }
 }
 
-exports.LinkView = LinkView;
+export default LinkView;

@@ -20,4 +20,4 @@ class MenuView {
     }
 }
 
-exports.MenuView = MenuView;
+export default MenuView;

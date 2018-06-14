@@ -1,4 +1,4 @@
-const { MenuItem } = require('./MenuItem');
+import MenuItem from './MenuItem';
 
 class Dropdown extends MenuItem {
     /**
@@ -133,4 +133,4 @@ class Dropdown extends MenuItem {
     }
 }
 
-exports.Dropdown = Dropdown;
+export default Dropdown;

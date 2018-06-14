@@ -1,12 +1,13 @@
-const { toggleMark, setBlockType, wrapIn } = require('prosemirror-commands');
-const { wrapInList, liftListItem, sinkListItem } = require('prosemirror-schema-list');
-const { MenuPlugin } = require('./MenuPlugin');
-const { MenuItem } = require('./MenuItem');
-const { schema } = require('../schema');
-const { MediaForm } = require('../MediaForm');
-const { LinkForm } = require('../LinkForm');
-const { getSvg } = require('./MDI');
-const { Dropdown } = require('./Dropdown');
+import { toggleMark, setBlockType, wrapIn } from 'prosemirror-commands';
+import { wrapInList, liftListItem, sinkListItem } from 'prosemirror-schema-list';
+
+import MenuPlugin from './MenuPlugin';
+import MenuItem from './MenuItem';
+import getSvg from './MDI';
+import Dropdown from './Dropdown';
+import schema from '../schema';
+import MediaForm from '../MediaForm';
+import LinkForm from '../LinkForm';
 
 /**
  * Use an SVG for an Icon
@@ -197,4 +198,4 @@ const menu = MenuPlugin([
     headingDropdown,
 ]);
 
-exports.menu = menu;
+export default menu;

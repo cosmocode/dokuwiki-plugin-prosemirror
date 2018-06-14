@@ -1,20 +1,14 @@
-/* eslint-disable no-unused-vars */
-
 import { baseKeymap } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Node } from 'prosemirror-model';
 
-const { EditorState } = require('prosemirror-state');
-const { EditorView } = require('prosemirror-view');
-const { Node } = require('prosemirror-model');
-// const { MenuItem } = require('prosemirror-menu');
-// const { insertPoint } = require('prosemirror-transform');
-// const { buildMenuItems, exampleSetup } = require('prosemirror-example-setup');
-
-const { schema } = require('./schema');
-const { LinkView } = require('./LinkView');
-const { MediaView } = require('./MediaView');
-const { menu } = require('./Menu/menu');
-const { customKeymapPlugin } = require('./keymap');
+import schema from './schema';
+import menu from './Menu/menu';
+import customKeymapPlugin from './keymap';
+import LinkView from './LinkView';
+import MediaView from './MediaView';
 
 
 //

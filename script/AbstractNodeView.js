@@ -23,4 +23,4 @@ class AbstractNodeView {
     }
 }
 
-exports.AbstractNodeView = AbstractNodeView;
+export default AbstractNodeView;
