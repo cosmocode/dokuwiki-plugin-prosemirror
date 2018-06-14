@@ -1,9 +1,9 @@
-const { Node } = require('prosemirror-model');
-const { schema } = require('../script/schema.js');
+import { Node } from 'prosemirror-model';
+import schema from '../script/schema.js';
 
-module.exports = {
-    testJsonAgainstSchema: function testJsonAgainstSchema(jsonInput) {
-        const node = Node.fromJSON(schema, JSON.parse(jsonInput));
-        node.check();
-    },
-};
+function testJsonAgainstSchema(jsonInput) {
+    const node = Node.fromJSON(schema, JSON.parse(jsonInput));
+    node.check();
+}
+
+export default testJsonAgainstSchema;
