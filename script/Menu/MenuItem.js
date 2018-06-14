@@ -1,15 +1,34 @@
-/**
- * Create a new MenuItem
- *
- * The constructor needs the following keys:
- *
- * command: must be command function created by prosemirror-commands or similar
- */
+
 class MenuItem {
-    isActive() { // eslint-disable-line class-methods-use-this
+    /**
+     * Determine if this MenuItem is currently active at the cursor position
+     *
+     * @param {EditorState} editorState The current EditorView.state
+     *
+     * @return {boolean}
+     */
+    isActive(editorState) { // eslint-disable-line class-methods-use-this,no-unused-vars
         return false;
     }
 
+    /**
+     * Create a new MenuItem
+     *
+     * The constructor needs the following keys:
+     *
+     * command: must be command function created by prosemirror-commands or similar
+     *
+     * It should have at least one of the following:
+     * render: a function that gets the EditorView and returns a DOM node
+     * icon: an Element that contains an icon for the menu-button (ideally inline svg)
+     * label: A human readable label for the menu item
+     *
+     * Optional:
+     * isActive: A function that gets the EditorView and returns true if the item as active and false otherwise
+     * update: A function that is called on update, gets the EditorView and this.dom and can change the latter
+     *
+     * @param {object} options
+     */
     constructor(options = {}) {
         if (typeof options.command !== 'function') {
             throw new Error('command is not a function!');
@@ -22,6 +41,12 @@ class MenuItem {
         }
     }
 
+    /**
+     * Render the menu icon and attach listeners
+     *
+     * @param {EditorView} editorView
+     * @return {Element}
+     */
     render(editorView) {
         let dom;
         if (typeof this.options.render === 'function') {
@@ -46,9 +71,16 @@ class MenuItem {
         return dom;
     }
 
+    /**
+     *
+     *
+     * @param {EditorView} editorView
+     *
+     * @return {void}
+     */
     update(editorView) {
         if (typeof this.options.update === 'function') {
-            this.options.update(editorView);
+            this.options.update(editorView, this.dom);
         }
 
         if (this.isActive(editorView.state)) {

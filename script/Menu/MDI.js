@@ -27,6 +27,12 @@ const paths = {
 };
 /* eslint-enable */
 
+/**
+ * Get a material design icon as svg string
+ *
+ * @param {string} mdi Icon identifier
+ * @return {string} the inline svg element as string
+ */
 function getSvg(mdi) {
     let path = paths['alert-circle-outline'];
     if (typeof (paths[mdi]) !== 'undefined') {

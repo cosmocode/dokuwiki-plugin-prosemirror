@@ -13,7 +13,7 @@ import LinkForm from '../LinkForm';
  * Use an SVG for an Icon
  *
  * @param {string} mdi Icon identifier
- * @return {HTMLSpanElement}
+ * @return {HTMLSpanElement} a <span> element which contains the <svg> element
  */
 function svgIcon(mdi) {
     const span = document.createElement('span');
@@ -21,7 +21,12 @@ function svgIcon(mdi) {
     return span;
 }
 
-// Create an icon for a heading at the given level
+/**
+ * Create an MenuItem to set the blocktype to a heading at the given level
+ *
+ * @param {int} level the level of the heading, from 1 to 6
+ * @return {MenuItem} the MenuItem
+ */
 function heading(level) {
     return new MenuItem({
         command: setBlockType(schema.nodes.heading, { level }),
@@ -181,13 +186,23 @@ const pluginInlineMenuItem = new MenuItem({
     label: 'Plugin inline',
 });
 
+/**
+ * Create a MenuItem for toggeling a mark
+ *
+ * @param {MarkType} markType type of the mark based on the schema (e.g. schema.marks.strong )
+ * @param {string} iconName identifier of the icon to use
+ * @param {string} title label for the mark to be displayed to the user
+ * @return {MenuItem} A MenuItem that toggles the mark
+ */
 function createMarkItem(markType, iconName, title) {
     /**
+     * Determine if the mark is currently active at the cursor
+     *
      * taken from prosemirror-example-setup
      *
-     * @param state
-     * @param type
-     * @return {boolean|*}
+     * @param {EditorState} state the editor's current state
+     * @param {MarkType} type type of the mark based on the schema (e.g. schema.marks.strong )
+     * @return {boolean} True if the mark is currently active
      */
     function markActive(state, type) {
         const {

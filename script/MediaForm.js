@@ -1,12 +1,24 @@
 import NodeForm from './NodeForm';
 
 class MediaForm extends NodeForm {
+    /**
+     * @param {string} id ID of the form
+     *
+     * @return {void}
+     */
     constructor(id = 'prosemirror-mediaform') {
         super(id);
 
         this.name = 'Image Configuration';
     }
 
+    /**
+     * Set either the source of the image
+     *
+     * @param {string} id DokuWiki id of the image or external address
+     *
+     * @return {void}
+     */
     setSource(id = '') {
         this.$form.find('[name="mediatarget"]').val(id);
     }
