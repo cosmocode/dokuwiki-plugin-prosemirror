@@ -41,7 +41,7 @@ class LinkForm extends NodeForm {
 
     setLinkTarget(type, target) {
         if (type === 'interwikilink') {
-            let [shortcut, reference] = target.split('>', 2);
+            let [shortcut, reference] = target.split('>', 2); // eslint-disable-line no-magic-numbers
             if (!reference) {
                 reference = shortcut;
                 shortcut = 'go';
@@ -161,7 +161,7 @@ class LinkForm extends NodeForm {
     }
 
     static resolveSubmittedLinkData(linkForm, initialAttributes, callback) {
-        return function (event) {
+        return function resolveSubmittedLinkDataCallback(event) {
             event.preventDefault();
             event.stopPropagation();
 

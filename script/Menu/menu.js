@@ -174,7 +174,7 @@ function createMarkItem(markType, iconName, title) {
 
 const headingDropdown = new Dropdown(
     [
-        heading(1), heading(2), heading(3),
+        heading(1), heading(2), heading(3), heading(4), heading(5), // eslint-disable-line no-magic-numbers
     ],
     {
         label: 'Headings',
