@@ -6,15 +6,15 @@ class SyntaxTreeBuilder
 {
 
     /**
-     * @param $json
+     * Expects the array decoded from prosemirror's JSON
+     *
+     * @param array $prosemirrorData
      *
      * @return Node
      */
-    public static function parseJsonIntoTree($json)
+    public static function parseDataIntoTree($prosemirrorData)
     {
-        $data = json_decode($json, true);
-
-        $rootNode = new RootNode($data['content']);
+        $rootNode = new RootNode($prosemirrorData['content']);
 //        var_dump($rootNode);
         return $rootNode;
     }
