@@ -146,6 +146,41 @@ const blockquoteMenuItem = new MenuItem({
     label: 'Blockquote',
 });
 
+const pluginBlockMenuItem = new MenuItem({
+    command: setBlockType(schema.nodes.dwplugin_block),
+    icon: svgIcon('puzzle'),
+    label: 'Plugin block',
+});
+
+const pluginInlineMenuItem = new MenuItem({
+    command: (state, dispatch) => {
+        const { $from } = state.selection;
+
+        const index = $from.index();
+        if (!$from.parent.canReplaceWith(index, index, schema.nodes.dwplugin_inline)) {
+            return false;
+        }
+        if (dispatch) {
+            let textContent = '';
+            state.selection.content().content.descendants((node) => {
+                textContent += node.textContent;
+                return false;
+            });
+            if (!textContent.length) {
+                textContent = 'FIXME';
+            }
+
+            dispatch(state.tr.replaceSelectionWith(schema.nodes.dwplugin_inline.createChecked(
+                {},
+                schema.text(textContent),
+            )));
+        }
+        return true;
+    },
+    icon: svgIcon('puzzle'),
+    label: 'Plugin inline',
+});
+
 function createMarkItem(markType, iconName, title) {
     /**
      * taken from prosemirror-example-setup
@@ -196,6 +231,13 @@ const menu = MenuPlugin([
     paragraphMenuItem,
     blockquoteMenuItem,
     headingDropdown,
+    new Dropdown(
+        [
+            pluginBlockMenuItem,
+            pluginInlineMenuItem,
+        ],
+        { label: 'Plugins' },
+    ),
 ]);
 
 export default menu;

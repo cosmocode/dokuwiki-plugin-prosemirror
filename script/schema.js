@@ -206,10 +206,10 @@ nodes = nodes.addToEnd('rss', {
 
 nodes = nodes.addToEnd('dwplugin_block', {
     content: 'text*',
-    marks: '_',
+    marks: '',
     attrs: {
         class: { default: 'dwplugin' },
-        'data-pluginname': {},
+        'data-pluginname': { default: ' ' },
     },
     draggable: true,
     inline: false,
@@ -225,20 +225,17 @@ nodes = nodes.addToEnd('dwplugin_block', {
 
 nodes = nodes.addToEnd('dwplugin_inline', {
     content: 'text*',
-    marks: '_',
     attrs: {
         class: { default: 'dwplugin' },
-        'data-pluginname': {},
+        'data-pluginname': { default: ' ' },
     },
+    marks: '',
     draggable: true,
     inline: true,
     group: 'inline',
     defining: true,
     isolating: true,
     code: true,
-    toDOM(node) {
-        return ['code', node.attrs, 0];
-    },
 });
 
 // FIXME we need a table header attribute

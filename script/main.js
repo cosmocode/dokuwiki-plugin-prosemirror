@@ -9,6 +9,7 @@ import menu from './Menu/menu';
 import customKeymapPlugin from './keymap';
 import LinkView from './LinkView';
 import MediaView from './MediaView';
+import PluginInlineView from './PluginInlineView';
 
 // PLUGIN ORDER IS IMPORTANT!
 const plugins = [
@@ -40,6 +41,9 @@ const view = new EditorView(document.querySelector('#prosemirror__editor'), {
         },
         image(node, outerview, getPos) {
             return new MediaView(node, outerview, getPos);
+        },
+        dwplugin_inline(node, outerview, getPos) {
+            return new PluginInlineView(node, outerview, getPos);
         },
     },
 });
