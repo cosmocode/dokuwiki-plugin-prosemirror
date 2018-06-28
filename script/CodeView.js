@@ -1,3 +1,5 @@
+/* globals LANG */
+
 import AbstractNodeView from './AbstractNodeView';
 
 class CodeView extends AbstractNodeView {
@@ -26,6 +28,7 @@ class CodeView extends AbstractNodeView {
             this.$contentWrapper = jQuery('<dd>');
             this.$fileDom.append(this.$contentWrapper);
             this.contentDOM = document.createElement('pre');
+            this.contentDOM.setAttribute('data-exithint', LANG.plugins.prosemirror.code_block_hint);
             this.$contentWrapper.append(this.contentDOM);
             jQuery(this.dom).append(this.$fileDom);
         }
