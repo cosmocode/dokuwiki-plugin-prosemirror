@@ -2,6 +2,23 @@
 
 .ProseMirror {
     white-space: pre-wrap;
+    padding: 4px 8px 4px 14px;
+    outline: none;
+
+    @highlight-odd-ini_text: fade(@ini_background, 95%);
+    @highlight-even-ini_text: fade(@ini_text, 5%);
+    background: repeating-linear-gradient(
+        -45deg,
+        @highlight-odd-ini_text,
+        @highlight-odd-ini_text 10px,
+        @highlight-even-ini_text 10px,
+        @highlight-even-ini_text 20px,
+    );
+
+    .ProseMirror-selectednode {
+        outline: 2px solid #8cf;
+    }
+
 
     li p {
         margin: 0;
