@@ -2,6 +2,9 @@ jQuery(function initializeProsemirror() {
 
     const $toggleEditorButton = jQuery('.plugin_prosemirror_useWYSIWYG');
     $toggleEditorButton.on('click', function() {
+        window.onbeforeunload = '';
+        window.textChanged = false;
+        window.keepDraft = true; // needed to keep draft on page unload
         const $current = DokuCookie.getValue('plugin_prosemirror_useWYSIWYG');
         DokuCookie.setValue('plugin_prosemirror_useWYSIWYG', $current ? '' : '1');
     });
