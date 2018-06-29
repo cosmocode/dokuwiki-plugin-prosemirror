@@ -1,4 +1,3 @@
-
 class MenuItem {
     /**
      * Determine if this MenuItem is currently active at the cursor position
@@ -88,7 +87,12 @@ class MenuItem {
         } else {
             this.dom.classList.remove('is-active');
         }
-        this.dom.style.display = this.options.command(editorView.state, null, editorView) ? '' : 'none';
+
+        if (!this.options.command(editorView.state, null, editorView)) {
+            this.dom.classList.add('is-disabled');
+        } else {
+            this.dom.classList.remove('is-disabled');
+        }
     }
 
     /**

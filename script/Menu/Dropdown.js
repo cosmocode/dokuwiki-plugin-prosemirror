@@ -119,7 +119,11 @@ class Dropdown extends MenuItem {
         }
 
         const isAnyItemEnabled = this.content.some(item => item.options.command(editorView.state, null, editorView));
-        this.dom.style.display = isAnyItemEnabled ? '' : 'none';
+        if (!isAnyItemEnabled) {
+            this.dom.classList.add('is-disabled');
+        } else {
+            this.dom.classList.remove('is-disabled');
+        }
     }
 
     /**

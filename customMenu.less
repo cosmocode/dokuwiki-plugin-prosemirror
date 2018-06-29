@@ -36,6 +36,18 @@
                 color: @ini_link;
             }
         }
+
+        &.is-disabled {
+            pointer-events: none;
+
+            > .menuicon svg {
+                fill: @ini_border;
+            }
+
+            > .menulabel {
+                color: @ini_border;
+            }
+        }
     }
 
     .menuicon {
