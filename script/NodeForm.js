@@ -6,6 +6,7 @@ class NodeForm {
      */
     constructor(formID) {
         this.$form = jQuery(`#${formID}`);
+        this.$form.find('[name="cancel-button"]').on('click', this.hide.bind(this));
     }
 
     /**
@@ -14,7 +15,7 @@ class NodeForm {
      * @return {void}
      */
     show() {
-        jQuery(this.$form).dialog({
+        this.$form.dialog({
             title: this.name,
             width: 600,
         });
