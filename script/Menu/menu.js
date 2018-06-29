@@ -8,6 +8,7 @@ import Dropdown from './Dropdown';
 import schema from '../schema';
 import MediaForm from '../MediaForm';
 import LinkForm from '../LinkForm';
+import { setBlockTypeNoAttrCheck } from '../customCommands';
 
 /**
  * Use an SVG for an Icon
@@ -145,6 +146,12 @@ const paragraphMenuItem = new MenuItem({
     label: 'Paragraph',
 });
 
+const codeBlockMenuItem = new MenuItem({
+    command: setBlockTypeNoAttrCheck(schema.nodes.code_block),
+    icon: svgIcon('code-braces'),
+    label: 'Code Block',
+});
+
 const blockquoteMenuItem = new MenuItem({
     command: wrapIn(schema.nodes.blockquote),
     icon: svgIcon('format-quote-close'),
@@ -243,6 +250,7 @@ const menu = MenuPlugin([
     orderedList,
     liftListItemMenuItem,
     sinkListItemMenuItem,
+    codeBlockMenuItem,
     paragraphMenuItem,
     blockquoteMenuItem,
     headingDropdown,
