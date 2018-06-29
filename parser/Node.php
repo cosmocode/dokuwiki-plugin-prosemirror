@@ -16,7 +16,6 @@ abstract class Node
         'heading' => HeadingNode::class,
         'preformatted' => PreformattedNode::class,
         'code_block' => CodeBlockNode::class,
-        'file_block' => CodeBlockNode::class,
         'html_inline' => HtmlPhpNode::class,
         'html_block' => HtmlPhpNode::class,
         'php_inline' => HtmlPhpNode::class,

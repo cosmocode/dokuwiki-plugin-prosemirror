@@ -287,7 +287,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
     public function code($text, $lang = null, $file = null)
     {
-        // FIXME add support for file and lang
         $this->clearBlock();
         $node = new Node('code_block');
         $node->attr('class', 'code ' . $lang);
@@ -300,14 +299,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
     public function file($text, $lang = null, $file = null)
     {
-        $this->clearBlock();
-        $node = new Node('file_block');
-        $node->attr('class', 'file code ' . $lang);
-        $node->attr('data-language', $lang);
-        $node->attr('data-filename', $file);
-        $this->nodestack->addTop($node);
-        $this->cdata(trim($text, "\n"));
-        $this->nodestack->drop('file_block');
+        $this->code($text, $lang, $file);
     }
 
     public function html($text)

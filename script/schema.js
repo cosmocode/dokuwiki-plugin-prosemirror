@@ -56,30 +56,14 @@ nodes = nodes.addToEnd('preformatted', {
 const codeBlock = nodes.get('code_block');
 codeBlock.attrs = {
     class: { default: 'code' },
-    'data-filename': { default: null },
-    'data-language': { default: null },
+    'data-filename': { default: '' },
+    'data-language': { default: '' },
 };
 codeBlock.toDOM = function toDOM(node) {
     return ['pre', node.attrs, 0];
 };
 codeBlock.group = 'protected_block';
 nodes = nodes.update('code_block', codeBlock);
-
-nodes = nodes.addToEnd('file_block', {
-    content: 'text*',
-    marks: '',
-    group: 'protected_block',
-    attrs: {
-        class: { default: 'code file' },
-        'data-filename': { default: null },
-        'data-language': { default: null },
-    },
-    code: true,
-    defining: true,
-    toDOM(node) {
-        return ['pre', node.attrs, 0];
-    },
-});
 
 nodes = nodes.addToEnd('html_block', {
     content: 'text*',

@@ -1,5 +1,0 @@
-<file poem haiku.txt>
-a block of code
-block text
-foo bar
-</file>

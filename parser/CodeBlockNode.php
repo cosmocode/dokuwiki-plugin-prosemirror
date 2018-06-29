@@ -16,8 +16,7 @@ class CodeBlockNode extends Node
 
     public function toSyntax()
     {
-        $tagname = $this->data['type'] === 'code_block' ? 'code' : 'file';
-        $openingTag = '<' . $tagname;
+        $openingTag = '<code';
         if (!empty($this->data['attrs']['data-language'])) {
             $openingTag .= ' ' . $this->data['attrs']['data-language'];
         } else {
@@ -27,6 +26,6 @@ class CodeBlockNode extends Node
             $openingTag .= ' ' . $this->data['attrs']['data-filename'];
         }
         $openingTag .= '>';
-        return $openingTag . "\n" . $this->data['content'][0]['text'] . "\n</$tagname>";
+        return $openingTag . "\n" . $this->data['content'][0]['text'] . "\n</code>";
     }
 }
