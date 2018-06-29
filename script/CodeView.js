@@ -9,18 +9,17 @@ class CodeView extends AbstractNodeView {
      * @return {void}
      */
     renderNode(attrs) {
-        // console.log('render CodeView', this.node.textContent);
-        console.log('render CodeView');
-        window.codeNode = this.node;
         if (!this.dom) {
             this.dom = document.createElement('div');
             this.$fileDom = jQuery('<dl>').addClass('code');
-            this.$title = jQuery('<dt><form>');
+            this.$title = jQuery('<dt>');
             this.$fn = jQuery('<input>')
                 .prop('placeholder', 'file.ext')
+                .on('keydown', this.constructor.preventSubmit)
                 .on('blur', this.dispatchMetaUpdate.bind(this));
             this.$lang = jQuery('<input>')
                 .prop('placeholder', 'language')
+                .on('keydown', this.constructor.preventSubmit)
                 .on('blur', this.dispatchMetaUpdate.bind(this))
                 .attr('list', 'codelanguages');
             this.$title.append(this.$fn).append(this.$lang);
@@ -37,6 +36,12 @@ class CodeView extends AbstractNodeView {
         this.$lang.val(attrs['data-language']);
 
         Object.entries(attrs).forEach(([key, value]) => this.dom.setAttribute(key, value));
+    }
+
+    static preventSubmit(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
     }
 
     dispatchMetaUpdate() {
