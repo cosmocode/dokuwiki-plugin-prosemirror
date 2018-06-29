@@ -85,7 +85,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 
         // output data and editor field
         $form->addHidden('prosemirror_json',$prosemirrorJSON);
-        $form->insertElement(1, '<div id="prosemirror__editor"></div>');
+        $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
     }
 
     protected function allowWYSIWYG()

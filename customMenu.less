@@ -1,12 +1,25 @@
+@menuitem_size: 1.5em;
+@menu_margin: 0.15em;
+@menu_border_width: 0.1em;
+
+.prosemirror_wrapper {
+    position: relative;
+    //padding-top: 2em;
+    padding-top: @menuitem_size + 2 * @menu_margin + 2 * @menu_border_width;
+}
+
 .menubar {
     display: flex;
+    background: @ini_background;
+    position: absolute;
+    top: 0;
 
     .menuitem {
-        border: 1px solid @ini_border;
-        margin: 2px;
+        border: @menu_border_width solid @ini_border;
+        margin: @menu_margin;
         display: inline-block;
         cursor: pointer;
-        height: 1.5em;
+        height: @menuitem_size;
 
         .menulabel {
             display: none;
@@ -26,18 +39,18 @@
     }
 
     .menuicon {
-        width: 1.5em;
+        width: @menuitem_size;
         text-align: center;
 
         svg {
-            width: 1.5em;
-            height: 1.5em;
+            width: @menuitem_size;
+            height: @menuitem_size;
             fill: @ini_text;
         }
     }
 
     .menulabel {
-        min-width: 1.5em;
+        min-width: @menuitem_size;
         padding: 0 3px;
         color: @ini_text;
     }

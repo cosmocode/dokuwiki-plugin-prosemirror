@@ -52,3 +52,16 @@ const view = new EditorView(document.querySelector('#prosemirror__editor'), {
     },
 });
 window.view = view.editor;
+
+jQuery(window).on('scroll', () => {
+    const $container = jQuery('#prosemirror__editor');
+    const $menuBar = $container.find('.menubar');
+    const docViewTop = jQuery(window).scrollTop();
+    const containerTop = $container.offset().top;
+
+    if (docViewTop > containerTop) {
+        $menuBar.css('position', 'fixed');
+    } else {
+        $menuBar.css('position', '');
+    }
+});
