@@ -60,6 +60,10 @@ class MenuItem {
                 .get(0);
         }
 
+        if (!dom) {
+            throw new Error(`Could not generate dom for ${this.options.label} ${JSON.stringify(this.options)}`);
+        }
+
         dom.addEventListener('mousedown', (e) => {
             e.preventDefault();
             // editorView.focus();

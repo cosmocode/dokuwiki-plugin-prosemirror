@@ -5,12 +5,12 @@ import { EditorView } from 'prosemirror-view';
 import { Node } from 'prosemirror-model';
 
 import schema from './schema';
-import menu from './Menu/menu';
+import menu from './plugins/Menu/menu';
 import customKeymapPlugin from './keymap';
-import LinkView from './LinkView';
-import MediaView from './MediaView';
-import PluginInlineView from './PluginInlineView';
-import CodeView from './CodeView';
+import LinkView from './nodeviews/LinkView';
+import MediaView from './nodeviews/MediaView';
+import PluginInlineView from './nodeviews/PluginInlineView';
+import CodeView from './nodeviews/CodeView';
 
 // PLUGIN ORDER IS IMPORTANT!
 const plugins = [

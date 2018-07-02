@@ -5,10 +5,10 @@ import MenuPlugin from './MenuPlugin';
 import MenuItem from './MenuItem';
 import getSvg from './MDI';
 import Dropdown from './Dropdown';
-import schema from '../schema';
-import MediaForm from '../MediaForm';
-import LinkForm from '../LinkForm';
-import { setBlockTypeNoAttrCheck } from '../customCommands';
+import schema from '../../schema';
+import MediaForm from '../../nodeviews/MediaForm';
+import LinkForm from '../../nodeviews/LinkForm';
+import { setBlockTypeNoAttrCheck } from '../../customCommands';
 
 /**
  * Use an SVG for an Icon
