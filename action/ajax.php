@@ -26,10 +26,13 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjax');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'switchEditors');
     }
 
     /**
      * [Custom event handler which performs action]
+     *
+     * Event: AJAX_CALL_UNKNOWN
      *
      * @param Doku_Event $event  event object by reference
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
@@ -123,5 +126,47 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
             return dokuwiki\plugin\prosemirror\parser\LocalLinkNode::resolveLocalLink($inner, $curId);
         }
        return \dokuwiki\plugin\prosemirror\parser\InternalLinkNode::resolveLink($inner, $curId);
+    }
+
+    /**
+     * [Custom event handler which performs action]
+     *
+     * Event: AJAX_CALL_UNKNOWN
+     *
+     * @param Doku_Event $event  event object by reference
+     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
+     *                           handler was registered]
+     *
+     * @return void
+     */
+    public function switchEditors(Doku_Event $event, $param)
+    {
+        if ($event->data !== 'plugin_prosemirror_switch_editors') {
+            return;
+        }
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        global $INPUT;
+
+        if ($INPUT->bool('getJSON')) {
+            $text = $INPUT->str('data');
+            $instructions = p_get_instructions($text);
+            $prosemirrorJSON = p_render('prosemirror', $instructions, $info);
+            $responseData = [
+                'json' => $prosemirrorJSON,
+            ];
+        } else {
+            /** @var \helper_plugin_prosemirror $helper */
+            $helper = plugin_load('helper', 'prosemirror');
+            $json = $INPUT->str('data');
+            $syntax = $helper->getSyntaxFromProsemirrorData($json);
+            $responseData = [
+                'text' => $syntax,
+            ];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($responseData);
     }
 }

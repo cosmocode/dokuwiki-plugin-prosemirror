@@ -19,49 +19,57 @@ const plugins = [
     keymap(baseKeymap),
 ];
 
-// textarea holds our intial data and will be updated on editor changes
-const json = document.getElementById('prosemirror_json');
-const view = new EditorView(document.querySelector('#prosemirror__editor'), {
-    state: EditorState.create({
-        doc: Node.fromJSON(schema, JSON.parse(json.value)),
-        schema,
-        plugins,
-    }),
-    dispatchTransaction(tr) {
-        console.log('run');
+window.Prosemirror = {};
 
-        view.updateState(view.state.apply(tr));
+window.Prosemirror.enableProsemirror = function enableProsemirror() {
+    const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);
+    const view = new EditorView(document.querySelector('#prosemirror__editor'), {
+        state: EditorState.create({
+            doc: Node.fromJSON(schema, JSON.parse(json.value)),
+            schema,
+            plugins,
+        }),
+        dispatchTransaction(tr) {
+            console.log('run');
 
-        // current state as json in text area
-        const spaces = 4;
-        json.value = JSON.stringify(view.state.doc.toJSON(), null, spaces);
-    },
-    nodeViews: {
-        link(node, outerview, getPos) {
-            return new LinkView(node, outerview, getPos);
-        },
-        image(node, outerview, getPos) {
-            return new MediaView(node, outerview, getPos);
-        },
-        dwplugin_inline(node, outerview, getPos) {
-            return new PluginInlineView(node, outerview, getPos);
-        },
-        code_block(node, outerview, getPos) {
-            return new CodeView(node, outerview, getPos);
-        },
-    },
-});
-window.view = view.editor;
+            view.updateState(view.state.apply(tr));
 
-jQuery(window).on('scroll', () => {
-    const $container = jQuery('#prosemirror__editor');
-    const $menuBar = $container.find('.menubar');
-    const docViewTop = jQuery(window).scrollTop();
-    const containerTop = $container.offset().top;
+            const spaces = 4;
+            json.value = JSON.stringify(view.state.doc.toJSON(), null, spaces); // FIXME: no need to pretty print this!
+        },
+        nodeViews: {
+            link(node, outerview, getPos) {
+                return new LinkView(node, outerview, getPos);
+            },
+            image(node, outerview, getPos) {
+                return new MediaView(node, outerview, getPos);
+            },
+            dwplugin_inline(node, outerview, getPos) {
+                return new PluginInlineView(node, outerview, getPos);
+            },
+            code_block(node, outerview, getPos) {
+                return new CodeView(node, outerview, getPos);
+            },
+        },
+    });
+    window.view = view;
+    jQuery(window).on('scroll.prosemirror_menu', () => {
+        const $container = jQuery('#prosemirror__editor');
+        const $menuBar = $container.find('.menubar');
+        const docViewTop = jQuery(window).scrollTop();
+        const containerTop = $container.offset().top;
 
-    if (docViewTop > containerTop) {
-        $menuBar.css('position', 'fixed');
-    } else {
-        $menuBar.css('position', '');
+        if (docViewTop > containerTop) {
+            $menuBar.css('position', 'fixed');
+        } else {
+            $menuBar.css('position', '');
+        }
+    });
+};
+
+window.Prosemirror.destroyProsemirror = function destroyProsemirror() {
+    if (window.view && typeof window.view.destroy === 'function') {
+        window.view.destroy();
     }
-});
+    jQuery(window).off('scroll.prosemirror_menu');
+};

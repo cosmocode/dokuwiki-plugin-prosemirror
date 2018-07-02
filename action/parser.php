@@ -43,8 +43,13 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
         if (empty($unparsedJSON)) {
             return;
         }
+
+
+        /** @var \helper_plugin_prosemirror $helper */
+        $helper = plugin_load('helper', 'prosemirror');
+
         try {
-            $syntax = $this->getSyntaxFromProsemirrorData($unparsedJSON);
+            $syntax = $helper->getSyntaxFromProsemirrorData($unparsedJSON);
         } catch (\Throwable $e) {
             $event->preventDefault();
             $event->stopPropagation();
@@ -90,31 +95,17 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
         }
 
         $unparsedJSON = $INPUT->post->str('prosemirror_json');
-        $syntax = $this->getSyntaxFromProsemirrorData($unparsedJSON);
+
+        /** @var \helper_plugin_prosemirror $helper */
+        $helper = plugin_load('helper', 'prosemirror');
+
+        $syntax = $helper->getSyntaxFromProsemirrorData($unparsedJSON);
+
         if (!empty($syntax)) {
             $TEXT = $syntax;
         }
     }
 
-    /**
-     * Decode json and parse the data back into DokuWiki Syntax
-     *
-     * @param string $unparsedJSON the json produced by Prosemirror
-     *
-     * @return null|string DokuWiki syntax or null on error
-     */
-    protected function getSyntaxFromProsemirrorData($unparsedJSON)
-    {
-        $prosemirrorData = json_decode($unparsedJSON, true);
-        if ($prosemirrorData === null) {
-            $errorMsg = 'Error decoding prosemirror json ' . json_last_error_msg();
-            throw new RuntimeException($errorMsg);
-        }
-
-        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($prosemirrorData);
-        $syntax = $rootNode->toSyntax();
-        return $syntax;
-    }
 }
 
 // vim:ts=4:sw=4:et:

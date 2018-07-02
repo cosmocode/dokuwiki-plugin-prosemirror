@@ -48,40 +48,39 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $form =& $event->data;
         $useWYSIWYG = get_doku_pref('plugin_prosemirror_useWYSIWYG', false);
 
+        $prosemirrorJSON = '';
         if (!$useWYSIWYG) {
             $attr = [
                 'class' => 'button plugin_prosemirror_useWYSIWYG'
             ];
-            $form->addElement(form_makeButton('submit', 'preview', $this->getLang('preview_and_wysiwyg'), $attr));
-            return;
-        }
+            $form->addElement(form_makeButton('button', 'preview', $this->getLang('switch_to_wysiwyg'), $attr));
+        } else {
+            global $TEXT;
+            $instructions = p_get_instructions($TEXT);
+            try {
+                $prosemirrorJSON = p_render('prosemirror', $instructions, $info);
+            } catch (Throwable $e) {
+                $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed';
 
-        global $TEXT;
-        $instructions = p_get_instructions($TEXT);
-        try {
-            $prosemirrorJSON =  p_render('prosemirror', $instructions, $info);
-        } catch (Throwable $e) {
-            $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed';
+                /** @var helper_plugin_sentry $sentry */
+                $sentry = plugin_load('helper', 'sentry');
+                if ($sentry) {
+                    $sentry->logException($e);
+                    $errorMsg .= ' Error has been logged to Sentry.';
+                }
 
-            /** @var helper_plugin_sentry $sentry */
-            $sentry = plugin_load('helper', 'sentry');
-            if ($sentry) {
-                $sentry->logException($e);
-                $errorMsg .= ' Error has been logged to Sentry.';
+                msg($errorMsg, -1);
+                return;
             }
 
-            msg($errorMsg, -1);
-            return;
+            $event->stopPropagation();
+            $event->preventDefault();
+
+            $attr = [
+                'class' => 'button plugin_prosemirror_useWYSIWYG'
+            ];
+            $form->addElement(form_makeButton('button', 'preview', $this->getLang('switch_to_syntax'), $attr));
         }
-
-        $event->stopPropagation();
-        $event->preventDefault();
-
-        $attr = [
-            'class' => 'button plugin_prosemirror_useWYSIWYG'
-        ];
-        $form->addElement(form_makeButton('submit', 'preview', $this->getLang('preview_and_syntax'), $attr));
-
 
         // output data and editor field
         $form->addHidden('prosemirror_json',$prosemirrorJSON);

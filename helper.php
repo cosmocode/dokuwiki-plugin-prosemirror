@@ -1,4 +1,7 @@
 <?php
+
+use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
+
 /**
  * DokuWiki Plugin prosemirror (Helper Component)
  *
@@ -6,35 +9,27 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
-// must be run within Dokuwiki
-if (!defined('DOKU_INC')) {
-    die();
-}
-
 class helper_plugin_prosemirror extends DokuWiki_Plugin
 {
 
     /**
-     * Return info about supported methods in this Helper Plugin
+     * Decode json and parse the data back into DokuWiki Syntax
      *
-     * @return array of public methods
+     * @param string $unparsedJSON the json produced by Prosemirror
+     *
+     * @return null|string DokuWiki syntax or null on error
      */
-    public function getMethods()
+    public function getSyntaxFromProsemirrorData($unparsedJSON)
     {
-        return [
-            [
-                'name' => 'getThreads',
-                'desc' => 'returns pages with discussion sections, sorted by recent comments',
-                'params' => [
-                    'namespace' => 'string',
-                    'number (optional)' => 'integer',
-                ],
-                'return' => ['pages' => 'array'],
-            ],
-            [// and more supported methods...
-            ],
-        ];
+        $prosemirrorData = json_decode($unparsedJSON, true);
+        if ($prosemirrorData === null) {
+            $errorMsg = 'Error decoding prosemirror json ' . json_last_error_msg();
+            throw new RuntimeException($errorMsg);
+        }
+
+        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($prosemirrorData);
+        $syntax = $rootNode->toSyntax();
+        return $syntax;
     }
 }
-
 // vim:ts=4:sw=4:et:

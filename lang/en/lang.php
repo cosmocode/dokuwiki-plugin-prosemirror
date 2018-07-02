@@ -9,8 +9,8 @@
 // $lang['menu'] = 'Your menu entry';
 
 // custom language strings for the plugin
- $lang['preview_and_syntax'] = 'Preview and use Syntax-Editor';
- $lang['preview_and_wysiwyg'] = 'Preview and use WYSIWYG-Editor';
+ $lang['switch_to_syntax'] = 'Switch to Syntax-Editor';
+ $lang['switch_to_wysiwyg'] = 'Switch to WYSIWYG-Editor';
 $lang['js']['code_block_hint'] = '💡 Press CTRL+Enter to exit';
 
 //Setup VIM: ex: et ts=4 :
