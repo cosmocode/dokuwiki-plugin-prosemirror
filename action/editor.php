@@ -53,7 +53,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             $attr = [
                 'class' => 'button plugin_prosemirror_useWYSIWYG'
             ];
-            $form->addElement(form_makeButton('button', 'preview', $this->getLang('switch_to_wysiwyg'), $attr));
+            $form->addElement(form_makeButton('button', '', $this->getLang('switch_editors'), $attr));
         } else {
             global $TEXT;
             $instructions = p_get_instructions($TEXT);
@@ -78,7 +78,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             $attr = [
                 'class' => 'button plugin_prosemirror_useWYSIWYG'
             ];
-            $form->addElement(form_makeButton('button', 'preview', $this->getLang('switch_to_syntax'), $attr));
+            $form->addElement(form_makeButton('button', '', $this->getLang('switch_editors'), $attr));
         }
 
         // output data and editor field
