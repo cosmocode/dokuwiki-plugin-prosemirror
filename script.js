@@ -36,7 +36,7 @@ function showProsemirror(json) {
                     'json': $prosemirrorJsonInput.val(),
                 }
             });
-            message += ' The error has been logged to sentry.';
+            message += ' -- The error has been logged to Sentry.';
         }
         showErrorMessage(message);
         setTimeout(function() {
@@ -94,7 +94,7 @@ function initializeProsemirror() {
  * @param {string} errorMsg
  */
 function showErrorMessage(errorMsg) {
-    jQuery('#draft__status').after(
+    jQuery('.editBox').before(
         jQuery('<div class="error"></div>').text(errorMsg)
     );
 }
@@ -120,8 +120,28 @@ jQuery(function () {
             } else {
                 showProsemirror(data.json);
             }
-        }).fail(function (jqXHR) {
-            console.error(jqXHR); // FIXME: proper error handling
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR, textStatus, errorThrown); // FIXME: proper error handling
+            if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                showErrorMessage(jqXHR.responseJSON.error);
+            } else {
+                let message = 'The request failed with an unexpected error.';
+                if (window.SentryPlugin) {
+                    SentryPlugin.logSentryException(new Error(textStatus), {
+                        tags: {
+                            plugin: 'prosemirror',
+                            'id': JSINFO.id,
+                            status: jqXHR.status
+                        },
+                        extra: {
+                            'content': $textArea.val(),
+                            'responseText': jqXHR.responseText,
+                        }
+                    });
+                    message += ' -- The error has been logged to Sentry.';
+                }
+                showErrorMessage(message);
+            }
         });
 
         const $current = DokuCookie.getValue('plugin_prosemirror_useWYSIWYG');

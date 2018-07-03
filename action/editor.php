@@ -62,10 +62,9 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             } catch (Throwable $e) {
                 $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed';
 
-                /** @var helper_plugin_sentry $sentry */
-                $sentry = plugin_load('helper', 'sentry');
-                if ($sentry) {
-                    $sentry->logException($e);
+                /** @var \helper_plugin_prosemirror $helper */
+                $helper = plugin_load('helper', 'prosemirror');
+                if ($helper->tryToLogErrorToSentry($e, ['text' => $TEXT])) {
                     $errorMsg .= ' Error has been logged to Sentry.';
                 }
 

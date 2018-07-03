@@ -8,7 +8,6 @@
 
 // must be run within Dokuwiki
 use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
-use dokuwiki\plugin\sentry\Event;
 
 if (!defined('DOKU_INC')) {
     die();
@@ -56,13 +55,7 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
 
             $errorMsg = $e->getMessage();
 
-            /** @var helper_plugin_sentry $sentry */
-            $sentry = plugin_load('helper', 'sentry');
-            if ($sentry) {
-                $sentryEvent = new Event(['extra' => ['json' => $unparsedJSON]]);
-                $sentryEvent->addException($e);
-                $sentry->logEvent($sentryEvent);
-
+            if ($helper->tryToLogErrorToSentry($e, ['json' => $unparsedJSON])) {
                 $errorMsg .= ' -- The error has been logged to Sentry.';
             }
 
@@ -98,9 +91,21 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
 
         /** @var \helper_plugin_prosemirror $helper */
         $helper = plugin_load('helper', 'prosemirror');
+        try {
+            $syntax = $helper->getSyntaxFromProsemirrorData($unparsedJSON);
+        } catch (\Throwable $e) {
+            $event->preventDefault();
+            $event->stopPropagation();
 
-        $syntax = $helper->getSyntaxFromProsemirrorData($unparsedJSON);
+            $errorMsg = $e->getMessage();
 
+            if ($helper->tryToLogErrorToSentry($e, ['json' => $unparsedJSON])) {
+                $errorMsg .= ' -- The error has been logged to Sentry.';
+            }
+
+            msg($errorMsg, -1);
+            return;
+        }
         if (!empty($syntax)) {
             $TEXT = $syntax;
         }
