@@ -99,58 +99,74 @@ function showErrorMessage(errorMsg) {
     );
 }
 
-jQuery(function () {
-    window.proseMirrorIsActive = false;
+/**
+ * Switch between WYSIWYG and Syntax editor
+ */
+function toggleEditor() {
+    const $textArea = jQuery('#wiki__text');
     const $jsonField = jQuery('#dw__editform').find('[name=prosemirror_json]');
-    if (!$jsonField.length) {
-        // this is not an edit session
-        return;
-    }
-
-    const $toggleEditorButton = jQuery('.plugin_prosemirror_useWYSIWYG');
-    $toggleEditorButton.on('click', function() {
-        const $textArea = jQuery('#wiki__text');
-        jQuery.post(DOKU_BASE + 'lib/exe/ajax.php', {
-            call: 'plugin_prosemirror_switch_editors',
-            data: window.proseMirrorIsActive ? $jsonField.val() : $textArea.val(),
-            getJSON: window.proseMirrorIsActive ? '0' : '1',
-        }).done(function handleSwitchEditorResponse(data) {
-            if (window.proseMirrorIsActive) {
-                showDefaultEditor(data.text);
-            } else {
-                showProsemirror(data.json);
+    jQuery.post(DOKU_BASE + 'lib/exe/ajax.php', {
+        call: 'plugin_prosemirror_switch_editors',
+        data: window.proseMirrorIsActive ? $jsonField.val() : $textArea.val(),
+        getJSON: window.proseMirrorIsActive ? '0' : '1',
+    }).done(function handleSwitchEditorResponse(data) {
+        if (window.proseMirrorIsActive) {
+            showDefaultEditor(data.text);
+        } else {
+            showProsemirror(data.json);
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.error(jqXHR, textStatus, errorThrown); // FIXME: proper error handling
+        if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+            showErrorMessage(jqXHR.responseJSON.error);
+        } else {
+            let message = 'The request failed with an unexpected error.';
+            if (window.SentryPlugin) {
+                SentryPlugin.logSentryException(new Error(textStatus), {
+                    tags: {
+                        plugin: 'prosemirror',
+                        'id': JSINFO.id,
+                        status: jqXHR.status
+                    },
+                    extra: {
+                        'content': $textArea.val(),
+                        'responseText': jqXHR.responseText,
+                    }
+                });
+                message += ' -- The error has been logged to Sentry.';
             }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            console.error(jqXHR, textStatus, errorThrown); // FIXME: proper error handling
-            if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
-                showErrorMessage(jqXHR.responseJSON.error);
-            } else {
-                let message = 'The request failed with an unexpected error.';
-                if (window.SentryPlugin) {
-                    SentryPlugin.logSentryException(new Error(textStatus), {
-                        tags: {
-                            plugin: 'prosemirror',
-                            'id': JSINFO.id,
-                            status: jqXHR.status
-                        },
-                        extra: {
-                            'content': $textArea.val(),
-                            'responseText': jqXHR.responseText,
-                        }
-                    });
-                    message += ' -- The error has been logged to Sentry.';
-                }
-                showErrorMessage(message);
-            }
-        });
-
-        const $current = DokuCookie.getValue('plugin_prosemirror_useWYSIWYG');
-        DokuCookie.setValue('plugin_prosemirror_useWYSIWYG', $current ? '' : '1');
+            showErrorMessage(message);
+        }
     });
 
-    initializeProsemirror();
+    const $current = DokuCookie.getValue('plugin_prosemirror_useWYSIWYG');
+    DokuCookie.setValue('plugin_prosemirror_useWYSIWYG', $current ? '' : '1');
+}
 
+/**
+ * If the cookie is set, then show the WYSIWYG editor and add the switch-editor-event to the button
+ */
+function handleEditSession() {
+    const $jsonField = jQuery('#dw__editform').find('[name=prosemirror_json]');
     if (DokuCookie.getValue('plugin_prosemirror_useWYSIWYG')) {
         showProsemirror($jsonField.val());
     }
+    const $toggleEditorButton = jQuery('.plugin_prosemirror_useWYSIWYG');
+    $toggleEditorButton.on('click', toggleEditor);
+}
+
+jQuery(function () {
+    window.proseMirrorIsActive = false;
+
+    initializeProsemirror();
+
+    if (jQuery('#dw__editform').find('[name=prosemirror_json]').length) {
+        handleEditSession();
+    }
+
+    jQuery(window).on('fastwiki:afterSwitch', function(evt, viewMode, isSectionEdit, prevViewMode) {
+        if (viewMode === 'edit' || isSectionEdit) {
+            handleEditSession();
+        }
+    });
 });
