@@ -83,6 +83,7 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
         if ($INPUT->server->str('REQUEST_METHOD') !== 'POST'
             || !in_array($event->data, ['save', 'preview'])
             || !$INPUT->post->has('prosemirror_json')
+            || !get_doku_pref('plugin_prosemirror_useWYSIWYG', false)
         ) {
             return;
         }
