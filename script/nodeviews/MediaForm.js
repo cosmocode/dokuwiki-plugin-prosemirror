@@ -1,6 +1,6 @@
-import NodeForm from './NodeForm';
+import CustomForm from './CustomForm';
 
-class MediaForm extends NodeForm {
+class MediaForm extends CustomForm {
     /**
      * @param {string} id ID of the form
      *

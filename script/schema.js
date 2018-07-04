@@ -293,6 +293,12 @@ marks = marks.addToEnd('unformatted', {
     },
 });
 
+if (window.Prosemirror && window.Prosemirror.pluginSchemas) {
+    window.Prosemirror.pluginSchemas.forEach((addSchema) => {
+        ({ nodes, marks } = addSchema(nodes, marks));
+    });
+}
+
 const schema = new Schema({
     nodes,
     marks,

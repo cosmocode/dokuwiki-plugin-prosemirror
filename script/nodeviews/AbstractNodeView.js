@@ -45,3 +45,4 @@ class AbstractNodeView {
 }
 
 export default AbstractNodeView;
+window.AbstractNodeView = AbstractNodeView;

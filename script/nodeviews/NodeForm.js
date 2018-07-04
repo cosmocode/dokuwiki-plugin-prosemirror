@@ -1,23 +1,15 @@
 class NodeForm {
     /**
-     * @param {string} formID id of the respective form element
-     *
-     * @return {void}
-     */
-    constructor(formID) {
-        this.$form = jQuery(`#${formID}`);
-        this.$form.find('[name="cancel-button"]').on('click', this.hide.bind(this));
-    }
-
-    /**
      * Show this form in a jQueryUI dialog
      *
      * @return {void}
      */
     show() {
+        this.hasBeenOpened = true;
         this.$form.dialog({
             title: this.name,
-            width: 600,
+            width: 800,
+            appendTo: '.dokuwiki',
         });
     }
 
@@ -27,7 +19,9 @@ class NodeForm {
      * @return {void}
      */
     hide() {
-        jQuery(this.$form).dialog('close');
+        if (this.hasBeenOpened) {
+            this.$form.dialog('close');
+        }
     }
 
     /**
@@ -51,6 +45,10 @@ class NodeForm {
      */
     off(eventName) {
         this.$form.off(eventName);
+    }
+
+    destroy() {
+        this.$form.remove();
     }
 }
 

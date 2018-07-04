@@ -1,7 +1,7 @@
-import NodeForm from './NodeForm';
+import CustomForm from './CustomForm';
 import MediaForm from './MediaForm';
 
-class LinkForm extends NodeForm {
+class LinkForm extends CustomForm {
     constructor() {
         super('prosemirror-linkform');
 

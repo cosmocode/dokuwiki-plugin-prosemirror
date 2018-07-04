@@ -155,6 +155,19 @@ function handleEditSession() {
     $toggleEditorButton.on('click', toggleEditor);
 }
 
+if (!window.Prosemirror) {
+    window.Prosemirror = {};
+}
+
+if (!window.Prosemirror.pluginSchemas) {
+    window.Prosemirror.pluginSchemas = [];
+}
+
+if (!window.Prosemirror.pluginNodeViews) {
+    window.Prosemirror.pluginNodeViews = {};
+}
+
+
 jQuery(function () {
     window.proseMirrorIsActive = false;
 

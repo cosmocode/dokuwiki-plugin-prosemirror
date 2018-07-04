@@ -238,6 +238,10 @@ const headingDropdown = new Dropdown(
     },
 );
 
+
+const commandsForPlugins = { setBlockType, setBlockTypeNoAttrCheck };
+const pluginMenuItems = window.Prosemirror.pluginMenuItems
+    .map(getPluginMenuItem => getPluginMenuItem(MenuItem, schema, commandsForPlugins));
 const menu = MenuPlugin([
     new Dropdown([
         createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
@@ -256,6 +260,7 @@ const menu = MenuPlugin([
     headingDropdown,
     new Dropdown(
         [
+            ...pluginMenuItems,
             pluginBlockMenuItem,
             pluginInlineMenuItem,
         ],

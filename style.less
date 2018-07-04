@@ -67,34 +67,45 @@
     }
 }
 
-.plugin_prosemirror_linkform, .plugin_prosemirror_mediaform {
-    background-color: white;
-    z-index: 500; // be above the default prosemirror menu bar
-
-    fieldset {
-        padding-top: 0;
-        padding-bottom: 0.2rem;
-    }
-
-    label {
-        display: block;
-        text-align: right;
-        font-weight: bold;
-
-        input, select {
-            width: 50%;
-        }
-    }
-
-    .mediaform_mediamanager, .linkform_linkwiz {
-        float: right;
-
-        margin: 0;
-        border: none;
-        height: 22px;
+.dokuwiki {
+    .plugin_prosemirror_linkform, .plugin_prosemirror_mediaform, .plugin_prosemirror_keyvalueform {
+        z-index: 500; // be above the default prosemirror menu bar
         padding: 0;
+        background-color: white;
 
-        background: transparent;
+        fieldset {
+            width: auto;
+        }
 
+        label {
+            display: block;
+            padding: 0.2rem;
+
+            input, select {
+                width: 49%;
+            }
+
+            span {
+                display: inline-block;
+                width: 48%;
+                padding-right: 0.5em;
+            }
+
+            &:hover {
+                background-color: @ini_background_alt;
+            }
+        }
+
+        .mediaform_mediamanager, .linkform_linkwiz {
+            float: right;
+
+            margin: 0;
+            border: none;
+            height: 22px;
+            padding: 0;
+
+            background: transparent;
+
+        }
     }
 }
