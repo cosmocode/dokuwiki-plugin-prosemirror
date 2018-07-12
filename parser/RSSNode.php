@@ -18,38 +18,35 @@ class RSSNode extends Node
     {
         $prefix = '{{rss>';
         $url = '';
-        if (!empty($this->data['attrs']['data-url'])) {
-            $url = $this->data['attrs']['data-url'];
+        $attrs = $this->data['attrs'];
+        if (!empty($attrs['url'])) {
+            $url = $attrs['url'];
         }
         $paramString = '';
-        if (!empty($this->data['attrs']['data-params'])) {
-            $params = json_decode($this->data['attrs']['data-params'], true);
-            // FIXME check for correct json decoding
 
-            if (!empty($params['max'])) {
-                $paramString .= ' ' . $params['max'];
+            if (!empty($attrs['max']) && $attrs['max'] !== 8) {
+                $paramString .= ' ' . $attrs['max'];
             }
 
-            if (!empty($params['reverse'])) {
+            if (!empty($attrs['reverse'])) {
                 $paramString .= ' reverse';
             }
 
-            if (!empty($params['author'])) {
+            if (!empty($attrs['author'])) {
                 $paramString .= ' author';
             }
 
-            if (!empty($params['date'])) {
+            if (!empty($attrs['date'])) {
                 $paramString .= ' date';
             }
 
-            if (!empty($params['description'])) {
+            if (!empty($attrs['details'])) {
                 $paramString .= ' description';
             }
 
-            if (!empty($params['refresh'])) {
-                $paramString .= ' ' . ($params['refresh']) / 60 . 'm';
+            if (!empty($attrs['refresh']) && $attrs['refresh'] !== '4h') {
+                $paramString .= ' ' . $attrs['refresh'];
             }
-        }
         $postfix = '}}';
         return $prefix . $url . $paramString . $postfix;
     }

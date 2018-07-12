@@ -347,8 +347,22 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     {
         $this->clearBlock();
         $node = new Node('rss');
-        $node->attr('data-url', hsc($url));
-        $node->attr('data-params', json_encode($params));
+        $node->attr('url', hsc($url));
+        $node->attr('max', $params['max']);
+        $node->attr('reverse', (bool)$params['reverse']);
+        $node->attr('author', (bool)$params['author']);
+        $node->attr('date', (bool)$params['date']);
+        $node->attr('details', (bool)$params['details']);
+
+        if ($params['refresh'] % 86400 === 0) {
+            $refresh = $params['refresh']/86400 . 'd';
+        } else if ($params['refresh'] % 3600 === 0) {
+            $refresh = $params['refresh']/3600 . 'h';
+        } else {
+            $refresh = $params['refresh']/60 . 'm';
+        }
+
+        $node->attr('refresh', trim($refresh));
         $this->nodestack->add($node);
     }
 

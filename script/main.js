@@ -11,6 +11,7 @@ import LinkView from './nodeviews/LinkView';
 import MediaView from './nodeviews/MediaView';
 import PluginInlineView from './nodeviews/PluginInlineView';
 import CodeView from './nodeviews/CodeView';
+import RSSView from './nodeviews/RSSView';
 import initializePublicAPI from './initializePublicAPI';
 
 initializePublicAPI();
@@ -52,6 +53,9 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
             },
             code_block(node, outerview, getPos) {
                 return new CodeView(node, outerview, getPos);
+            },
+            rss(node, outerview, getPos) {
+                return new RSSView(node, outerview, getPos);
             },
             ...window.Prosemirror.pluginNodeViews,
         },
