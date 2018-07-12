@@ -11,6 +11,10 @@ import LinkView from './nodeviews/LinkView';
 import MediaView from './nodeviews/MediaView';
 import PluginInlineView from './nodeviews/PluginInlineView';
 import CodeView from './nodeviews/CodeView';
+import RSSView from './nodeviews/RSSView';
+import initializePublicAPI from './initializePublicAPI';
+
+initializePublicAPI();
 
 // PLUGIN ORDER IS IMPORTANT!
 const plugins = [
@@ -19,7 +23,7 @@ const plugins = [
     keymap(baseKeymap),
 ];
 
-window.Prosemirror = {};
+window.Prosemirror = window.Prosemirror || {};
 
 window.Prosemirror.enableProsemirror = function enableProsemirror() {
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);
@@ -50,6 +54,10 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
             code_block(node, outerview, getPos) {
                 return new CodeView(node, outerview, getPos);
             },
+            rss(node, outerview, getPos) {
+                return new RSSView(node, outerview, getPos);
+            },
+            ...window.Prosemirror.pluginNodeViews,
         },
     });
     window.view = view;

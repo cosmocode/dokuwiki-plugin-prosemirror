@@ -9,6 +9,8 @@ import schema from '../../schema';
 import MediaForm from '../../nodeviews/MediaForm';
 import LinkForm from '../../nodeviews/LinkForm';
 import { setBlockTypeNoAttrCheck } from '../../customCommands';
+import KeyValueForm from '../../nodeviews/KeyValueForm';
+import RSSView from '../../nodeviews/RSSView';
 
 /**
  * Use an SVG for an Icon
@@ -115,6 +117,39 @@ const image = new MenuItem({
     },
     icon: svgIcon('image'),
     label: 'Insert Image',
+});
+
+const rss = new MenuItem({
+    command: (state, dispatch) => {
+        if (!setBlockTypeNoAttrCheck(schema.nodes.rss)(state)) {
+            return false;
+        }
+        if (dispatch) {
+            const rssForm = new KeyValueForm(
+                'New RSS feed',
+                RSSView.getFields(Object.entries(schema.nodes.rss.attrs).reduce((acc, [name, value]) => {
+                    acc[name] = value.default;
+                    return acc;
+                }, {})),
+            );
+            rssForm.show();
+            rssForm.on('submit', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const attrs = rssForm.$form.serializeArray().reduce((acc, { name, value }) => {
+                    acc[name] = value;
+                    return acc;
+                }, {});
+
+                dispatch(state.tr.replaceSelectionWith(schema.nodes.rss.create(attrs)));
+                rssForm.destroy();
+            });
+        }
+        return true;
+    },
+    icon: svgIcon('rss'),
+    label: 'Add new RSS feed',
 });
 
 const bulletList = new MenuItem({
@@ -238,6 +273,10 @@ const headingDropdown = new Dropdown(
     },
 );
 
+
+const commandsForPlugins = { setBlockType, setBlockTypeNoAttrCheck };
+const pluginMenuItems = window.Prosemirror.pluginMenuItems
+    .map(getPluginMenuItem => getPluginMenuItem(MenuItem, schema, commandsForPlugins));
 const menu = MenuPlugin([
     new Dropdown([
         createMarkItem(schema.marks.strong, 'format-bold', 'strong'),
@@ -253,9 +292,11 @@ const menu = MenuPlugin([
     codeBlockMenuItem,
     paragraphMenuItem,
     blockquoteMenuItem,
+    rss,
     headingDropdown,
     new Dropdown(
         [
+            ...pluginMenuItems,
             pluginBlockMenuItem,
             pluginInlineMenuItem,
         ],

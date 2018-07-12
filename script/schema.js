@@ -179,12 +179,13 @@ nodes = nodes.addToEnd('rss', {
     atom: true,
     attrs: {
         class: { default: 'rss' },
-        'data-url': { default: null },
-        'data-params': { default: null },
-    },
-    toDOM(node) {
-        const url = node.attrs['data-url'] || '';
-        return ['span', node.attrs, `RSS: ${url}`];
+        url: { },
+        max: { default: 8 },
+        reverse: { default: null },
+        author: { default: null },
+        date: { default: null },
+        details: { default: null },
+        refresh: { default: '' },
     },
 });
 
@@ -292,6 +293,12 @@ marks = marks.addToEnd('unformatted', {
         return ['span', { class: 'unformatted' }];
     },
 });
+
+if (window.Prosemirror && window.Prosemirror.pluginSchemas) {
+    window.Prosemirror.pluginSchemas.forEach((addSchema) => {
+        ({ nodes, marks } = addSchema(nodes, marks));
+    });
+}
 
 const schema = new Schema({
     nodes,

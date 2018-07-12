@@ -59,9 +59,27 @@ abstract class Node
                 return new self::$linkClasses[$linkType]($node, $parent, $previous);
             }
 
-            return new self::$nodeclass[$node['type']]($node, $parent, $previous);
+            if (isset(self::$nodeclass[$node['type']])) {
+                return new self::$nodeclass[$node['type']]($node, $parent, $previous);
+            }
+            $eventData = [
+                'node' => $node,
+                'parent' => $parent,
+                'previous' => $previous,
+                'newNode' => null,
+            ];
+            $event = new \Doku_Event('PROSEMIRROR_PARSE_UNKNOWN', $eventData);
+            if ($event->advise_before() || !is_a($eventData['newNode'], __CLASS__)) {
+                $exception = new ProsemirrorException('Invalid node type received: ' . $node['type'], 0);
+                $exception->addExtraData('nodeData', $node);
+                $exception->addExtraData('parentNodeType', get_class($parent));
+
+                throw $exception;
+            }
+            return $eventData['newNode'];
+
         } catch (\Error $e) {
-            $exception = new ProsemirrorException('Invalid node type received: ' . $node['type'], 0, $e);
+            $exception = new ProsemirrorException('FIXME: better message for general error! Invalid node type received: ' . $node['type'], 0, $e);
             $exception->addExtraData('nodeData', $node);
             $exception->addExtraData('parentNodeType', get_class($parent));
 
