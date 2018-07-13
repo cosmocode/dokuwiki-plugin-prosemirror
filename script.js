@@ -166,7 +166,9 @@ if (!window.Prosemirror.pluginSchemas) {
 if (!window.Prosemirror.pluginNodeViews) {
     window.Prosemirror.pluginNodeViews = {};
 }
-
+if (!window.Prosemirror.pluginMenuItems) {
+    window.Prosemirror.pluginMenuItems = [];
+}
 
 jQuery(function () {
     window.proseMirrorIsActive = false;
