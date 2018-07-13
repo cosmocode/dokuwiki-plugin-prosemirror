@@ -68,6 +68,8 @@
     }
 
     .dropdown {
+        margin: 0;
+        border: 0;
 
         .menulabel {
             display: block;
@@ -77,7 +79,9 @@
     .dropdown_content {
         position: relative;
         top: 3px;
+        max-width: 300px;
         background-color: @ini_background;
+        outline: 1px dotted @ini_border;
 
         .menuitem {
             display: flex;

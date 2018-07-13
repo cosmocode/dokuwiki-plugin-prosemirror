@@ -47,19 +47,7 @@ class MenuItem {
      * @return {Element}
      */
     render(editorView) {
-        let dom;
-        if (typeof this.options.render === 'function') {
-            dom = this.options.render(editorView);
-        } else if (this.options.icon instanceof Element) {
-            dom = MenuItem.renderSVGIcon(this.options.icon, this.options.label);
-        } else if (typeof this.options.label === 'string') {
-            dom = jQuery('<span>')
-                .addClass('menuitem menulabel')
-                .attr('title', this.options.label)
-                .text(this.options.label[0])
-                .get(0);
-        }
-
+        const dom = this.renderDOM(editorView);
         if (!dom) {
             throw new Error(`Could not generate dom for ${this.options.label} ${JSON.stringify(this.options)}`);
         }
@@ -71,6 +59,22 @@ class MenuItem {
         });
 
         this.dom = dom;
+        return dom;
+    }
+
+    renderDOM(editorView) {
+        let dom;
+        if (typeof this.options.render === 'function') {
+            dom = this.options.render(editorView);
+        } else if (this.options.icon instanceof Element) {
+            dom = MenuItem.renderSVGIcon(this.options.icon, this.options.label);
+        } else if (typeof this.options.label === 'string') {
+            dom = jQuery('<span>')
+                .addClass('menuitem menulabel')
+                .attr('title', this.options.label)
+                .text(this.options.label)
+                .get(0);
+        }
         return dom;
     }
 
