@@ -193,7 +193,7 @@ nodes = nodes.addToEnd('smiley', {
     group: 'inline',
     draggable: true,
     toDOM: node => ['img', {
-        src: `${DOKU_BASE}/lib/images/smileys/${node.attrs.icon}`,
+        src: `${DOKU_BASE}lib/images/smileys/${node.attrs.icon}`,
         alt: node.attrs.syntax,
         class: 'icon',
     }],
