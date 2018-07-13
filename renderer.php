@@ -504,7 +504,14 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
     function smiley($smiley)
     {
-        $this->cdata($smiley);
+        if(array_key_exists($smiley, $this->smileys)) {
+            $node = new Node('smiley');
+            $node->attr('icon', $this->smileys[$smiley]);
+            $node->attr('syntax', $smiley);
+            $this->nodestack->add($node);
+        } else {
+            $this->cdata($smiley);
+        }
     }
 
     #region elements with no special WYSIWYG representation

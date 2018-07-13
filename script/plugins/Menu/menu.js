@@ -152,6 +152,52 @@ const rss = new MenuItem({
     label: 'Add new RSS feed',
 });
 
+function insertSmiley(icon, syntax) {
+    return function dispatchSimleyInsert(state, dispatch) {
+        const { $from } = state.selection;
+        const index = $from.index();
+        if (!$from.parent.canReplaceWith(index, index, schema.nodes.smiley)) {
+            return false;
+        }
+        if (dispatch) {
+            dispatch(state.tr.replaceSelectionWith(schema.nodes.smiley.create({ icon, syntax })));
+        }
+        return true;
+    };
+}
+
+function smileyItem(icon, syntax) {
+    return new MenuItem({
+        render: () => jQuery(`<img src="${DOKU_BASE}lib/images/smileys/${icon}" title="${syntax}">`)
+            .css('margin', '3px')
+            .get(0),
+        command: insertSmiley(icon, syntax),
+    });
+}
+
+const smileys = new Dropdown([
+    smileyItem('icon_cool.gif', '8-)'),
+    smileyItem('icon_eek.gif', '8-O'),
+    smileyItem('icon_sad.gif', ':-('),
+    smileyItem('icon_smile.gif', ':-)'),
+    smileyItem('icon_smile2.gif', '=)'),
+    smileyItem('icon_doubt.gif', ':-/'),
+    smileyItem('icon_doubt2.gif', ':-\\'),
+    smileyItem('icon_confused.gif', ':-?'),
+    smileyItem('icon_biggrin.gif', ':-D'),
+    smileyItem('icon_razz.gif', ':-P'),
+    smileyItem('icon_surprised.gif', ':-O'),
+    smileyItem('icon_silenced.gif', ':-X'),
+    smileyItem('icon_neutral.gif', ':-|'),
+    smileyItem('icon_wink.gif', ';-)'),
+    smileyItem('icon_fun.gif', '^_^'),
+    smileyItem('icon_question.gif', ':?:'),
+    smileyItem('icon_exclaim.gif', ':!:'),
+    smileyItem('icon_lol.gif', 'LOL'),
+    smileyItem('fixme.gif', 'FIXME'),
+    smileyItem('delete.gif', 'DELETEME'),
+], { icon: svgIcon('emoticon') });
+
 const bulletList = new MenuItem({
     icon: svgIcon('format-list-bulleted'),
     command: wrapInList(schema.nodes.bullet_list, {}),
@@ -293,6 +339,7 @@ const menu = MenuPlugin([
     paragraphMenuItem,
     blockquoteMenuItem,
     rss,
+    smileys,
     headingDropdown,
     new Dropdown(
         [

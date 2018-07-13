@@ -13,7 +13,6 @@ class Dropdown extends MenuItem {
         super({
             ...options,
             command: () => true,
-            render: view => this.renderIcon(view, options),
         });
         this.content = Array.isArray(content) ? content : [content];
     }
@@ -25,12 +24,12 @@ class Dropdown extends MenuItem {
      *
      * @return {HTMLElement} A span containing both the label and a hidden element with the items
      */
-    renderIcon(editorView) {
+    render(editorView) {
         const $menuItemContainer = jQuery('<span>').addClass('dropdown menuitem');
-        const $dropdownLabel = jQuery('<span>').text(this.options.label).addClass('menulabel');
-        $menuItemContainer.append($dropdownLabel);
+        const dropdownLabel = super.render(editorView);
+        $menuItemContainer.append(dropdownLabel);
 
-        jQuery($dropdownLabel).on('mousedown', (e) => {
+        jQuery(dropdownLabel).on('mousedown', (e) => {
             e.preventDefault();
             if (this.contentDom.style.display !== 'none') {
                 this.hideContent();

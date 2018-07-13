@@ -138,6 +138,16 @@ imageNode.attrs.cache = { default: '' };
 imageNode.attrs['data-resolvedHtml'] = { default: '' };
 imageNode.attrs.id = {};
 delete imageNode.attrs.src;
+imageNode.parseDOM = [{
+    tag: 'img.media[src]',
+    getAttrs: function getAttrs(dom) {
+        return {
+            src: dom.getAttribute('src'),
+            title: dom.getAttribute('title'),
+            alt: dom.getAttribute('alt'),
+        };
+    },
+}];
 nodes = nodes.update('image', imageNode);
 
 const imageAttrs = {};
@@ -172,6 +182,33 @@ nodes = nodes.addToEnd('footnote', {
     toDOM() {
         return ['footnote', { class: 'footnote' }, 0];
     },
+});
+
+nodes = nodes.addToEnd('smiley', {
+    attrs: {
+        icon: {},
+        syntax: {},
+    },
+    inline: true,
+    group: 'inline',
+    draggable: true,
+    toDOM: node => ['img', {
+        src: `${DOKU_BASE}/lib/images/smileys/${node.attrs.icon}`,
+        alt: node.attrs.syntax,
+        class: 'icon',
+    }],
+    parseDOM: [{
+        tag: 'img.icon',
+        getAttrs: (dom) => {
+            const src = dom.getAttribute('src').split('/');
+            const icon = src.pop();
+            if (!src.slice(-3).every((value, index) => ['lib', 'images', 'smileys'][index] === value)) {
+                return false;
+            }
+            const syntax = dom.getAttribute('alt');
+            return { icon, syntax };
+        },
+    }],
 });
 
 nodes = nodes.addToEnd('rss', {
