@@ -174,6 +174,21 @@ nodes = nodes.addToEnd('footnote', {
     },
 });
 
+nodes = nodes.addToEnd('smiley', {
+    attrs: {
+        icon: {},
+        syntax: {},
+    },
+    inline: true,
+    group: 'inline',
+    draggable: true,
+    toDOM: node => ['img', {
+        src: `${DOKU_BASE}/lib/images/smileys/${node.attrs.icon}`,
+        alt: node.attrs.syntax,
+        class: 'icon',
+    }],
+});
+
 nodes = nodes.addToEnd('rss', {
     group: 'substitution_block',
     atom: true,

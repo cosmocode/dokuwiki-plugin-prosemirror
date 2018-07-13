@@ -15,8 +15,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": "8-)"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_cool.gif",
+                                        "syntax": "8-)"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -46,8 +49,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": "8-O"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_eek.gif",
+                                        "syntax": "8-O"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -77,8 +83,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": ":-("
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_sad.gif",
+                                        "syntax": ":-("
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -108,8 +117,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": ":-)"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_smile.gif",
+                                        "syntax": ":-)"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -139,8 +151,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": ";-)"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_wink.gif",
+                                        "syntax": ";-)"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -170,8 +185,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": "^_^"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_fun.gif",
+                                        "syntax": "^_^"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -201,8 +219,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": ":?:"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_question.gif",
+                                        "syntax": ":?:"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -232,8 +253,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": "LOL"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "icon_lol.gif",
+                                        "syntax": "LOL"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -263,8 +287,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": "FIXME"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "fixme.gif",
+                                        "syntax": "FIXME"
+                                    }
                                 },
                                 {
                                     "type": "text",
@@ -294,8 +321,11 @@
                                     "text": " "
                                 },
                                 {
-                                    "type": "text",
-                                    "text": "DELETEME"
+                                    "type": "smiley",
+                                    "attrs": {
+                                        "icon": "delete.gif",
+                                        "syntax": "DELETEME"
+                                    }
                                 },
                                 {
                                     "type": "text",
