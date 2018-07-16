@@ -331,6 +331,7 @@ const menu = MenuPlugin([
         createMarkItem(schema.marks.superscript, 'format-superscript', 'superscript'),
         createMarkItem(schema.marks.subscript, 'format-subscript', 'subscript'),
         createMarkItem(schema.marks.deleted, 'format-strikethrough', 'deleted'),
+        createMarkItem(schema.marks.code, 'console-line', 'monospaced'),
     ], { label: 'Marks' }),
     link,
     image,
