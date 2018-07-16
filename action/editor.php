@@ -22,12 +22,12 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      */
     public function register(Doku_Event_Handler $controller)
     {
-        $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'output_editor');
+        $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
     }
 
     /**
-     * [Custom event handler which performs action]
+     * Add the editor toggle button and, if using the WYSIWYG editor, the instructions rendered to json
      *
      * Triggered by event: HTML_EDITFORM_OUTPUT
      *
@@ -37,24 +37,18 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      *
      * @return void
      */
-    public function output_editor(Doku_Event $event, $param)
+    public function addDataAndToggleButton(Doku_Event $event, $param)
     {
         if (!$this->allowWYSIWYG()) {
             return;
         }
-
 
         /** @var Doku_Form $form */
         $form =& $event->data;
         $useWYSIWYG = get_doku_pref('plugin_prosemirror_useWYSIWYG', false);
 
         $prosemirrorJSON = '';
-        if (!$useWYSIWYG) {
-            $attr = [
-                'class' => 'button plugin_prosemirror_useWYSIWYG'
-            ];
-            $form->addElement(form_makeButton('button', '', $this->getLang('switch_editors'), $attr));
-        } else {
+        if ($useWYSIWYG) {
             global $TEXT;
             $instructions = p_get_instructions($TEXT);
             try {
@@ -71,18 +65,25 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
                 msg($errorMsg, -1);
                 return;
             }
-
-            $attr = [
-                'class' => 'button plugin_prosemirror_useWYSIWYG'
-            ];
-            $form->addElement(form_makeButton('button', '', $this->getLang('switch_editors'), $attr));
         }
+
+        $attr = [
+            'class' => 'button plugin_prosemirror_useWYSIWYG'
+        ];
+        $form->addElement(form_makeButton('button', '', $this->getLang('switch_editors'), $attr));
 
         // output data and editor field
         $form->addHidden('prosemirror_json',$prosemirrorJSON);
         $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
     }
 
+    /**
+     * Forbid using WYSIWYG editor when editing anything else then sections or the entire page
+     *
+     * This would be the case for the edittable editor or the editor of the data plugin
+     *
+     * @return bool
+     */
     protected function allowWYSIWYG()
     {
         global $INPUT;
