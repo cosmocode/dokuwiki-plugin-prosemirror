@@ -107,8 +107,8 @@ class action_plugin_prosemirror_parser extends DokuWiki_Action_Plugin
             msg($errorMsg, -1);
             return;
         }
-        if (!empty($syntax)) {
-            $TEXT = $syntax;
+        if ($syntax !== null) {
+            $TEXT = trim($syntax);
         }
     }
 
