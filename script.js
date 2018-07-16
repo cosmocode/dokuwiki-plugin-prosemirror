@@ -47,6 +47,7 @@ function showProsemirror(json) {
     $textArea.hide();
     jQuery('#size__ctl').hide();
     jQuery('.editBox > .toolbar').hide();
+    jQuery('div.ProseMirror').focus();
 
     if (dw_locktimer.addField) {
         // todo remove this guard after the next stable DokuWiki release after Greebo
