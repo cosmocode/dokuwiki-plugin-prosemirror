@@ -133,4 +133,13 @@ class Node implements \JsonSerializable
 
         return $json;
     }
+
+    /**
+     * Check if any child nodes have been added to this node
+     *
+     * @return bool
+     */
+    public function hasContent() {
+        return !empty($this->content);
+    }
 }

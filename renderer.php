@@ -79,6 +79,10 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritDoc */
     function document_end()
     {
+        if ($this->nodestack->isEmpty()) {
+            $this->p_open();
+            $this->p_close();
+        }
         $this->doc = json_encode($this->nodestack->doc(), JSON_PRETTY_PRINT);
     }
 

@@ -94,4 +94,12 @@ class NodeStack
     {
         $this->current()->addChild($node);
     }
+
+    /**
+     * Check if there have been any nodes added to the document
+     */
+    public function isEmpty()
+    {
+        return !$this->doc->hasContent();
+    }
 }
