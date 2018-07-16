@@ -72,9 +72,6 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
                 return;
             }
 
-            $event->stopPropagation();
-            $event->preventDefault();
-
             $attr = [
                 'class' => 'button plugin_prosemirror_useWYSIWYG'
             ];
