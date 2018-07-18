@@ -39,7 +39,7 @@ const paths = {
  * @param {string} mdi Icon identifier
  * @return {string} the inline svg element as string
  */
-function getSvg(mdi) {
+export default function getSvg(mdi) {
     let path = paths['alert-circle-outline'];
     if (typeof (paths[mdi]) !== 'undefined') {
         path = paths[mdi];
@@ -50,4 +50,15 @@ function getSvg(mdi) {
     return `<svg viewBox="0 0 24 24"><path d="${path}" /></svg>`;
 }
 
-export default getSvg;
+
+/**
+ * Use an SVG for an Icon
+ *
+ * @param {string} mdi Icon identifier
+ * @return {HTMLSpanElement} a <span> element which contains the <svg> element
+ */
+export function svgIcon(mdi) {
+    const span = document.createElement('span');
+    span.innerHTML = getSvg(mdi);
+    return span;
+}

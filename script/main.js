@@ -5,7 +5,6 @@ import { EditorView } from 'prosemirror-view';
 import { Node } from 'prosemirror-model';
 
 import schema from './schema';
-import menu from './plugins/Menu/menu';
 import customKeymapPlugin from './keymap';
 import LinkView from './nodeviews/LinkView';
 import MediaView from './nodeviews/MediaView';
@@ -13,19 +12,22 @@ import PluginInlineView from './nodeviews/PluginInlineView';
 import CodeView from './nodeviews/CodeView';
 import RSSView from './nodeviews/RSSView';
 import initializePublicAPI from './initializePublicAPI';
+import MenuInitializer from './plugins/Menu/MenuInitializer';
 
 initializePublicAPI();
 
-// PLUGIN ORDER IS IMPORTANT!
-const plugins = [
-    menu,
-    customKeymapPlugin,
-    keymap(baseKeymap),
-];
+const mi = new MenuInitializer(schema);
 
 window.Prosemirror = window.Prosemirror || {};
 
 window.Prosemirror.enableProsemirror = function enableProsemirror() {
+    // PLUGIN ORDER IS IMPORTANT!
+    const plugins = [
+        mi.getMenuPlugin(),
+        customKeymapPlugin,
+        keymap(baseKeymap),
+    ];
+
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);
     const view = new EditorView(document.querySelector('#prosemirror__editor'), {
         state: EditorState.create({

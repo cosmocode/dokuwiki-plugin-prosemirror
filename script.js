@@ -167,14 +167,18 @@ if (!window.Prosemirror.pluginSchemas) {
 if (!window.Prosemirror.pluginNodeViews) {
     window.Prosemirror.pluginNodeViews = {};
 }
-if (!window.Prosemirror.pluginMenuItems) {
-    window.Prosemirror.pluginMenuItems = [];
+if (!window.Prosemirror.pluginMenuItemDispatchers) {
+    window.Prosemirror.pluginMenuItemDispatchers = [];
 }
+
+if (!window.Prosemirror.classes) {
+    window.Prosemirror.classes = {};
+}
+
+initializeProsemirror();
 
 jQuery(function () {
     window.proseMirrorIsActive = false;
-
-    initializeProsemirror();
 
     if (jQuery('#dw__editform').find('[name=prosemirror_json]').length) {
         handleEditSession();
