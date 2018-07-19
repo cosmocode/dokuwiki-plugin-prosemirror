@@ -29,8 +29,8 @@ install: sh travis.sh
 script:
   - cd _test && phpunit --stderr --group plugin_prosemirror
   - cd ../lib/plugins/prosemirror
-  - yarn run eslint
   - yarn test
+  - yarn lint
 before_deploy:
   - yarn build
   - rm -rf script _test _jstest node_modules .travis.yml webpack.config.js yarn.lock requirements.txt .gitignore package.json
