@@ -1,15 +1,15 @@
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { Node, Schema } from 'prosemirror-model';
+import { Node } from 'prosemirror-model';
 
 import getKeymapPlugin from '../plugins/Keymap/keymap';
 
 import AbstractNodeView from './AbstractNodeView';
-import { spec } from '../schema';
 import MenuInitializer from '../plugins/Menu/MenuInitializer';
 
 // todo: Fix this cycle
 import getNodeViews from './index'; // eslint-disable-line import/no-cycle
+import footnoteSchema from './Footnote/footnoteSchema';
 
 class FootnoteView extends AbstractNodeView {
     renderNode() {
@@ -36,18 +36,6 @@ class FootnoteView extends AbstractNodeView {
         }
     }
 
-    static buildFootnoteSchema() {
-        let footnoteSchemaNodes = spec.nodes.remove('footnote').remove('heading');
-        const doc = footnoteSchemaNodes.get('doc');
-        doc.content = doc.content.replace(' baseonly |', '');
-        footnoteSchemaNodes = footnoteSchemaNodes.update('doc', doc);
-
-        return new Schema({
-            nodes: footnoteSchemaNodes,
-            marks: spec.marks,
-        });
-    }
-
     open() {
         jQuery(this.tooltip).dialog({
             minWidth: 600,
@@ -59,7 +47,6 @@ class FootnoteView extends AbstractNodeView {
         });
         // And put a sub-ProseMirror into that
 
-        const footnoteSchema = FootnoteView.buildFootnoteSchema();
         const mi = new MenuInitializer(footnoteSchema);
         this.innerView = new EditorView(this.tooltip, {
             // You can use any node as an editor document

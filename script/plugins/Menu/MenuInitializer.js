@@ -18,6 +18,7 @@ import SmileyMenuItemDispatcher from './MenuItems/SmileyMenuItemDispatcher';
 import SmileyDropdownDispatcher from './MenuItems/SmileyDropdownDispatcher';
 import MarkDropdownDispatcher from './MenuItems/MarkDropdownDispatcher';
 import MarkMenuItemDispatcher from './MenuItems/MarkMenuItemDispatcher';
+import FootnoteMenuItemDispatcher from './MenuItems/FootnoteMenuItemDispatcher';
 
 
 class MenuInitializer {
@@ -51,6 +52,7 @@ class MenuInitializer {
             CodeMenuItemDispatcher,
             ParagraphMenuItemDispatcher,
             BlockquoteMenuItemDispatcher,
+            FootnoteMenuItemDispatcher,
             RSSMenuItemDispatcher,
             new SmileyDropdownDispatcher([
                 new SmileyMenuItemDispatcher('icon_cool.gif', '8-)'),
