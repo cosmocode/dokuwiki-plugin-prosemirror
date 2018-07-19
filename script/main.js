@@ -1,16 +1,14 @@
-import { baseKeymap } from 'prosemirror-commands';
-import { keymap } from 'prosemirror-keymap';
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Node } from 'prosemirror-model';
 
 import schema from './schema';
-import customKeymapPlugin from './keymap';
 import LinkView from './nodeviews/LinkView';
 import MediaView from './nodeviews/MediaView';
 import PluginInlineView from './nodeviews/PluginInlineView';
 import CodeView from './nodeviews/CodeView';
 import RSSView from './nodeviews/RSSView';
+import getKeymapPlugin from './plugins/Keymap/keymap';
 import initializePublicAPI from './initializePublicAPI';
 import MenuInitializer from './plugins/Menu/MenuInitializer';
 
@@ -24,8 +22,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
     // PLUGIN ORDER IS IMPORTANT!
     const plugins = [
         mi.getMenuPlugin(),
-        customKeymapPlugin,
-        keymap(baseKeymap),
+        getKeymapPlugin(schema),
     ];
 
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);
