@@ -76,10 +76,10 @@ class MenuInitializer {
             ]),
             new HeadingDropdownDispatcher([
                 new HeadingMenuItemDispatcher(1),
-                new HeadingMenuItemDispatcher(2),
-                new HeadingMenuItemDispatcher(3),
-                new HeadingMenuItemDispatcher(4),
-                new HeadingMenuItemDispatcher(5),
+                new HeadingMenuItemDispatcher(2), // eslint-disable-line no-magic-numbers
+                new HeadingMenuItemDispatcher(3), // eslint-disable-line no-magic-numbers
+                new HeadingMenuItemDispatcher(4), // eslint-disable-line no-magic-numbers
+                new HeadingMenuItemDispatcher(5), // eslint-disable-line no-magic-numbers
             ]),
             new PluginDropdownDispatcher([
                 PluginBlockMenuItemDispatcher,

@@ -176,12 +176,14 @@ nodes = nodes.addToEnd('link', {
 });
 
 nodes = nodes.addToEnd('footnote', {
-    content: 'inline',
+    content: '',
+    marks: '',
+    attrs: {
+        contentJSON: { default: '' },
+    },
     group: 'inline',
     inline: true,
-    toDOM() {
-        return ['footnote', { class: 'footnote' }, 0];
-    },
+    atom: true,
 });
 
 nodes = nodes.addToEnd('smiley', {
@@ -337,9 +339,8 @@ if (window.Prosemirror && window.Prosemirror.pluginSchemas) {
     });
 }
 
-const schema = new Schema({
-    nodes,
-    marks,
-});
+const spec = { nodes, marks };
+const schema = new Schema(spec);
 
+export { spec };
 export default schema;

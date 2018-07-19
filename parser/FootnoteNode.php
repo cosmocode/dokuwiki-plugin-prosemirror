@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: michael
- * Date: 1/25/18
- * Time: 2:40 PM
- */
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
@@ -20,10 +14,10 @@ class FootnoteNode extends Node
         $this->parent = &$parent;
 
         $previousNode = null;
-        foreach ($data['content'] as $nodeData) {
-            $newNode = self::getSubNode($nodeData, $this, $previousNode);
-            $this->subnodes[] = $newNode;
-            $previousNode = $newNode;
+        $json = $data['attrs']['contentJSON'];
+        $contentDoc = json_decode($json, true);
+        foreach ($contentDoc['content'] as $subnode) {
+            $this->subnodes[] = self::getSubNode($subnode, $this);
         }
     }
 
@@ -31,8 +25,8 @@ class FootnoteNode extends Node
     {
         $doc = '';
         foreach ($this->subnodes as $subnode) {
-            $doc .= $subnode->toSyntax();
+            $doc .= $subnode->toSyntax() . "\n\n";
         }
-        return '((' . $doc . '))';
+        return "((\n" . rtrim(ltrim($doc, "\n")) . "\n))";
     }
 }

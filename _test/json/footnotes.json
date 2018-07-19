@@ -10,12 +10,9 @@
                 },
                 {
                     "type": "footnote",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "This is a footnote"
-                        }
-                    ]
+                    "attrs": {
+                        "contentJSON": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"\\nThis is a footnote\\n\"}]}]}"
+                    }
                 },
                 {
                     "type": "text",

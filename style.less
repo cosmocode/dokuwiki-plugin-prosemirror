@@ -4,6 +4,7 @@
     white-space: pre-wrap;
     padding: 4px 8px 4px 14px;
     outline: none;
+    counter-reset: prosemirror-footnote;
 
     @highlight-odd-ini_text: fade(@ini_background, 95%);
     @highlight-even-ini_text: fade(@ini_text, 5%);
@@ -23,10 +24,6 @@
     li p {
         margin: 0;
         color: @ini_text;
-    }
-
-    .footnote {
-        background-color: #ffdddd;
     }
 
     .dwplugin {
@@ -53,6 +50,14 @@
             }
         }
     }
+
+    .footnote {
+
+        &::after {
+            content: counter(prosemirror-footnote)')';
+            counter-increment: prosemirror-footnote;
+        }
+    }
 }
 .dokuwiki {
 
@@ -65,11 +70,14 @@
         top: 55px;
         right: 30px;
     }
-}
 
-.dokuwiki {
+    .footnote-tooltip {
+        .menubar {
+            position: static;
+        }
+    }
+
     .plugin_prosemirror_linkform, .plugin_prosemirror_mediaform, .plugin_prosemirror_keyvalueform {
-        z-index: 500; // be above the default prosemirror menu bar
         padding: 0;
         background-color: white;
 

@@ -23,6 +23,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @var  NodeStack */
     public $nodestack;
 
+    /** @var NodeStack[] */
+    protected $nodestackBackup = [];
+
     /** @var array list of currently active formatting marks */
     protected $marks = [];
 
@@ -272,6 +275,11 @@ class renderer_plugin_prosemirror extends Doku_Renderer
             $this->nodestack->addTop($node);
         }
 
+        if ($parentNode === 'doc') {
+            $node = new Node('paragraph');
+            $this->nodestack->addTop($node);
+        }
+
         $node = new Node('text');
         $node->setText($text);
         foreach (array_keys($this->marks) as $mark) {
@@ -375,10 +383,16 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     {
         $footnoteNode = new Node('footnote');
         $this->nodestack->addTop($footnoteNode);
+        $this->nodestackBackup[] = $this->nodestack;
+        $this->nodestack = new NodeStack();
+
     }
 
     function footnote_close()
     {
+        $json = json_encode($this->nodestack->doc());
+        $this->nodestack = array_pop($this->nodestackBackup);
+        $this->nodestack->current()->attr('contentJSON', $json);
         $this->nodestack->drop('footnote');
     }
 

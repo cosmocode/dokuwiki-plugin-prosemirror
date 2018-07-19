@@ -10,6 +10,14 @@ class NodeForm {
             title: this.name,
             width: 800,
             appendTo: '.dokuwiki',
+            modal: true,
+            open: () => {
+                const TIMEOUT_TO_LOOK_SMOOTH = 50;
+                window.setTimeout(() => {
+                    // hack to ensure this dialog is in front of other open dialogs, e.g. the footnote dialog.
+                    this.$form.dialog('moveToTop');
+                }, TIMEOUT_TO_LOOK_SMOOTH);
+            },
         });
     }
 

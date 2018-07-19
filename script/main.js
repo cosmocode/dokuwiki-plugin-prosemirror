@@ -3,14 +3,10 @@ import { EditorView } from 'prosemirror-view';
 import { Node } from 'prosemirror-model';
 
 import schema from './schema';
-import LinkView from './nodeviews/LinkView';
-import MediaView from './nodeviews/MediaView';
-import PluginInlineView from './nodeviews/PluginInlineView';
-import CodeView from './nodeviews/CodeView';
-import RSSView from './nodeviews/RSSView';
 import getKeymapPlugin from './plugins/Keymap/keymap';
 import initializePublicAPI from './initializePublicAPI';
 import MenuInitializer from './plugins/Menu/MenuInitializer';
+import getNodeViews from './nodeviews/index';
 
 initializePublicAPI();
 
@@ -40,24 +36,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
             const spaces = 4;
             json.value = JSON.stringify(view.state.doc.toJSON(), null, spaces); // FIXME: no need to pretty print this!
         },
-        nodeViews: {
-            link(node, outerview, getPos) {
-                return new LinkView(node, outerview, getPos);
-            },
-            image(node, outerview, getPos) {
-                return new MediaView(node, outerview, getPos);
-            },
-            dwplugin_inline(node, outerview, getPos) {
-                return new PluginInlineView(node, outerview, getPos);
-            },
-            code_block(node, outerview, getPos) {
-                return new CodeView(node, outerview, getPos);
-            },
-            rss(node, outerview, getPos) {
-                return new RSSView(node, outerview, getPos);
-            },
-            ...window.Prosemirror.pluginNodeViews,
-        },
+        nodeViews: getNodeViews(),
     });
     window.view = view;
     jQuery(window).on('scroll.prosemirror_menu', () => {
