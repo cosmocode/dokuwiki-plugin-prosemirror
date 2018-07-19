@@ -1,13 +1,11 @@
 @import "customMenu.less";
 
-.ProseMirror {
-    white-space: pre-wrap;
-    padding: 4px 8px 4px 14px;
-    outline: none;
-    counter-reset: prosemirror-footnote;
+@highlight-odd-ini_text: fade(@ini_background, 95%);
+@highlight-even-ini_text: fade(@ini_text, 5%);
 
-    @highlight-odd-ini_text: fade(@ini_background, 95%);
-    @highlight-even-ini_text: fade(@ini_text, 5%);
+.ProseMirror {
+    padding: 4px 8px 4px 14px;
+    white-space: pre-wrap;
     background: repeating-linear-gradient(
         -45deg,
         @highlight-odd-ini_text,
@@ -15,11 +13,12 @@
         @highlight-even-ini_text 10px,
         @highlight-even-ini_text 20px,
     );
+    outline: none;
+    counter-reset: prosemirror-footnote;
 
     .ProseMirror-selectednode {
         outline: 2px solid #8cf;
     }
-
 
     li p {
         margin: 0;
@@ -42,33 +41,31 @@
             &::after {
                 content: attr(data-exithint);
                 float: right;
-                background: transparent;
                 padding: 2px;
+                background: transparent;
+                border: 1px solid @ini_border;
                 border-radius: 7px;
                 box-shadow: 1px 3px @ini_border;
-                border: 1px solid @ini_border;
             }
         }
     }
 
     .footnote {
-
         &::after {
-            content: counter(prosemirror-footnote)')';
+            content: counter(prosemirror-footnote) ')';
             counter-increment: prosemirror-footnote;
         }
     }
 }
+
 .dokuwiki {
-
     .plugin_prosemirror_useWYSIWYG {
-        background: yellow none;
-        padding: 5px;
-        color: black;
-
         position: absolute;
         top: 55px;
         right: 30px;
+        padding: 5px;
+        color: black;
+        background: yellow none;
     }
 
     .footnote-tooltip {
@@ -77,7 +74,9 @@
         }
     }
 
-    .plugin_prosemirror_linkform, .plugin_prosemirror_mediaform, .plugin_prosemirror_keyvalueform {
+    .plugin_prosemirror_linkform,
+    .plugin_prosemirror_mediaform,
+    .plugin_prosemirror_keyvalueform {
         padding: 0;
         background-color: white;
 
@@ -89,7 +88,8 @@
             display: block;
             padding: 0.2rem;
 
-            input, select {
+            input,
+            select {
                 width: 49%;
             }
 
@@ -104,16 +104,14 @@
             }
         }
 
-        .mediaform_mediamanager, .linkform_linkwiz {
+        .mediaform_mediamanager,
+        .linkform_linkwiz {
             float: right;
-
-            margin: 0;
-            border: none;
             height: 22px;
+            margin: 0;
             padding: 0;
-
             background: transparent;
-
+            border: none;
         }
     }
 }

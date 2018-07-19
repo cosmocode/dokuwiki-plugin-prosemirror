@@ -9,20 +9,46 @@
 }
 
 .menubar {
-    display: flex;
-    background: @ini_background;
     position: absolute;
     top: 0;
+    display: flex;
+    background: @ini_background;
+
+    .menuicon {
+        width: @menuitem_size;
+        text-align: center;
+
+        svg {
+            width: @menuitem_size;
+            height: @menuitem_size;
+            fill: @ini_text;
+        }
+    }
+
+    .menulabel {
+        min-width: @menuitem_size;
+        padding: 0 3px;
+        color: @ini_text;
+    }
 
     .menuitem {
-        border: @menu_border_width solid @ini_border;
-        margin: @menu_margin;
         display: inline-block;
-        cursor: pointer;
         height: @menuitem_size;
+        margin: @menu_margin;
+        border: @menu_border_width solid @ini_border;
+        cursor: pointer;
 
         .menulabel {
             display: none;
+        }
+
+        &.dropdown {
+            margin: 0;
+            border: 0;
+
+            .menulabel {
+                display: block;
+            }
         }
 
         &.is-active {
@@ -47,32 +73,6 @@
             > .menulabel {
                 color: @ini_border;
             }
-        }
-    }
-
-    .menuicon {
-        width: @menuitem_size;
-        text-align: center;
-
-        svg {
-            width: @menuitem_size;
-            height: @menuitem_size;
-            fill: @ini_text;
-        }
-    }
-
-    .menulabel {
-        min-width: @menuitem_size;
-        padding: 0 3px;
-        color: @ini_text;
-    }
-
-    .dropdown {
-        margin: 0;
-        border: 0;
-
-        .menulabel {
-            display: block;
         }
     }
 
