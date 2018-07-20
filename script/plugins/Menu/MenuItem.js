@@ -66,14 +66,19 @@ class MenuItem {
         let dom;
         if (typeof this.options.render === 'function') {
             dom = this.options.render(editorView);
-        } else if (this.options.icon instanceof Element) {
-            dom = MenuItem.renderSVGIcon(this.options.icon, this.options.label);
-        } else if (typeof this.options.label === 'string') {
-            dom = jQuery('<span>')
-                .addClass('menuitem menulabel')
-                .attr('title', this.options.label)
-                .text(this.options.label)
-                .get(0);
+        } else {
+            dom = jQuery('<span>').addClass('menuitem');
+            if (this.options.icon instanceof Element) {
+                dom.append(MenuItem.renderSVGIcon(this.options.icon, this.options.label));
+            }
+            if (typeof this.options.label === 'string') {
+                dom.append(jQuery('<span>')
+                    .addClass('menulabel')
+                    .attr('title', this.options.label)
+                    .text(this.options.label)
+                    .get(0));
+            }
+            dom = dom.get(0);
         }
         return dom;
     }
@@ -111,13 +116,7 @@ class MenuItem {
      * @return {HTMLSpanElement}
      */
     static renderSVGIcon(icon, title = '') {
-        const $span = jQuery('<span>');
-        $span.addClass('menuitem');
-        $span.append(jQuery(icon).addClass('menuicon').attr('title', title));
-        if (title) {
-            $span.append(jQuery('<span>').text(title).addClass('menulabel'));
-        }
-        return $span.get(0);
+        return jQuery(icon).addClass('menuicon').attr('title', title);
     }
 }
 

@@ -38,8 +38,8 @@ class FootnoteView extends AbstractNodeView {
 
     open() {
         jQuery(this.tooltip).dialog({
-            minWidth: 600,
-            minHeight: 300,
+            minWidth: 1100,
+            minHeight: 550,
             title: 'edit footnote',
             modal: true,
             appendTo: '.dokuwiki',

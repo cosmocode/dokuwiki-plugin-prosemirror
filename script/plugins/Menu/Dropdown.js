@@ -25,11 +25,10 @@ class Dropdown extends MenuItem {
      * @return {HTMLElement} A span containing both the label and a hidden element with the items
      */
     render(editorView) {
-        const $menuItemContainer = jQuery('<span>').addClass('dropdown menuitem');
         const dropdownLabel = super.render(editorView);
-        $menuItemContainer.append(dropdownLabel);
+        const $menuItemContainer = jQuery(dropdownLabel).addClass('dropdown');
 
-        jQuery(dropdownLabel).on('mousedown', (e) => {
+        $menuItemContainer.on('mousedown', (e) => {
             e.preventDefault();
             if (this.contentDom.style.display !== 'none') {
                 this.hideContent();
@@ -38,7 +37,7 @@ class Dropdown extends MenuItem {
             }
         });
 
-        this.renderContentDom(editorView, $menuItemContainer);
+        this.renderContentDom(editorView);
         $menuItemContainer.append(this.contentDom);
         this.hideContent();
 

@@ -1,11 +1,10 @@
-@menuitem_size: 1.5em;
-@menu_margin: 0.15em;
-@menu_border_width: 0.1em;
+@menuitem_size: 2.5em;
+@menuicon_size: 1.5em;
+@menu_padding: 0.5em;
 
 .prosemirror_wrapper {
     position: relative;
-    //padding-top: 2em;
-    padding-top: @menuitem_size + 2 * @menu_margin + 2 * @menu_border_width;
+    padding-top: @menuitem_size;
 }
 
 .menubar {
@@ -19,32 +18,34 @@
         text-align: center;
 
         svg {
-            width: @menuitem_size;
-            height: @menuitem_size;
+            width: @menuicon_size;
+            height: @menuicon_size;
             fill: @ini_text;
         }
     }
 
     .menulabel {
+        display: none;
         min-width: @menuitem_size;
         padding: 0 3px;
         color: @ini_text;
     }
 
     .menuitem {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        box-sizing: border-box;
         height: @menuitem_size;
-        margin: @menu_margin;
-        border: @menu_border_width solid @ini_border;
+        padding: @menu_padding;
+        border-right: 1px solid fade(@ini_border, 30%);
         cursor: pointer;
 
-        .menulabel {
-            display: none;
+        &:hover {
+            background-color: fade(@ini_border, 30%);
         }
 
         &.dropdown {
-            margin: 0;
-            border: 0;
+            position: relative;
 
             .menulabel {
                 display: block;
@@ -52,7 +53,7 @@
         }
 
         &.is-active {
-            border-color: @ini_link;
+            border: 1px solid @ini_link;
 
             > .menuicon svg {
                 fill: @ini_link;
@@ -77,9 +78,11 @@
     }
 
     .dropdown_content {
-        position: relative;
-        top: 3px;
+        position: absolute;
+        top: @menuitem_size;
+        left: 0;
         max-width: 300px;
+        white-space: nowrap;
         background-color: @ini_background;
         outline: 1px dotted @ini_border;
 
