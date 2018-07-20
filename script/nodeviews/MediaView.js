@@ -25,6 +25,16 @@ class MediaView extends AbstractNodeView {
 
         // FIXME this needs to be something meaningful -- maybe a spinner?
         this.dom = jQuery('<span>⌚</span>').get(0);
+
+        MediaForm.resolveImageAttributes(attrs, (newAttrs) => {
+            const nodeStartPos = this.getPos();
+            this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
+                nodeStartPos,
+                null,
+                newAttrs,
+                this.node.marks,
+            ));
+        });
     }
 
     selectNode() {

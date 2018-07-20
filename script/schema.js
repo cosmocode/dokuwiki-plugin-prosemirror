@@ -138,16 +138,54 @@ imageNode.attrs.cache = { default: '' };
 imageNode.attrs['data-resolvedHtml'] = { default: '' };
 imageNode.attrs.id = {};
 delete imageNode.attrs.src;
-imageNode.parseDOM = [{
-    tag: 'img.media[src]',
-    getAttrs: function getAttrs(dom) {
-        return {
-            src: dom.getAttribute('src'),
-            title: dom.getAttribute('title'),
-            alt: dom.getAttribute('alt'),
-        };
+imageNode.parseDOM = [
+    {
+        tag: 'img.media,img.medialeft,img.mediacenter,img.mediaright', // FIXME: handle a.media as well
+        getAttrs: function getAttrs(dom) {
+            const src = dom.getAttribute('src');
+            const dokuWikiFetch = `${DOKU_BASE}lib/exe/fetch.php`;
+            if (!src.includes(dokuWikiFetch)) {
+                return undefined; // let another rule handle this case
+            }
+            const [, query] = src.split('?');
+            const attrs = query.split('&')
+                .map(item => item.split('='))
+                .reduce((acc, [key, value]) => {
+                    acc[key] = decodeURIComponent(value);
+                    return acc;
+                }, {});
+            let align = '';
+            if (dom.classList.contains('medialeft')) {
+                align = 'left';
+            } else if (dom.classList.contains('mediaright')) {
+                align = 'right';
+            } else if (dom.classList.contains('mediacenter')) {
+                align = 'center';
+            }
+            return {
+                id: attrs.media,
+                title: dom.getAttribute('alt'),
+                width: attrs.w,
+                height: attrs.h,
+                align,
+                'data-resolvedHtml': dom.outerHTML,
+            };
+        },
     },
-}];
+    {
+        // handle generice images copied from other pages
+        tag: 'img[src]:not(.icon)',
+        getAttrs(dom) {
+            const src = dom.getAttribute('src');
+            return {
+                id: src,
+                title: dom.getAttribute('alt') || dom.getAttribute('title'),
+                width: dom.getAttribute('width'),
+                height: dom.getAttribute('height'),
+            };
+        },
+    },
+];
 nodes = nodes.update('image', imageNode);
 
 const imageAttrs = {};
