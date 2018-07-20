@@ -137,43 +137,49 @@ class MediaForm extends CustomForm {
             newAttrs.linking = $mediaForm.getLinking();
             newAttrs.cache = $mediaForm.getCache();
 
-            const ajaxEndpoint = `${DOKU_BASE}lib/exe/ajax.php`;
-            const ajaxParams = {
-                call: 'plugin_prosemirror',
-                actions: ['resolveMedia'],
-                attrs: newAttrs,
-                id: JSINFO.id,
-            };
-
-            jQuery.get(
-                ajaxEndpoint,
-                ajaxParams,
-            ).done((data) => {
-                const parsedData = JSON.parse(data);
-                newAttrs['data-resolvedHtml'] = parsedData.resolveMedia['data-resolvedHtml'];
-                console.log(newAttrs);
-                callback(newAttrs);
-            }).fail((jqXHR, textStatus, errorThrown) => {
-                let errorMsg = `There was an error resolving this image -- ${errorThrown}: ${textStatus}.`;
-                if (window.SentryPlugin) {
-                    window.SentryPlugin.logSentryException(new Error('Ajax Request failed'), {
-                        tags: {
-                            plugin: 'prosemirror',
-                            id: JSINFO.id,
-                        },
-                        extra: {
-                            ajaxEndpoint,
-                            ajaxParams,
-                            textStatus,
-                            errorThrown,
-                        },
-                    });
-                    errorMsg += ' The error has been logged to Sentry.';
-                }
-                errorMsg += ' You may want to continue your work in the syntax editor.';
-                jQuery('#draft__status').after(jQuery('<div class="error"></div>').text(errorMsg));
-            });
+            this.resolveImageAttributes(newAttrs, callback);
         };
+    }
+
+    static resolveImageAttributes(newAttrs, callback) {
+        const ajaxEndpoint = `${DOKU_BASE}lib/exe/ajax.php`;
+        const ajaxParams = {
+            call: 'plugin_prosemirror',
+            actions: ['resolveMedia'],
+            attrs: newAttrs,
+            id: JSINFO.id,
+        };
+
+        jQuery.get(
+            ajaxEndpoint,
+            ajaxParams,
+        ).done((data) => {
+            const parsedData = JSON.parse(data);
+            const resolvedAttrs = {
+                ...newAttrs,
+                'data-resolvedHtml': parsedData.resolveMedia['data-resolvedHtml'],
+            };
+            callback(resolvedAttrs);
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            let errorMsg = `There was an error resolving this image -- ${errorThrown}: ${textStatus}.`;
+            if (window.SentryPlugin) {
+                window.SentryPlugin.logSentryException(new Error('Ajax Request failed'), {
+                    tags: {
+                        plugin: 'prosemirror',
+                        id: JSINFO.id,
+                    },
+                    extra: {
+                        ajaxEndpoint,
+                        ajaxParams,
+                        textStatus,
+                        errorThrown,
+                    },
+                });
+                errorMsg += ' The error has been logged to Sentry.';
+            }
+            errorMsg += ' You may want to continue your work in the syntax editor.';
+            jQuery('#draft__status').after(jQuery('<div class="error"></div>').text(errorMsg));
+        });
     }
 }
 
