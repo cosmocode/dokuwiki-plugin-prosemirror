@@ -242,7 +242,7 @@ nodes = nodes.addToEnd('smiley', {
         getAttrs: (dom) => {
             const src = dom.getAttribute('src').split('/');
             const icon = src.pop();
-            if (!src.slice(-3).every((value, index) => ['lib', 'images', 'smileys'][index] === value)) {
+            if (!src.join('/').endsWith('lib/images/smileys')) {
                 return false;
             }
             const syntax = dom.getAttribute('alt');
