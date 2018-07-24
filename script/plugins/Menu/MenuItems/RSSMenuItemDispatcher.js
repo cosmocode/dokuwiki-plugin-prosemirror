@@ -12,7 +12,7 @@ class RSSMenuItemDispatcher extends AbstractMenuItemDispatcher {
 
     static getMenuItem({ nodes }) {
         if (!nodes.rss) {
-            throw Error('Node type RSS is missing in Schema!');
+            throw new Error('Node type RSS is missing in Schema!');
         }
         return new MenuItem({
             command: (state, dispatch) => {

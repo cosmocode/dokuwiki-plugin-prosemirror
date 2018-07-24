@@ -30,7 +30,7 @@ class MenuItem {
      */
     constructor(options = {}) {
         if (typeof options.command !== 'function') {
-            throw new Error('command is not a function!');
+            throw new TypeError('command is not a function!');
         }
 
         this.options = options;

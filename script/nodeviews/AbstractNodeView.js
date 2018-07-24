@@ -22,7 +22,7 @@ class AbstractNodeView {
      */
     renderNode(attrs) {
         console.log(this.node, attrs);
-        throw Error('renderNode must be implemented by child class!');
+        throw new Error('renderNode must be implemented by child class!');
     }
 
     /**

@@ -11,7 +11,7 @@ class AbstractDropdownDispatcher {
 
     getMenuItem(schema, dropdownAttributes) {
         if (!this.isAvailable(schema)) {
-            throw Error('None of the items is valid for this Schema!');
+            throw new Error('None of the items is valid for this Schema!');
         }
         if (!dropdownAttributes) {
             throw new Error('dropdown attributes missing!');
