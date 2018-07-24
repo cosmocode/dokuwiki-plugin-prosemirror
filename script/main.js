@@ -1,20 +1,20 @@
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { Node } from 'prosemirror-model';
+import { Schema, Node } from 'prosemirror-model';
 
-import schema from './schema';
+import getSpec from './schema';
 import getKeymapPlugin from './plugins/Keymap/keymap';
 import initializePublicAPI from './initializePublicAPI';
 import MenuInitializer from './plugins/Menu/MenuInitializer';
-import getNodeViews from './nodeviews/index';
+import getNodeViews from './nodeviews';
 
 initializePublicAPI();
 
-const mi = new MenuInitializer(schema);
-
-window.Prosemirror = window.Prosemirror || {};
-
 window.Prosemirror.enableProsemirror = function enableProsemirror() {
+    const schema = new Schema(getSpec());
+
+    const mi = new MenuInitializer(schema);
+
     // PLUGIN ORDER IS IMPORTANT!
     const plugins = [
         mi.getMenuPlugin(),

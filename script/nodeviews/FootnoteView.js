@@ -1,6 +1,6 @@
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { Node } from 'prosemirror-model';
+import { Node, Schema } from 'prosemirror-model';
 
 import getKeymapPlugin from '../plugins/Keymap/keymap';
 
@@ -9,7 +9,7 @@ import MenuInitializer from '../plugins/Menu/MenuInitializer';
 
 // todo: Fix this cycle
 import getNodeViews from './index'; // eslint-disable-line import/no-cycle
-import footnoteSchema from './Footnote/footnoteSchema';
+import getFootnoteSpec from './Footnote/footnoteSchema';
 
 class FootnoteView extends AbstractNodeView {
     renderNode() {
@@ -46,7 +46,7 @@ class FootnoteView extends AbstractNodeView {
             close: this.dispatchOuter.bind(this),
         });
         // And put a sub-ProseMirror into that
-
+        const footnoteSchema = new Schema(getFootnoteSpec());
         const mi = new MenuInitializer(footnoteSchema);
         this.innerView = new EditorView(this.tooltip, {
             // You can use any node as an editor document

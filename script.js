@@ -156,28 +156,8 @@ function handleEditSession() {
     $toggleEditorButton.on('click', toggleEditor);
 }
 
-if (!window.Prosemirror) {
-    window.Prosemirror = {};
-}
-
-if (!window.Prosemirror.pluginSchemas) {
-    window.Prosemirror.pluginSchemas = [];
-}
-
-if (!window.Prosemirror.pluginNodeViews) {
-    window.Prosemirror.pluginNodeViews = {};
-}
-if (!window.Prosemirror.pluginMenuItemDispatchers) {
-    window.Prosemirror.pluginMenuItemDispatchers = [];
-}
-
-if (!window.Prosemirror.classes) {
-    window.Prosemirror.classes = {};
-}
-
-initializeProsemirror();
-
 jQuery(function () {
+    initializeProsemirror();
     window.proseMirrorIsActive = false;
 
     if (jQuery('#dw__editform').find('[name=prosemirror_json]').length) {

@@ -1,7 +1,9 @@
+import { Schema } from 'prosemirror-model';
+
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
 import MenuItem from '../MenuItem';
 import { svgIcon } from '../MDI';
-import footnoteSchema from '../../../nodeviews/Footnote/footnoteSchema';
+import getFootnoteSpec from '../../../nodeviews/Footnote/footnoteSchema';
 
 export default class FootnoteMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable(schema) {
@@ -27,6 +29,7 @@ export default class FootnoteMenuItemDispatcher extends AbstractMenuItemDispatch
                     content: selectedContent || [{ type: 'paragraph' }],
                 };
                 try {
+                    const footnoteSchema = new Schema(getFootnoteSpec());
                     footnoteSchema.nodeFromJSON(footnoteDoc);
                 } catch (e) {
                     return false;
