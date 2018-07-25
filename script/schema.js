@@ -262,6 +262,7 @@ export default function getSpec() {
             date: { default: null },
             details: { default: null },
             refresh: { default: '' },
+            renderedHTML: { default: null },
         },
     });
 

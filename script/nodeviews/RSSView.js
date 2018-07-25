@@ -84,19 +84,50 @@ class RSSView extends AbstractNodeView {
             ));
     }
 
+    /**
+     * Send this node's attributes to the server to get the rendered html back
+     *
+     * @param {object} attrs
+     */
+    retrieveRenderedHTML(attrs) {
+        const ajaxEndpoint = `${DOKU_BASE}lib/exe/ajax.php`;
+        jQuery.post(ajaxEndpoint, {
+            call: 'plugin_prosemirror',
+            actions: ['resolveRSS'],
+            attrs: JSON.stringify(attrs),
+            contentType: 'application/json',
+        }).done((data) => {
+            const renderedHTML = data.resolveRSS;
+            const newAttrs = {
+                ...attrs,
+                renderedHTML,
+            };
+            this.outerView.dispatch(
+                this.outerView.state.tr
+                    .setNodeMarkup(
+                        this.getPos(),
+                        null,
+                        newAttrs,
+                        this.node.marks,
+                    ),
+            );
+        });
+    }
+
     renderNode(attrs) {
         if (!this.dom) {
-            this.dom = document.createElement('pre');
-            const $settingsButton = jQuery('<button>', { type: 'button', class: 'settings' }).text('settings');
-            $settingsButton.on('click', () => {
+            const $dom = jQuery('<div>').addClass('nodeHasForm');
+            $dom.on('click', () => {
                 this.form.show();
             });
-            jQuery(this.dom)
-                .text('RSS: ')
-                .append(jQuery('<span class="url">'))
-                .append($settingsButton);
+            this.dom = $dom.get(0);
         }
-        jQuery(this.dom).find('.url').text(attrs.url);
+        if (!attrs.renderedHTML) {
+            this.retrieveRenderedHTML(attrs, this);
+            // FIXME add throbber while loading
+        } else {
+            jQuery(attrs.renderedHTML).css('pointer-events', 'none').appendTo(this.dom);
+        }
     }
 }
 

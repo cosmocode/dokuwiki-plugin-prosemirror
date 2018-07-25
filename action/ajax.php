@@ -97,6 +97,12 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                         );
                         break;
                     }
+                case 'resolveRSS':
+                    {
+                        $attrs = json_decode($INPUT->str('attrs'), true);
+                        $responseData[$action] = \dokuwiki\plugin\prosemirror\parser\RSSNode::renderAttrsToHTML($attrs);
+                        break;
+                    }
                 default:
                     {
                         dbglog('Unknown action: ' . $action, __FILE__ . ': ' . __LINE__);
