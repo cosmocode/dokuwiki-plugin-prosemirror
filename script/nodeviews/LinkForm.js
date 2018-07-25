@@ -231,12 +231,10 @@ class LinkForm extends CustomForm {
                     ajaxEndpoint,
                     ajaxParams,
                 ).done((data) => {
-                    // FIXME handle aggregated data
-                    const parsedData = JSON.parse(data);
-                    if (parsedData.resolveInternalLink) {
+                    if (data.resolveInternalLink) {
                         const {
                             id, exists, heading: linkName,
-                        } = parsedData.resolveInternalLink;
+                        } = data.resolveInternalLink;
                         newAttrs['data-resolvedID'] = id;
                         newAttrs['data-resolvedTitle'] = id;
                         newAttrs['data-resolvedClass'] = exists ? 'wikilink1' : 'wikilink2';
@@ -244,15 +242,15 @@ class LinkForm extends CustomForm {
                             newAttrs['data-resolvedName'] = linkName;
                         }
                     }
-                    if (parsedData.resolveInterWikiLink) {
+                    if (data.resolveInterWikiLink) {
                         const {
                             url, resolvedClass,
-                        } = parsedData.resolveInterWikiLink;
+                        } = data.resolveInterWikiLink;
                         newAttrs['data-resolvedUrl'] = url;
                         newAttrs['data-resolvedClass'] = resolvedClass;
                     }
-                    if (parsedData.resolveImageTitle) {
-                        newAttrs['data-resolvedImage'] = parsedData.resolveImageTitle['data-resolvedImage'];
+                    if (data.resolveImageTitle) {
+                        newAttrs['data-resolvedImage'] = data.resolveImageTitle['data-resolvedImage'];
                     }
 
                     callback(newAttrs);

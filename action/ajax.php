@@ -99,13 +99,14 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                     }
                 default:
                     {
-                        dbglog('Unknown action: ' . $INPUT->str('action'), __FILE__ . ': ' . __LINE__);
+                        dbglog('Unknown action: ' . $action, __FILE__ . ': ' . __LINE__);
                         http_status(400, 'unknown action');
                         return;
                     }
             }
         }
 
+        header('Content-Type: application/json');
         echo json_encode($responseData);
     }
 

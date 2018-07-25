@@ -154,10 +154,9 @@ class MediaForm extends CustomForm {
             ajaxEndpoint,
             ajaxParams,
         ).done((data) => {
-            const parsedData = JSON.parse(data);
             const resolvedAttrs = {
                 ...newAttrs,
-                'data-resolvedHtml': parsedData.resolveMedia['data-resolvedHtml'],
+                'data-resolvedHtml': data.resolveMedia['data-resolvedHtml'],
             };
             callback(resolvedAttrs);
         }).fail((jqXHR, textStatus, errorThrown) => {
