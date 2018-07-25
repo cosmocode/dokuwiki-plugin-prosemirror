@@ -16,6 +16,12 @@
     outline: none;
     counter-reset: prosemirror-footnote;
 
+    &::after {
+        clear: both;
+        content: '';
+        display: block;
+    }
+
     .ProseMirror-selectednode {
         outline: 2px solid #8cf;
     }
