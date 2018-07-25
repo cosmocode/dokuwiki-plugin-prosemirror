@@ -78,6 +78,7 @@ class LinkView extends AbstractNodeView {
         } else {
             this.dom.setAttribute('class', LinkView.getClassFromType(attributes['data-type']));
         }
+        jQuery(this.dom).addClass('nodeHasForm');
     }
 
     selectNode() {

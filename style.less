@@ -17,9 +17,9 @@
     counter-reset: prosemirror-footnote;
 
     &::after {
+        display: block;
         clear: both;
         content: '';
-        display: block;
     }
 
     .ProseMirror-selectednode {
@@ -40,6 +40,13 @@
         color: greenyellow;
         cursor: grab;
         cursor: -webkit-grab;
+    }
+
+    .nodeHasForm {
+        &:hover {
+            background-color: #e8f1fd;
+            box-shadow: inset 0 0 0 1px #c6e0ff;
+        }
     }
 
     dl.code dd {
