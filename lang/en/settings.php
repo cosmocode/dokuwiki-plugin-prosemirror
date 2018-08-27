@@ -6,8 +6,4 @@
  */
 
 // keys need to match the config setting name
-$lang['use_editor'] = 'Use the prosemirror editor';
-
-
-
-//Setup VIM: ex: et ts=4 :
+$lang['forceWYSIWYG'] = 'Force the WYSIWYG editor for all users except managers and admins';

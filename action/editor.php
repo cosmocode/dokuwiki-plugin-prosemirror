@@ -22,8 +22,24 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      */
     public function register(Doku_Event_Handler $controller)
     {
+        $controller->register_hook('ACTION_HEADERS_SEND', 'BEFORE', $this, 'forceWYSIWYG');
         $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
+    }
+
+    /**
+     * If the current user is forced to use the WYSIWYG editor, set the cookie accordingly
+     *
+     * Triggered by event: ACTION_HEADERS_SEND
+     *
+     * @param Doku_Event $event
+     * @param            $param
+     */
+    public function forceWYSIWYG(Doku_Event $event, $param)
+    {
+        if ($this->isForceWYSIWYG()) {
+            set_doku_pref('plugin_prosemirror_useWYSIWYG', true);
+        }
     }
 
     /**
@@ -67,14 +83,39 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             }
         }
 
-        $attr = [
-            'class' => 'button plugin_prosemirror_useWYSIWYG'
-        ];
-        $form->addElement(form_makeButton('button', '', $this->getLang('switch_editors'), $attr));
+        $form->addElement($this->buildToggleButton());
 
         // output data and editor field
         $form->addHidden('prosemirror_json',$prosemirrorJSON);
         $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
+    }
+
+    /**
+     * Create the button to toggle the WYSIWYG editor
+     *
+     * Creates it as hidden if forcing WYSIWYG
+     *
+     * @return array the pseudo-tag expected by \Doku_Form::addElement
+     */
+    protected function buildToggleButton()
+    {
+        $attr = [
+            'class' => 'button plugin_prosemirror_useWYSIWYG'
+        ];
+        if ($this->isForceWYSIWYG()) {
+            $attr['style'] = 'display: none;';
+        }
+        return form_makeButton('button', '', $this->getLang('switch_editors'), $attr);
+    }
+
+    /**
+     * Determine if the current user is forced to use the WYSIWYG editor
+     *
+     * @return bool
+     */
+    protected function isForceWYSIWYG()
+    {
+        return $this->getConf('forceWYSIWYG') && !auth_ismanager();
     }
 
     /**

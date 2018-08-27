@@ -5,3 +5,4 @@
  * @author Andreas Gohr <gohr@cosmocode.de>
  */
 
+$conf['forceWYSIWYG'] = 0;
