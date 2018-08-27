@@ -8,6 +8,7 @@ class NodeForm {
         this.hasBeenOpened = true;
         this.$form.dialog({
             title: this.name,
+            closeText: LANG.plugins.prosemirror.cancel,
             width: 800,
             appendTo: '.dokuwiki',
             modal: true,

@@ -16,7 +16,7 @@ export default class BlockquoteMenuItemDispatcher extends AbstractMenuItemDispat
         return new MenuItem({
             command: wrapIn(schema.nodes.blockquote),
             icon: svgIcon('format-quote-close'),
-            label: 'Blockquote',
+            label: LANG.plugins.prosemirror['label:blockquote'],
         });
     }
 }

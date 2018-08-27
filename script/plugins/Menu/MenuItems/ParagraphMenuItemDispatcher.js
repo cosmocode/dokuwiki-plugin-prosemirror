@@ -15,7 +15,7 @@ export default class ParagraphMenuItemDispatcher extends AbstractMenuItemDispatc
         return new MenuItem({
             command: setBlockType(schema.nodes.paragraph),
             icon: svgIcon('format-paragraph'),
-            label: 'Paragraph',
+            label: LANG.plugins.prosemirror['label:paragraph'],
         });
     }
 }

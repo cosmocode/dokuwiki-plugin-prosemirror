@@ -21,7 +21,7 @@ class RSSMenuItemDispatcher extends AbstractMenuItemDispatcher {
                 }
                 if (dispatch) {
                     const rssForm = new KeyValueForm(
-                        'New RSS feed',
+                        LANG.plugins.prosemirror['label:rss'],
                         RSSView.getFields(Object.entries(nodes.rss.attrs).reduce((acc, [name, value]) => {
                             acc[name] = value.default;
                             return acc;
@@ -44,7 +44,7 @@ class RSSMenuItemDispatcher extends AbstractMenuItemDispatcher {
                 return true;
             },
             icon: svgIcon('rss'),
-            label: 'Add new RSS feed',
+            label: LANG.plugins.prosemirror['label:rss'],
         });
     }
 }

@@ -5,7 +5,7 @@ class LinkForm extends CustomForm {
     constructor() {
         super('prosemirror-linkform');
 
-        this.name = 'Link Configuration';
+        this.name = LANG.plugins.prosemirror.linkConfig;
 
         if (jQuery('#prosemirror-linkform').length) {
             this.initializeLinkForm();
@@ -159,7 +159,7 @@ class LinkForm extends CustomForm {
             $linkWizButton.show();
             $linkTargetInput
                 .attr('type', 'text')
-                .prop('placeholder', 'namespace:page');
+                .prop('placeholder', LANG.plugins.prosemirror['placeholder:page']);
             break;
         case 'interwikilink':
             this.$form.find('[name="iwshortcut"]').closest('label').show();

@@ -43,7 +43,7 @@ export default class FootnoteMenuItemDispatcher extends AbstractMenuItemDispatch
                 return true;
             },
             icon: svgIcon('note-plus-outline'),
-            label: 'Add a footnote',
+            label: LANG.plugins.prosemirror['label:footnote'],
         });
     }
 }

@@ -32,6 +32,7 @@ module.exports = {
     globals: {
         JSINFO: false,
         DOKU_BASE: false,
+        LANG: false,
     },
     rules,
 };

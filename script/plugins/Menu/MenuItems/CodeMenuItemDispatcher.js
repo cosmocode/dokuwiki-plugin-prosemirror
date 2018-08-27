@@ -15,7 +15,7 @@ export default class CodeMenuItemDispatcher extends AbstractMenuItemDispatcher {
         return new MenuItem({
             command: setBlockTypeNoAttrCheck(schema.nodes.code_block),
             icon: svgIcon('code-braces'),
-            label: 'Code Block',
+            label: LANG.plugins.prosemirror['label:code'],
         });
     }
 }

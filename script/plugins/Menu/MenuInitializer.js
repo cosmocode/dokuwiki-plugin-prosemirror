@@ -33,15 +33,16 @@ class MenuInitializer {
     }
 
     collectMenuItems() {
+        const lang = LANG.plugins.prosemirror;
         return [
             new MarkDropdownDispatcher([
-                new MarkMenuItemDispatcher('strong', 'format-bold', 'strong'),
-                new MarkMenuItemDispatcher('em', 'format-italic', 'em'),
-                new MarkMenuItemDispatcher('underline', 'format-underline', 'underline'),
-                new MarkMenuItemDispatcher('superscript', 'format-superscript', 'superscript'),
-                new MarkMenuItemDispatcher('subscript', 'format-subscript', 'subscript'),
-                new MarkMenuItemDispatcher('deleted', 'format-strikethrough', 'deleted'),
-                new MarkMenuItemDispatcher('code', 'console-line', 'monospaced'),
+                new MarkMenuItemDispatcher('strong', 'format-bold', lang['label:strong']),
+                new MarkMenuItemDispatcher('em', 'format-italic', lang['label:em']),
+                new MarkMenuItemDispatcher('underline', 'format-underline', lang['label:underline']),
+                new MarkMenuItemDispatcher('superscript', 'format-superscript', lang['label:superscript']),
+                new MarkMenuItemDispatcher('subscript', 'format-subscript', lang['label:subscript']),
+                new MarkMenuItemDispatcher('deleted', 'format-strikethrough', lang['label:deleted']),
+                new MarkMenuItemDispatcher('code', 'console-line', lang['label:monospaced']),
             ]),
             LinkMenuItemDispatcher,
             ImageMenuItemDispatcher,

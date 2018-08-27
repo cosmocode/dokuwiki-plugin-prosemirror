@@ -15,7 +15,7 @@ export default class PluginBlockMenuItemDispatcher extends AbstractMenuItemDispa
         return new MenuItem({
             command: setBlockType(nodes.dwplugin_block),
             icon: svgIcon('puzzle'),
-            label: 'Plugin block',
+            label: LANG.plugins.prosemirror['label:pluginBlock'],
         });
     }
 }

@@ -15,7 +15,7 @@ export default class OderedListMenuItemDispatcher extends AbstractMenuItemDispat
         return new MenuItem({
             icon: svgIcon('format-list-numbers'),
             command: wrapInList(schema.nodes.ordered_list, {}),
-            label: 'Wrap in ordered list',
+            label: LANG.plugins.prosemirror['label:orderedList'],
         });
     }
 }

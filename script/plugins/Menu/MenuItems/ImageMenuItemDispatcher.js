@@ -49,7 +49,7 @@ export default class ImageMenuItemDispatcher extends AbstractMenuItemDispatcher 
                 return true;
             },
             icon: svgIcon('image'),
-            label: 'Insert Image',
+            label: LANG.plugins.prosemirror['label:image'],
         });
     }
 }

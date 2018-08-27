@@ -20,7 +20,7 @@ class KeyValueForm extends NodeForm {
 
         this.$form.append(jQuery('<button>', {
             type: 'submit',
-        }).text('Submit'));
+        }).text('OK'));
 
         this.$form.find('[name="cancel-button"]').on('click', this.hide.bind(this));
     }

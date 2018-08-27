@@ -25,7 +25,7 @@ export default class HeadingMenuItemDispatcher extends AbstractMenuItemDispatche
         return new MenuItem({
             command: setBlockType(schema.nodes.heading, { level: this.level }),
             icon: svgIcon(`format-header-${this.level}`),
-            label: `Heading ${this.level}`,
+            label: LANG.plugins.prosemirror['label:heading'].replace(/%s/, this.level),
         });
     }
 }

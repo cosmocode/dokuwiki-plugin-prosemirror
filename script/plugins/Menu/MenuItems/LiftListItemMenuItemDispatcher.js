@@ -15,7 +15,7 @@ export default class LiftListItemMenuItemDispatcher extends AbstractMenuItemDisp
         return new MenuItem({
             icon: svgIcon('arrow-expand-left'),
             command: liftListItem(schema.nodes.list_item),
-            label: 'Lift list item',
+            label: LANG.plugins.prosemirror['label:liftLI'],
         });
     }
 }

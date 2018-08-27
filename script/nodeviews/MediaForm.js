@@ -9,7 +9,7 @@ class MediaForm extends CustomForm {
     constructor(id = 'prosemirror-mediaform') {
         super(id);
 
-        this.name = 'Image Configuration';
+        this.name = LANG.plugins.prosemirror.mediaConfig;
 
         this.$form.find('.js-open-mediamanager').on('click', MediaForm.openMediaManager);
         window.pmMediaSelect = this.mediaSelect.bind(this);

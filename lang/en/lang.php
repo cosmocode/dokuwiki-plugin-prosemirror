@@ -5,11 +5,79 @@
  * @author Andreas Gohr <gohr@cosmocode.de>
  */
 
-// menu entry for admin plugins
-// $lang['menu'] = 'Your menu entry';
-
 // custom language strings for the plugin
- $lang['switch_editors'] = 'Toggle WYSIWYG editor';
- $lang['js']['code_block_hint'] = '💡 Press CTRL+Enter to exit';
+$lang['switch_editors'] = 'Toggle WYSIWYG editor';
 
-//Setup VIM: ex: et ts=4 :
+$lang['link target'] = 'Link target';
+$lang['type:wiki page'] = 'A page in this wiki';
+$lang['type:interwiki'] = 'An interwiki link';
+$lang['type:email'] = 'An email address';
+$lang['type:external'] = 'An link to an external page';
+$lang['type:other'] = 'Other';
+$lang['type:automatic title'] = 'Automatic title';
+$lang['type:custom title'] = 'Custom title';
+$lang['type:image'] = 'Use an image as title';
+
+$lang['placeholder:link name'] = '(automatic)';
+
+$lang['legend:media'] = 'Media';
+$lang['legend:alignment'] = 'Alignment';
+$lang['legend:linking'] = 'Linking';
+$lang['legend:caching'] = 'Caching';
+$lang['media target'] = 'Image file';
+$lang['label:caption'] = 'Caption';
+$lang['label:width'] = 'Width (px)';
+$lang['label:height'] = 'Height (px)';
+$lang['label:default alignment'] = 'Default';
+$lang['label:float left'] = 'Left';
+$lang['label:center alignment'] = 'Center';
+$lang['label:float right'] = 'Right';
+$lang['label:default linking'] = 'Default';
+$lang['label:direct linking'] = 'Direct';
+$lang['label:nolink'] = 'No link';
+$lang['label:linkonly'] = 'Link only';
+$lang['label:default caching'] = 'Default';
+$lang['label:recache'] = 'Recache';
+$lang['label:nocache'] = 'Nocache';
+
+$lang['cancel'] = 'Cancel';
+
+$lang['js']['cancel'] = $lang['cancel'];
+
+$lang['js']['linkConfig'] = 'Link Configuration';
+$lang['js']['mediaConfig'] = 'Image Configuration';
+$lang['js']['rssConfig'] = 'RSS-Feed Configuration';
+$lang['js']['footnoteViewTitle'] = 'Edit footnote';
+$lang['js']['placeholder:page'] = 'namespace:page';
+
+$lang['js']['label:blockquote'] = 'Blockquote';
+$lang['js']['label:bulletList'] = 'Wrap in bullet list';
+$lang['js']['label:code'] = 'Code Block';
+$lang['js']['label:footnote'] = 'Add a footnote';
+$lang['js']['label:headings'] = 'Headings';
+$lang['js']['label:heading'] = 'Heading %s';
+$lang['js']['label:image'] = 'Insert Image';
+$lang['js']['label:liftLI'] = 'Lift list item';
+$lang['js']['label:link'] = 'Insert Link';
+$lang['js']['label:orderedList'] = 'Wrap in ordered list';
+$lang['js']['label:paragraph'] = 'Paragraph';
+$lang['js']['label:pluginBlock'] = 'Plugin block';
+$lang['js']['label:rss'] = 'Add new RSS feed';
+$lang['js']['label:sinkListItem'] = 'Sink list item';
+$lang['js']['label:strong'] = 'strong';
+$lang['js']['label:em'] = 'italic';
+$lang['js']['label:underline'] = 'underline';
+$lang['js']['label:superscript'] = 'superscript';
+$lang['js']['label:subscript'] = 'subscript';
+$lang['js']['label:deleted'] = 'strike through';
+$lang['js']['label:monospaced'] = 'monospaced';
+
+$lang['js']['label:rss url'] = 'URL of the RSS feed';
+$lang['js']['label:rss nOfItems'] = 'Maximum number of items to show';
+$lang['js']['label:rss reverse'] = 'Display the last items in the feed first';
+$lang['js']['label:rss author'] = 'Show item authors names';
+$lang['js']['label:rss date'] = 'Show item dates';
+$lang['js']['label:rss details'] = 'Show the item description';
+$lang['js']['label:rss refresh'] = 'Refresh period';
+
+$lang['js']['code_block_hint'] = '💡 Press CTRL+Enter to exit';

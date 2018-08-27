@@ -15,7 +15,7 @@ export default class BulletListMenuItemDispatcher extends AbstractMenuItemDispat
         return new MenuItem({
             icon: svgIcon('format-list-bulleted'),
             command: wrapInList(schema.nodes.bullet_list, {}),
-            label: 'Wrap in bullet list',
+            label: LANG.plugins.prosemirror['label:bulletList'],
         });
     }
 }

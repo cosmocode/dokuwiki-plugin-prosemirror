@@ -5,51 +5,52 @@ class RSSView extends AbstractNodeView {
     static getFields(attr) {
         return [
             {
-                label: 'url',
+                label: LANG.plugins.prosemirror['label:rss url'],
                 type: 'url',
                 name: 'url',
                 required: true,
                 value: attr.url,
             },
             {
-                label: 'maximum number items to show',
+                label: LANG.plugins.prosemirror['label:rss nOfItems'],
                 type: 'number',
                 min: '1',
                 name: 'max',
                 value: attr.max,
             },
             {
-                label: 'display the last items in the feed first ',
+                label: LANG.plugins.prosemirror['label:rss reverse'],
                 type: 'checkbox',
                 name: 'reverse',
                 value: '1',
                 checked: attr.reverse,
             },
             {
-                label: 'show item authors names',
+                label: LANG.plugins.prosemirror['label:rss author'],
                 name: 'author',
                 type: 'checkbox',
                 value: '1',
                 checked: attr.author,
             },
             {
-                label: 'show item dates',
+                label: LANG.plugins.prosemirror['label:rss date'],
                 name: 'date',
                 type: 'checkbox',
                 value: '1',
                 checked: attr.date,
             },
             {
-                label: 'show the item description',
+                label: LANG.plugins.prosemirror['label:rss details'],
                 name: 'details',
                 type: 'checkbox',
                 value: '1',
                 checked: attr.details,
             },
             {
-                label: 'refresh period',
+                label: LANG.plugins.prosemirror['label:rss refresh'],
                 name: 'refresh',
                 type: 'text',
+                placeholder: '4h',
                 value: attr.refresh,
             },
         ];
@@ -59,7 +60,7 @@ class RSSView extends AbstractNodeView {
         super(node, view, getPos);
 
         this.form = new KeyValueForm(
-            'RSS-Feed Configuration',
+            LANG.plugins.prosemirror.rssConfig,
             RSSView.getFields(node.attrs),
         );
         this.form.on('submit', this.handleFormSubmit.bind(this));

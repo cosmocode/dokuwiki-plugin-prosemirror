@@ -15,7 +15,7 @@ export default class SinkListItemMenuItemDispatcher extends AbstractMenuItemDisp
         return new MenuItem({
             icon: svgIcon('arrow-expand-right'),
             command: sinkListItem(schema.nodes.list_item),
-            label: 'Sink list item',
+            label: LANG.plugins.prosemirror['label:sinkListItem'],
         });
     }
 }

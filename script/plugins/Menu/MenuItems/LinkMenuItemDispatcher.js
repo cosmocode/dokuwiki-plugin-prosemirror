@@ -50,7 +50,7 @@ export default class LinkMenuItemDispatcher extends AbstractMenuItemDispatcher {
                 return true;
             },
             icon: svgIcon('link-variant'),
-            label: 'Insert Link',
+            label: LANG.plugins.prosemirror['label:link'],
         });
     }
 }

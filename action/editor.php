@@ -154,7 +154,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             'type' => 'button',
             'class' => 'js-open-linkwiz linkform_linkwiz'
         ]);
-        $linkForm->addTextInput('linktarget', 'Link target')->attrs(
+        $linkForm->addTextInput('linktarget', $this->getLang('link target'))->attrs(
             [
             'required'=> 'required',
             'autofocus' => 'autofocus',
@@ -166,11 +166,11 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $linkForm->addTagOpen('legend');
         $linkForm->addHTML('Link Type');
         $linkForm->addTagClose('legend');
-        $linkForm->addRadioButton('linktype', 'Wiki page')->val('internallink');
-        $linkForm->addRadioButton('linktype', 'Interwiki')->val('interwikilink');
-        $linkForm->addRadioButton('linktype', 'email')->val('emaillink');
-        $linkForm->addRadioButton('linktype', 'external')->val('externallink')->attr('checked', 'checked');
-        $linkForm->addRadioButton('linktype', 'Other')->val('other');
+        $linkForm->addRadioButton('linktype', $this->getLang('type:wiki page'))->val('internallink');
+        $linkForm->addRadioButton('linktype', $this->getLang('type:interwiki'))->val('interwikilink');
+        $linkForm->addRadioButton('linktype', $this->getLang('type:email'))->val('emaillink');
+        $linkForm->addRadioButton('linktype', $this->getLang('type:external'))->val('externallink')->attr('checked', 'checked');
+        $linkForm->addRadioButton('linktype', $this->getLang('type:other'))->val('other');
         $linkForm->addTagClose('fieldset');
         $linkForm->addTagClose('div');
 
@@ -179,10 +179,10 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $linkForm->addTagOpen('legend');
         $linkForm->addHTML('Link Name Type');
         $linkForm->addTagClose('legend');
-        $linkForm->addRadioButton('nametype', 'automatic')->val('automatic')->attr('checked', 'checked');
-        $linkForm->addRadioButton('nametype', 'custom')->val('custom');
-        $linkForm->addRadioButton('nametype', 'image')->val('image');
-        $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', '(automatic)');
+        $linkForm->addRadioButton('nametype', $this->getLang('type:automatic title'))->val('automatic')->attr('checked', 'checked');
+        $linkForm->addRadioButton('nametype', $this->getLang('type:custom title'))->val('custom');
+        $linkForm->addRadioButton('nametype', $this->getLang('type:image'))->val('image');
+        $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', $this->getLang('placeholder:link name'));
         $linkForm->addTagOpen('div')->addClass('js-media-wrapper');
         $linkForm->addTagClose('div');
         $linkForm->addTagClose('fieldset');
@@ -191,7 +191,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 
         $linkForm->addFieldsetClose();
         $linkForm->addButton('ok-button', 'OK')->attr('type', 'submit');
-        $linkForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
+        $linkForm->addButton('cancel-button', $this->getLang('cancel'))->attr('type', 'button');
 
         echo $linkForm->toHTML();
 
@@ -200,59 +200,59 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             'id' => 'prosemirror-mediaform',
             'style' => 'display: none;',
         ]);
-        $mediaForm->addFieldsetOpen('Media')->addClass('js-media-fieldset');
+        $mediaForm->addFieldsetOpen($this->getLang('legend:media'))->addClass('js-media-fieldset');
         $mediaForm->addButton('mediamanager', '🖼️')->attrs([
             'type' => 'button',
             'class' => 'js-open-mediamanager mediaform_mediamanager'
         ]);
-        $mediaForm->addTextInput('mediatarget', 'Media')->attrs(
+        $mediaForm->addTextInput('mediatarget', $this->getLang('media target'))->attrs(
             [
                 'required'=> 'required',
                 'autofocus' => 'autofocus',
             ]
         );
-        $mediaForm->addTextInput('mediacaption', 'Caption');
-        $mediaForm->addTextInput('width', 'Width (px)')->attr('type', 'number');
-        $mediaForm->addTextInput('height', 'Height (px)')->attr('type', 'number');
+        $mediaForm->addTextInput('mediacaption', $this->getLang('label:caption'));
+        $mediaForm->addTextInput('width', $this->getLang('label:width'))->attr('type', 'number');
+        $mediaForm->addTextInput('height', $this->getLang('label:height'))->attr('type', 'number');
 
         $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
         $mediaForm->addTagOpen('fieldset');
         $mediaForm->addTagOpen('legend');
-        $mediaForm->addHTML('Alignment');
+        $mediaForm->addHTML($this->getLang('legend:alignment'));
         $mediaForm->addTagClose('legend');
-        $mediaForm->addRadioButton('alignment', 'default')->val('')->attr('checked', 'checked');
-        $mediaForm->addRadioButton('alignment', 'float left')->val('left');
-        $mediaForm->addRadioButton('alignment', 'center')->val('center');
-        $mediaForm->addRadioButton('alignment', 'float right')->val('right');
+        $mediaForm->addRadioButton('alignment', $this->getLang('label:default alignment'))->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('alignment', $this->getLang('label:float left'))->val('left');
+        $mediaForm->addRadioButton('alignment', $this->getLang('label:center alignment'))->val('center');
+        $mediaForm->addRadioButton('alignment', $this->getLang('label:float right'))->val('right');
         $mediaForm->addTagClose('fieldset');
         $mediaForm->addTagClose('div');
 
         $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
         $mediaForm->addTagOpen('fieldset');
         $mediaForm->addTagOpen('legend');
-        $mediaForm->addHTML('Linking');
+        $mediaForm->addHTML($this->getLang('legend:linking'));
         $mediaForm->addTagClose('legend');
-        $mediaForm->addRadioButton('linking', 'default')->val('details')->attr('checked', 'checked');
-        $mediaForm->addRadioButton('linking', 'direct')->val('direct');
-        $mediaForm->addRadioButton('linking', 'nolink')->val('nolink');
-        $mediaForm->addRadioButton('linking', 'linkonly')->val('linkonly');
+        $mediaForm->addRadioButton('linking', $this->getLang('label:default linking'))->val('details')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('linking', $this->getLang('label:direct linking'))->val('direct');
+        $mediaForm->addRadioButton('linking', $this->getLang('label:nolink'))->val('nolink');
+        $mediaForm->addRadioButton('linking', $this->getLang('label:linkonly'))->val('linkonly');
         $mediaForm->addTagClose('fieldset');
         $mediaForm->addTagClose('div');
 
         $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
         $mediaForm->addTagOpen('fieldset');
         $mediaForm->addTagOpen('legend');
-        $mediaForm->addHTML('Caching');
+        $mediaForm->addHTML($this->getLang('legend:caching'));
         $mediaForm->addTagClose('legend');
-        $mediaForm->addRadioButton('caching', 'default')->val('')->attr('checked', 'checked');
-        $mediaForm->addRadioButton('caching', 'recache')->val('recache');
-        $mediaForm->addRadioButton('caching', 'nocache')->val('nocache');
+        $mediaForm->addRadioButton('caching', $this->getLang('label:default caching'))->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('caching', $this->getLang('label:recache'))->val('recache');
+        $mediaForm->addRadioButton('caching', $this->getLang('label:nocache'))->val('nocache');
         $mediaForm->addTagClose('fieldset');
         $mediaForm->addTagClose('div');
 
         $mediaForm->addFieldsetClose();
         $mediaForm->addButton('ok-button', 'OK')->attr('type', 'submit');
-        $mediaForm->addButton('cancel-button', 'Cancel')->attr('type', 'button');
+        $mediaForm->addButton('cancel-button', $this->getLang('cancel'))->attr('type', 'button');
 
         // dynamic image hack? https://www.dokuwiki.org/images#dynamic_images
 
