@@ -162,12 +162,16 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
             try {
                 $prosemirrorJSON = p_render('prosemirror', $instructions, $info);
             } catch (Throwable $e) {
-                $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed';
+                $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed: ';
+                $errorMsg .= $e->getMessage();
 
                 /** @var \helper_plugin_prosemirror $helper */
                 $helper = plugin_load('helper', 'prosemirror');
                 if ($helper->tryToLogErrorToSentry($e, ['text' => $text])) {
                     $errorMsg .= ' -- The error has been logged to Sentry.';
+                } else {
+                    $errorMsg .= '<code>' . $e->getFile() . ':' . $e->getLine() . '</code>';
+                    $errorMsg .= '<pre>' . $e->getTraceAsString() . '</pre>';
                 }
 
                 http_status(500);
