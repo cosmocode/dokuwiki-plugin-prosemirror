@@ -4,11 +4,8 @@
             "env",
             {
                 "targets": {
-                    "browsers": [
-                        "ie 11"
-                    ]
-                },
-                "useBuiltIns": true
+                    "ie": 11
+                }
             }
         ],
         "stage-2"
