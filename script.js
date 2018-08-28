@@ -22,6 +22,7 @@ function showProsemirror(json) {
     const $prosemirrorJsonInput = jQuery('#dw__editform').find('[name=prosemirror_json]').val(json);
     try {
         window.Prosemirror.enableProsemirror();
+        disableNativeFirefoxTableControls();
     } catch (e) {
         console.error(e);
         let message = 'There was an error in the WYSIWYG editor. You will be redirected to the syntax editor in 5 seconds.';
@@ -56,6 +57,16 @@ function showProsemirror(json) {
     } else {
         console.warn('Draft saving in WYSIWYG is not available. Please upgrade your wiki to the current development snapshot.')
     }
+}
+
+/**
+ * Disables Firefox's controls for editable tables, they are incompatible with prosemirror
+ *
+ * See https://github.com/ProseMirror/prosemirror/issues/432 and https://github.com/ProseMirror/prosemirror-tables/issues/22
+ */
+function disableNativeFirefoxTableControls() {
+    document.execCommand("enableObjectResizing", false, "false");
+    document.execCommand("enableInlineTableEditing", false, "false");
 }
 
 /**
