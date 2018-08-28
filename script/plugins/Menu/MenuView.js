@@ -34,7 +34,7 @@ class MenuView {
      * @return {void}
      */
     destroy() {
-        this.dom.remove();
+        this.dom.parentNode.removeChild(this.dom);
     }
 }
 
