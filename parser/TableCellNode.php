@@ -12,6 +12,14 @@ class TableCellNode extends Node
 
     public function __construct($data)
     {
+        if (empty($data['content'])) {
+            $data['content'] = [
+                [
+                    'type' => 'text',
+                    'text' => ' ',
+                ]
+            ];
+        }
         $this->data = $data;
 
         $previousNode = null;

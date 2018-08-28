@@ -20,6 +20,14 @@ import MarkDropdownDispatcher from './MenuItems/MarkDropdownDispatcher';
 import MarkMenuItemDispatcher from './MenuItems/MarkMenuItemDispatcher';
 import FootnoteMenuItemDispatcher from './MenuItems/FootnoteMenuItemDispatcher';
 import TableMenuItemDispatcher from './MenuItems/TableMenuItemDispatcher';
+import TableDropdownDispatcher from './MenuItems/TableDropdownDispatcher';
+import TRowAddBeforeMenuItemDispatcher from './MenuItems/TRowAddBeforeMenuItemDispatcher';
+import TRowAddAfterMenuItemDispatcher from './MenuItems/TRowAddAfterMenuItemDispatcher';
+import TRowDeleteMenuItemDispatcher from './MenuItems/TRowDeleteMenuItemDispatcher';
+import TColumnAddBeforeMenuItemDispatcher from './MenuItems/TColumnAddBeforeMenuItemDispatcher';
+import TColumnAddAfterMenuItemDispatcher from './MenuItems/TColumnAddAfterMenuItemDispatcher';
+import TColumnDeleteMenuItemDispatcher from './MenuItems/TColumnDeleteMenuItemDispatcher';
+import TCellHeaderMenuItemDispatcher from './MenuItems/TCellHeaderMenuItemDispatcher';
 
 
 class MenuInitializer {
@@ -86,6 +94,14 @@ class MenuInitializer {
                 new HeadingMenuItemDispatcher(5), // eslint-disable-line no-magic-numbers
             ]),
             TableMenuItemDispatcher,
+            new TableDropdownDispatcher([
+                TRowAddBeforeMenuItemDispatcher,
+                TRowAddAfterMenuItemDispatcher,
+                TRowDeleteMenuItemDispatcher,
+                TColumnAddBeforeMenuItemDispatcher,
+                TColumnAddAfterMenuItemDispatcher,
+                TColumnDeleteMenuItemDispatcher,
+            ]),
             new PluginDropdownDispatcher([
                 PluginBlockMenuItemDispatcher,
                 PluginInlineMenuItemDispatcher,
