@@ -2,6 +2,7 @@ import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema, Node } from 'prosemirror-model';
 
+import { tableEditing } from 'prosemirror-tables';
 import getSpec from './schema';
 import getKeymapPlugin from './plugins/Keymap/keymap';
 import initializePublicAPI from './initializePublicAPI';
@@ -19,6 +20,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
     const plugins = [
         mi.getMenuPlugin(),
         getKeymapPlugin(schema),
+        tableEditing(),
     ];
 
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);

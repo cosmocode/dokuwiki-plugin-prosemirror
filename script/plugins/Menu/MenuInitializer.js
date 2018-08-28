@@ -19,6 +19,7 @@ import SmileyDropdownDispatcher from './MenuItems/SmileyDropdownDispatcher';
 import MarkDropdownDispatcher from './MenuItems/MarkDropdownDispatcher';
 import MarkMenuItemDispatcher from './MenuItems/MarkMenuItemDispatcher';
 import FootnoteMenuItemDispatcher from './MenuItems/FootnoteMenuItemDispatcher';
+import TableMenuItemDispatcher from './MenuItems/TableMenuItemDispatcher';
 
 
 class MenuInitializer {
@@ -84,6 +85,7 @@ class MenuInitializer {
                 new HeadingMenuItemDispatcher(4), // eslint-disable-line no-magic-numbers
                 new HeadingMenuItemDispatcher(5), // eslint-disable-line no-magic-numbers
             ]),
+            TableMenuItemDispatcher,
             new PluginDropdownDispatcher([
                 PluginBlockMenuItemDispatcher,
                 PluginInlineMenuItemDispatcher,

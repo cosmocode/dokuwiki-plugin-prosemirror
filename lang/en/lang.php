@@ -63,6 +63,7 @@ $lang['js']['label:orderedList'] = 'Wrap in ordered list';
 $lang['js']['label:paragraph'] = 'Paragraph';
 $lang['js']['label:pluginBlock'] = 'Plugin block';
 $lang['js']['label:rss'] = 'Add new RSS feed';
+$lang['js']['label:table'] = 'Add new 2x2 table';
 $lang['js']['label:sinkListItem'] = 'Sink list item';
 $lang['js']['label:strong'] = 'strong';
 $lang['js']['label:em'] = 'italic';

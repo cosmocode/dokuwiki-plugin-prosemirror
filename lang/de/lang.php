@@ -63,6 +63,7 @@ $lang['js']['label:orderedList'] = 'geordnete Liste';
 $lang['js']['label:paragraph'] = 'Absatz';
 $lang['js']['label:pluginBlock'] = 'Plugin-Block einfügen';
 $lang['js']['label:rss'] = 'Neuen RSS-Feed einfügen';
+$lang['js']['label:table'] = 'Neue 2x2 Tabelle einfügen';
 $lang['js']['label:sinkListItem'] = 'Einrückung des Listenelements entfernen';
 $lang['js']['label:strong'] = 'fett';
 $lang['js']['label:em'] = 'kursiv';
