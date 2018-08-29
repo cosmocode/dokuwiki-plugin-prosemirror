@@ -205,7 +205,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->colcount += $colspan;
 
         $node = new Node('table_cell');
-        $node->attr('is_header', false);
         $node->attr('colspan', $colspan);
         $node->attr('rowspan', $rowspan);
         $node->attr('align', $rowspan);
@@ -223,8 +222,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     {
         $this->colcount += $colspan;
 
-        $node = new Node('table_cell');
-        $node->attr('is_header', true);
+        $node = new Node('table_header');
         $node->attr('colspan', $colspan);
         $node->attr('rowspan', $rowspan);
         $node->attr('align', $rowspan);
@@ -234,7 +232,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritdoc */
     function tableheader_close()
     {
-        $this->nodestack->drop('table_cell');
+        $this->nodestack->drop('table_header');
     }
 
     #endregion table

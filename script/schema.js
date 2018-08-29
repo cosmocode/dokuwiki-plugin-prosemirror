@@ -37,7 +37,6 @@ export default function getSpec() {
         tableGroup: 'container',
         cellContent: 'inline*',
         cellAttributes: {
-            is_header: {},
         },
     }));
 

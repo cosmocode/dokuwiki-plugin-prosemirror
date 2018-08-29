@@ -38,7 +38,7 @@ class TableCellNode extends Node
     public function toSyntax()
     {
         $prefix = '|';
-        if ($this->data['attrs']['is_header']) {
+        if ($this->isHeaderCell()) {
             $prefix = '^';
         }
         $doc = '';
@@ -51,7 +51,7 @@ class TableCellNode extends Node
 
     public function isHeaderCell()
     {
-        return $this->data['attrs']['is_header'];
+        return $this->data['type'] === 'table_header';
     }
 
     public function getRowSpan()

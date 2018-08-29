@@ -20,7 +20,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
     const plugins = [
         mi.getMenuPlugin(),
         getKeymapPlugin(schema),
-        tableEditing(),
+        tableEditing(schema),
     ];
 
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);

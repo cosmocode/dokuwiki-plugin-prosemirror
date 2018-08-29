@@ -101,6 +101,7 @@ class MenuInitializer {
                 TColumnAddBeforeMenuItemDispatcher,
                 TColumnAddAfterMenuItemDispatcher,
                 TColumnDeleteMenuItemDispatcher,
+                TCellHeaderMenuItemDispatcher,
             ]),
             new PluginDropdownDispatcher([
                 PluginBlockMenuItemDispatcher,

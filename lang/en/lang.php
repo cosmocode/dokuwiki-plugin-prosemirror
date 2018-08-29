@@ -71,6 +71,7 @@ $lang['js']['label:table-row-delete'] = 'Delete row';
 $lang['js']['label:table-add-column-before'] = 'Add column before';
 $lang['js']['label:table-add-column-after'] = 'Add column after';
 $lang['js']['label:table-column-delete'] = 'Delete column';
+$lang['js']['label:table-cell-header-toggle'] = 'Toggle header state';
 $lang['js']['label:sinkListItem'] = 'Sink list item';
 $lang['js']['label:strong'] = 'strong';
 $lang['js']['label:em'] = 'italic';

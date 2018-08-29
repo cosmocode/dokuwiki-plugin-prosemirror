@@ -71,6 +71,7 @@ $lang['js']['label:table-row-delete'] = 'Zeile löschen';
 $lang['js']['label:table-add-column-before'] = 'Neue Spalte davor einfügen';
 $lang['js']['label:table-add-column-after'] = 'Neue Spalte danach einfügen';
 $lang['js']['label:table-column-delete'] = 'Spalte löschen';
+$lang['js']['label:table-cell-header-toggle'] = 'Kopfzeile an/aus';
 $lang['js']['label:sinkListItem'] = 'Einrückung des Listenelements entfernen';
 $lang['js']['label:strong'] = 'fett';
 $lang['js']['label:em'] = 'kursiv';

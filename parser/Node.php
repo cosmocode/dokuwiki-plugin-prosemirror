@@ -29,6 +29,7 @@ abstract class Node
         'table' => TableNode::class,
         'table_row' => TableRowNode::class,
         'table_cell' => TableCellNode::class,
+        'table_header' => TableCellNode::class,
         'rss' => RSSNode::class,
         'dwplugin_inline' => PluginNode::class,
         'dwplugin_block' => PluginNode::class,
