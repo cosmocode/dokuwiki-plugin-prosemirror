@@ -8,7 +8,7 @@
                     "type": "table_row",
                     "content": [
                         {
-                            "type": "table_cell",
+                            "type": "table_header",
                             "content": [
                                 {
                                     "type": "text",
@@ -16,7 +16,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": true,
                                 "colspan": 3,
                                 "rowspan": 1,
                                 "align": 1
@@ -39,7 +38,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -54,7 +52,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -69,7 +66,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -92,7 +88,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -107,7 +102,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -122,7 +116,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -145,7 +138,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -160,7 +152,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
@@ -175,7 +166,6 @@
                                 }
                             ],
                             "attrs": {
-                                "is_header": false,
                                 "colspan": 1,
                                 "rowspan": 1,
                                 "align": 1
