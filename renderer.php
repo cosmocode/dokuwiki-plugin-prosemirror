@@ -214,6 +214,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritdoc */
     function tablecell_close()
     {
+        $curNode = $this->nodestack->current();
+        $curNode->trimContentLeft();
+        $curNode->trimContentRight();
         $this->nodestack->drop('table_cell');
     }
 
@@ -232,6 +235,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritdoc */
     function tableheader_close()
     {
+        $curNode = $this->nodestack->current();
+        $curNode->trimContentLeft();
+        $curNode->trimContentRight();
         $this->nodestack->drop('table_header');
     }
 
