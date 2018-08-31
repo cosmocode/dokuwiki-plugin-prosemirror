@@ -207,7 +207,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $node = new Node('table_cell');
         $node->attr('colspan', $colspan);
         $node->attr('rowspan', $rowspan);
-        $node->attr('align', $rowspan);
+        $node->attr('align', $align);
         $this->nodestack->addTop($node);
     }
 
@@ -225,7 +225,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $node = new Node('table_header');
         $node->attr('colspan', $colspan);
         $node->attr('rowspan', $rowspan);
-        $node->attr('align', $rowspan);
+        $node->attr('align', $align);
         $this->nodestack->addTop($node);
     }
 

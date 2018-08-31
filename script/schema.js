@@ -37,6 +37,13 @@ export default function getSpec() {
         tableGroup: 'container',
         cellContent: 'inline*',
         cellAttributes: {
+            align: {
+                default: 'left',
+                setDOMAttr(val, attr) {
+                    // eslint-disable-next-line no-param-reassign
+                    attr.class = `${val}align`;
+                },
+            },
         },
     }));
 
