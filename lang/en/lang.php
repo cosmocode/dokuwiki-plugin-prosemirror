@@ -75,6 +75,7 @@ $lang['js']['label:table-column-delete'] = 'Delete column';
 $lang['js']['label:table-cell-header-toggle'] = 'Toggle header state';
 $lang['js']['label:table-cell-merge'] = 'Merge cells';
 $lang['js']['label:table-cell-split'] = 'Split cells';
+$lang['js']['label:table-delete'] = 'Delete table';
 $lang['js']['label:sinkListItem'] = 'Sink list item';
 $lang['js']['label:marks'] = 'Formatting';
 $lang['js']['label:strong'] = 'strong';

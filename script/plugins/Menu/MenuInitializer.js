@@ -30,6 +30,7 @@ import TColumnDeleteMenuItemDispatcher from './MenuItems/TColumnDeleteMenuItemDi
 import TCellHeaderMenuItemDispatcher from './MenuItems/TCellHeaderMenuItemDispatcher';
 import TCellMergeMenuItemDispatcher from './MenuItems/TCellMergeMenuItemDispatcher';
 import TCellSplitMenuItemDispatcher from './MenuItems/TCellSplitMenuItemDispatcher';
+import TRemoveMenuItemDispatcher from './MenuItems/TRemoveMenuItemDispatcher';
 
 
 class MenuInitializer {
@@ -106,6 +107,7 @@ class MenuInitializer {
                 TCellHeaderMenuItemDispatcher,
                 TCellMergeMenuItemDispatcher,
                 TCellSplitMenuItemDispatcher,
+                TRemoveMenuItemDispatcher,
             ]),
             new PluginDropdownDispatcher([
                 PluginBlockMenuItemDispatcher,

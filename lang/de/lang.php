@@ -75,6 +75,7 @@ $lang['js']['label:table-column-delete'] = 'Spalte löschen';
 $lang['js']['label:table-cell-header-toggle'] = 'Kopfzeile an/aus';
 $lang['js']['label:table-cell-merge'] = 'Zellen verbinden';
 $lang['js']['label:table-cell-split'] = 'Zellen trennen';
+$lang['js']['label:table-delete'] = 'Tablle löschen';
 $lang['js']['label:sinkListItem'] = 'Einrückung des Listenelements entfernen';
 $lang['js']['label:marks'] = 'Format';
 $lang['js']['label:strong'] = 'fett';
