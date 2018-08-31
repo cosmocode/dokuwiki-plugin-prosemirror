@@ -63,6 +63,7 @@ $lang['js']['label:orderedList'] = 'Wrap in ordered list';
 $lang['js']['label:paragraph'] = 'Paragraph';
 $lang['js']['label:pluginBlock'] = 'Plugin block';
 $lang['js']['label:rss'] = 'Add new RSS feed';
+$lang['js']['label:smileys'] = 'Smileys';
 $lang['js']['label:table'] = 'Add new 2x2 table';
 $lang['js']['label:table-ops'] = 'Edit table';
 $lang['js']['label:table-add-row-before'] = 'Add row before';

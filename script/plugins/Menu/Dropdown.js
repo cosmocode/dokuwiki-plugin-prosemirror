@@ -1,4 +1,5 @@
 import MenuItem from './MenuItem';
+import { svgIcon } from './MDI';
 
 class Dropdown extends MenuItem {
     /**
@@ -42,6 +43,21 @@ class Dropdown extends MenuItem {
         this.hideContent();
 
         return $menuItemContainer.get(0);
+    }
+
+    renderDOM() {
+        const dom = jQuery('<span>').addClass('menuitem');
+        if (this.options.icon instanceof Element) {
+            dom.append(MenuItem.renderSVGIcon(this.options.icon, this.options.label));
+        } else if (typeof this.options.label === 'string') {
+            dom.append(jQuery('<span>')
+                .addClass('menulabel')
+                .attr('title', this.options.label)
+                .text(this.options.label)
+                .get(0));
+        }
+        dom.append(jQuery('<span>').addClass('dropdown-indicator').append(svgIcon('chevron-down')));
+        return dom.get(0);
     }
 
     /**

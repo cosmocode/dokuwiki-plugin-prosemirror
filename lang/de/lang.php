@@ -63,6 +63,7 @@ $lang['js']['label:orderedList'] = 'geordnete Liste';
 $lang['js']['label:paragraph'] = 'Absatz';
 $lang['js']['label:pluginBlock'] = 'Plugin-Block einfügen';
 $lang['js']['label:rss'] = 'Neuen RSS-Feed einfügen';
+$lang['js']['label:smileys'] = 'Smileys';
 $lang['js']['label:table'] = 'Neue 2x2 Tabelle einfügen';
 $lang['js']['label:table-ops'] = 'Tabelle bearbeiten';
 $lang['js']['label:table-add-row-before'] = 'Neue Zeile davor einfügen';

@@ -50,6 +50,10 @@
             .menulabel {
                 display: block;
             }
+
+            .dropdown-indicator {
+                width: 1em;
+            }
         }
 
         &.is-active {
@@ -67,7 +71,8 @@
         &.is-disabled {
             pointer-events: none;
 
-            > .menuicon svg {
+            > .menuicon svg,
+            > .dropdown-indicator svg {
                 fill: @ini_border;
             }
 
