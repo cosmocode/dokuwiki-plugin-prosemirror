@@ -160,7 +160,9 @@ class Node implements \JsonSerializable
             }
             return;
         }
-        $this->text = ltrim($this->text);
+        if ($this->text !== null) {
+            $this->text = ltrim($this->text);
+        }
     }
 
     /**
@@ -181,6 +183,8 @@ class Node implements \JsonSerializable
             }
             return;
         }
-        $this->text = rtrim($this->text);
+        if ($this->text !== null) {
+            $this->text = rtrim($this->text);
+        }
     }
 }

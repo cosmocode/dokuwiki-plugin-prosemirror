@@ -35,7 +35,7 @@ export default function getSpec() {
 
     nodes = nodes.append(tableNodes({
         tableGroup: 'container',
-        cellContent: 'inline*',
+        cellContent: '(paragraph | protected_block | substitution_block)+',
         cellAttributes: {
             align: {
                 default: 'left',

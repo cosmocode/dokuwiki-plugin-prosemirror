@@ -209,11 +209,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $node->attr('rowspan', $rowspan);
         $node->attr('align', $align);
         $this->nodestack->addTop($node);
+
+        $node = new Node('paragraph');
+        $this->nodestack->addTop($node);
     }
 
     /** @inheritdoc */
     function tablecell_close()
     {
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+
         $curNode = $this->nodestack->current();
         $curNode->trimContentLeft();
         $curNode->trimContentRight();
@@ -230,11 +237,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $node->attr('rowspan', $rowspan);
         $node->attr('align', $align);
         $this->nodestack->addTop($node);
+
+        $node = new Node('paragraph');
+        $this->nodestack->addTop($node);
     }
 
     /** @inheritdoc */
     function tableheader_close()
     {
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+
         $curNode = $this->nodestack->current();
         $curNode->trimContentLeft();
         $curNode->trimContentRight();

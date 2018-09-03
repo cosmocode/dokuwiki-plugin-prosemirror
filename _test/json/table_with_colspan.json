@@ -1,5 +1,5 @@
 {
-    "type": "doc",
+        "type": "doc",
     "content": [
         {
             "type": "table",
@@ -11,8 +11,13 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Heading 1"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Heading 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -24,8 +29,13 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Heading 2"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Heading 2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -37,8 +47,13 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Heading 3"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Heading 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -58,8 +73,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 1 Col 1"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 1 Col 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -71,8 +91,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 1 Col 2"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 1 Col 2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -84,8 +109,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 1 Col 3"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 1 Col 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -105,8 +135,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 2 Col 1"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 2 Col 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -118,8 +153,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "some colspan (note the double pipe)"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "some colspan (note the double pipe)"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -139,8 +179,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 3 Col 1"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 3 Col 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -152,8 +197,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 3 Col 2"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 3 Col 2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -165,8 +215,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Row 3 Col 3"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 3 Col 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {

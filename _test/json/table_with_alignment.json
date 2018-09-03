@@ -1,5 +1,5 @@
 {
-    "type": "doc",
+        "type": "doc",
     "content": [
         {
             "type": "table",
@@ -11,8 +11,13 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "Table with alignment"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Table with alignment"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -33,8 +38,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "right"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "right"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -47,8 +57,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "center"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "center"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -61,8 +76,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "left"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "left"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -82,8 +102,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "left"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "left"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -95,8 +120,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "right"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "right"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -109,8 +139,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "center"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "center"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -131,8 +166,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "xxxxxxxxxxxx"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "xxxxxxxxxxxx"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -144,8 +184,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "xxxxxxxxxxxx"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "xxxxxxxxxxxx"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
@@ -157,8 +202,13 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": "xxxxxxxxxxxx"
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "xxxxxxxxxxxx"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
