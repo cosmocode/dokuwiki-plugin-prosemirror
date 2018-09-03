@@ -12,13 +12,13 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "           Table with alignment           "
+                                    "text": "Table with alignment"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 3,
                                 "rowspan": 1,
-                                "align": 1
+                                "align": "center"
                             }
                         }
                     ],
@@ -34,13 +34,13 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "         right"
+                                    "text": "right"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
                                 "rowspan": 1,
-                                "align": 1
+                                "align": "right"
                             }
                         },
                         {
@@ -48,13 +48,13 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "    center    "
+                                    "text": "center"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
                                 "rowspan": 1,
-                                "align": 1
+                                "align": "center"
                             }
                         },
                         {
@@ -62,13 +62,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "left          "
+                                    "text": "left"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -84,13 +83,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "left          "
+                                    "text": "left"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -98,13 +96,13 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "         right"
+                                    "text": "right"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
                                 "rowspan": 1,
-                                "align": 1
+                                "align": "right"
                             }
                         },
                         {
@@ -112,13 +110,13 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": "    center    "
+                                    "text": "center"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
                                 "rowspan": 1,
-                                "align": 1
+                                "align": "center"
                             }
                         }
                     ],
@@ -134,13 +132,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " xxxxxxxxxxxx "
+                                    "text": "xxxxxxxxxxxx"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -148,13 +145,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " xxxxxxxxxxxx "
+                                    "text": "xxxxxxxxxxxx"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -162,13 +158,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " xxxxxxxxxxxx "
+                                    "text": "xxxxxxxxxxxx"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],

@@ -12,13 +12,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " A1 "
+                                    "text": "A1"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -26,13 +25,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " B1 "
+                                    "text": "B1"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -48,13 +46,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " A2 "
+                                    "text": "A2"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -62,13 +59,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " B2 "
+                                    "text": "B2"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],

@@ -12,13 +12,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " A1  "
+                                    "text": "A1"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -26,13 +25,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " B1   "
+                                    "text": "B1"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -40,13 +38,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " C1   "
+                                    "text": "C1"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -54,13 +51,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " D1  "
+                                    "text": "D1"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -76,13 +72,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " A2  "
+                                    "text": "A2"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -90,13 +85,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " B2         "
+                                    "text": "B2"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 2,
-                                "rowspan": 2,
-                                "align": 2
+                                "rowspan": 2
                             }
                         },
                         {
@@ -104,13 +98,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " D2  "
+                                    "text": "D2"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -126,13 +119,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " A3  "
+                                    "text": "A3"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -140,13 +132,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " D3  "
+                                    "text": "D3"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -162,13 +153,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " A4  "
+                                    "text": "A4"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -176,13 +166,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " B4   "
+                                    "text": "B4"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -190,13 +179,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " C4   "
+                                    "text": "C4"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
@@ -204,13 +192,12 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " D4  "
+                                    "text": "D4"
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
