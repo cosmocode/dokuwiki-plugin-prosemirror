@@ -1,5 +1,5 @@
 {
-        "type": "doc",
+    "type": "doc",
     "content": [
         {
             "type": "table",
@@ -21,14 +21,14 @@
                                 }
                             ],
                             "attrs": {
-                                "colspan": 3,
+                                "colspan": 4,
                                 "rowspan": 1,
                                 "align": "center"
                             }
                         }
                     ],
                     "attrs": {
-                        "columns": 3
+                        "columns": 4
                     }
                 },
                 {
@@ -87,12 +87,31 @@
                             ],
                             "attrs": {
                                 "colspan": 1,
+                                "rowspan": 1,
+                                "align": "left"
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "default"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
                                 "rowspan": 1
                             }
                         }
                     ],
                     "attrs": {
-                        "columns": 3
+                        "columns": 4
                     }
                 },
                 {
@@ -113,7 +132,8 @@
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1
+                                "rowspan": 1,
+                                "align": "left"
                             }
                         },
                         {
@@ -153,10 +173,28 @@
                                 "rowspan": 1,
                                 "align": "center"
                             }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "default"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
                         }
                     ],
                     "attrs": {
-                        "columns": 3
+                        "columns": 4
                     }
                 },
                 {
@@ -215,10 +253,28 @@
                                 "colspan": 1,
                                 "rowspan": 1
                             }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "xxxxxxxxxxxx"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
                         }
                     ],
                     "attrs": {
-                        "columns": 3
+                        "columns": 4
                     }
                 }
             ]

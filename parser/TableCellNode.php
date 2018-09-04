@@ -77,6 +77,9 @@ class TableCellNode extends Node
         if ($this->data['attrs']['align'] === 'center') {
             return ['  ', '  '];
         }
+        if ($this->data['attrs']['align'] === 'left') {
+            return [' ', '  '];
+        }
         return [' ', ' '];
 
     }

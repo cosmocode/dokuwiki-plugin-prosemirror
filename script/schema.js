@@ -38,8 +38,13 @@ export default function getSpec() {
         cellContent: '(paragraph | protected_block | substitution_block)+',
         cellAttributes: {
             align: {
-                default: 'left',
+                default: '',
                 setDOMAttr(val, attr) {
+                    if (!val) {
+                        // eslint-disable-next-line no-param-reassign
+                        attr.class = null;
+                        return;
+                    }
                     // eslint-disable-next-line no-param-reassign
                     attr.class = `${val}align`;
                 },
