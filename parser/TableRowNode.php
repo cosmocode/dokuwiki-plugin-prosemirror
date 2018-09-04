@@ -22,34 +22,48 @@ class TableRowNode extends Node
     public function toSyntax()
     {
         $doc = '';
-        $colIndex = 0;
         $rowSpans = $this->parent->getRowSpans();
-        foreach ($this->tableCells as $tableCell) {
-            $colIndex += 1;
-
-            while (!empty($rowSpans[$colIndex])) {
+        $numColsInTable = $this->parent->getNumTableCols();
+        $lastCell = end($this->tableCells);
+        for ($colIndex = 1; $colIndex <= $numColsInTable; $colIndex += $colSpan) {
+            if (!empty($rowSpans[$colIndex])) {
                 $doc .= '| ::: ';
                 $rowSpans[$colIndex] -= 1;
-                $colIndex += 1;
+                $colspan = 1;
+                continue;
             }
-
+            $tableCell = array_shift($this->tableCells);
             $doc .= $tableCell->toSyntax();
 
-            // does nothing if $rowSpan==1 and $colSpan==1
             $rowSpan = $tableCell->getRowSpan();
             $colSpan = $tableCell->getColSpan();
-            for ($i = 0; $i < $colSpan; $i += 1) {
-                $rowSpans[$colIndex + $i] = $rowSpan - 1;
+            // does nothing if $rowSpan==1 and $colSpan==1
+            for ($colSpanIndex = 0; $colSpanIndex < $colSpan; $colSpanIndex += 1) {
+                $rowSpans[$colIndex + $colSpanIndex] = $rowSpan - 1;
             }
-            $doc .= str_repeat('|', $colSpan - 1);
-            $colIndex += $colSpan - 1;
-        }
 
+            $doc .= str_repeat('|', $colSpan - 1);
+
+        }
         $this->parent->setRowSpans($rowSpans);
 
-        $lastCell = end($this->tableCells);
         $postfix = $lastCell->isHeaderCell() ? '^' : '|';
 
         return $doc . $postfix;
+    }
+
+    /**
+     * This counts the number of columns covered by the cells in the current row
+     *
+     * WARNING: This will not(!) count cells ommited due to row-spans!
+     *
+     * @return int
+     */
+    public function countCols() {
+        $cols = 0;
+        foreach ($this->tableCells as $cell) {
+            $cols += $cell->getColSpan();
+        }
+        return $cols;
     }
 }

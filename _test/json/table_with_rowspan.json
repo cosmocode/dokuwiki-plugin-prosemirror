@@ -11,42 +11,54 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Heading 1      "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Heading 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Heading 2                  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Heading 2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Heading 3          "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Heading 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -61,42 +73,54 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Row 1 Col 1    "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 1 Col 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " this cell spans vertically "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "this cell spans vertically"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 3,
-                                "align": 3
+                                "rowspan": 3
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Row 1 Col 3        "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 1 Col 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -111,28 +135,36 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Row 2 Col 1    "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 2 Col 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Row 2 Col 3        "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 2 Col 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -147,28 +179,36 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Row 3 Col 1    "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 3 Col 1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " Row 2 Col 3        "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "Row 2 Col 3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -180,3 +220,5 @@
         }
     ]
 }
+
+

@@ -202,37 +202,63 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritDoc */
     function tablecell_open($colspan = 1, $align = null, $rowspan = 1)
     {
-        $this->colcount += $colspan;
-
-        $node = new Node('table_cell');
-        $node->attr('colspan', $colspan);
-        $node->attr('rowspan', $rowspan);
-        $node->attr('align', $rowspan);
-        $this->nodestack->addTop($node);
+        $this->openTableCell('table_cell', $colspan, $align, $rowspan);
     }
 
     /** @inheritdoc */
     function tablecell_close()
     {
-        $this->nodestack->drop('table_cell');
+        $this->closeTableCell('table_cell');
     }
 
     /** @inheritDoc */
     function tableheader_open($colspan = 1, $align = null, $rowspan = 1)
     {
-        $this->colcount += $colspan;
-
-        $node = new Node('table_header');
-        $node->attr('colspan', $colspan);
-        $node->attr('rowspan', $rowspan);
-        $node->attr('align', $rowspan);
-        $this->nodestack->addTop($node);
+        $this->openTableCell('table_header', $colspan, $align, $rowspan);
     }
 
     /** @inheritdoc */
     function tableheader_close()
     {
-        $this->nodestack->drop('table_header');
+        $this->closeTableCell('table_header');
+    }
+
+    /**
+     * Add a new table cell to the top of the stack
+     *
+     * @param string      $type    either table_cell or table_header
+     * @param int         $colspan
+     * @param string|null $align   either null/left, center or right
+     * @param int         $rowspan
+     */
+    protected function openTableCell($type, $colspan, $align, $rowspan) {
+        $this->colcount += $colspan;
+
+        $node = new Node($type);
+        $node->attr('colspan', $colspan);
+        $node->attr('rowspan', $rowspan);
+        $node->attr('align', $align);
+        $this->nodestack->addTop($node);
+
+        $node = new Node('paragraph');
+        $this->nodestack->addTop($node);
+    }
+
+    /**
+     * Remove a table cell from the top of the stack
+     *
+     * @param string $type either table_cell or table_header
+     */
+    protected function closeTableCell($type)
+    {
+        if ($this->nodestack->current()->getType() === 'paragraph') {
+            $this->nodestack->drop('paragraph');
+        }
+
+        $curNode = $this->nodestack->current();
+        $curNode->trimContentLeft();
+        $curNode->trimContentRight();
+        $this->nodestack->drop($type);
     }
 
     #endregion table

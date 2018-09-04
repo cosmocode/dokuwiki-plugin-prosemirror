@@ -35,8 +35,20 @@ export default function getSpec() {
 
     nodes = nodes.append(tableNodes({
         tableGroup: 'container',
-        cellContent: 'inline*',
+        cellContent: '(paragraph | protected_block | substitution_block)+',
         cellAttributes: {
+            align: {
+                default: '',
+                setDOMAttr(val, attr) {
+                    if (!val) {
+                        // eslint-disable-next-line no-param-reassign
+                        attr.class = null;
+                        return;
+                    }
+                    // eslint-disable-next-line no-param-reassign
+                    attr.class = `${val}align`;
+                },
+            },
         },
     }));
 

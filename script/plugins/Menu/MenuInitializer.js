@@ -31,7 +31,7 @@ import TCellHeaderMenuItemDispatcher from './MenuItems/TCellHeaderMenuItemDispat
 import TCellMergeMenuItemDispatcher from './MenuItems/TCellMergeMenuItemDispatcher';
 import TCellSplitMenuItemDispatcher from './MenuItems/TCellSplitMenuItemDispatcher';
 import TRemoveMenuItemDispatcher from './MenuItems/TRemoveMenuItemDispatcher';
-
+import TCellAlignMenuItemDispatcher from './MenuItems/TCellAlignMenuItemDispatcher';
 
 class MenuInitializer {
     constructor(schema) {
@@ -105,6 +105,9 @@ class MenuInitializer {
                 TColumnAddAfterMenuItemDispatcher,
                 TColumnDeleteMenuItemDispatcher,
                 TCellHeaderMenuItemDispatcher,
+                new TCellAlignMenuItemDispatcher('left'),
+                new TCellAlignMenuItemDispatcher('center'),
+                new TCellAlignMenuItemDispatcher('right'),
                 TCellMergeMenuItemDispatcher,
                 TCellSplitMenuItemDispatcher,
                 TRemoveMenuItemDispatcher,

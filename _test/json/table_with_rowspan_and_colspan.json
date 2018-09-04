@@ -1,5 +1,5 @@
 {
-    "type": "doc",
+        "type": "doc",
     "content": [
         {
             "type": "table",
@@ -11,56 +11,72 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " A1  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "A1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " B1   "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "B1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " C1   "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "C1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " D1  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "D1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -75,42 +91,54 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " A2  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "A2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " B2         "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "B2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 2,
-                                "rowspan": 2,
-                                "align": 2
+                                "rowspan": 2
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " D2  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "D2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -125,28 +153,36 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " A3  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "A3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " D3  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "D3"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -161,56 +197,72 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " A4  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "A4"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " B4   "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "B4"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " C4   "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "C4"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " D4  "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "D4"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],

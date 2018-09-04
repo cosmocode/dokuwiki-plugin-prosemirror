@@ -11,28 +11,36 @@
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " A1 "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "A1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_header",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " B1 "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "B1"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],
@@ -47,43 +55,51 @@
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " A2 "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "A2"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         },
                         {
                             "type": "table_cell",
                             "content": [
                                 {
-                                    "type": "text",
-                                    "text": " B2 "
-                                },
-                                {
-                                    "type": "link",
-                                    "attrs": {
-                                        "data-type": "internallink",
-                                        "data-inner": "some:page",
-                                        "data-resolvedTitle": "some:page",
-                                        "data-resolvedID": "some:page",
-                                        "data-resolvedName": "page",
-                                        "data-resolvedClass": "wikilink2"
-                                    }
-                                },
-                                {
-                                    "type": "text",
-                                    "text": " foo "
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "B2 "
+                                        },
+                                        {
+                                            "type": "link",
+                                            "attrs": {
+                                                "data-type": "internallink",
+                                                "data-inner": "some:page",
+                                                "data-resolvedTitle": "some:page",
+                                                "data-resolvedID": "some:page",
+                                                "data-resolvedName": "page",
+                                                "data-resolvedClass": "wikilink2"
+                                            }
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": " foo"
+                                        }
+                                    ]
                                 }
                             ],
                             "attrs": {
                                 "colspan": 1,
-                                "rowspan": 1,
-                                "align": 1
+                                "rowspan": 1
                             }
                         }
                     ],

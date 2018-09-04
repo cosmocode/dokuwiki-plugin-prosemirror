@@ -45,8 +45,8 @@ class TableCellNode extends Node
         foreach ($this->subnodes as $subnode) {
             $doc .= $subnode->toSyntax();
         }
-
-        return $prefix . $doc;
+        list($paddingLeft, $paddingRight) = $this->calculateAlignmentPadding();
+        return $prefix . $paddingLeft . trim($doc) . $paddingRight;
     }
 
     public function isHeaderCell()
@@ -62,5 +62,25 @@ class TableCellNode extends Node
     public function getColSpan()
     {
         return $this->data['attrs']['colspan'];
+    }
+
+    /**
+     * Calculate the correct padding to align cell-content left, right or center
+     *
+     * @return String[] [left padding, right padding]
+     */
+    protected function calculateAlignmentPadding()
+    {
+        if ($this->data['attrs']['align'] === 'right') {
+            return ['  ', ' '];
+        }
+        if ($this->data['attrs']['align'] === 'center') {
+            return ['  ', '  '];
+        }
+        if ($this->data['attrs']['align'] === 'left') {
+            return [' ', '  '];
+        }
+        return [' ', ' '];
+
     }
 }

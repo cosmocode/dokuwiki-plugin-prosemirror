@@ -142,4 +142,49 @@ class Node implements \JsonSerializable
     public function hasContent() {
         return !empty($this->content);
     }
+
+    /**
+     * Trim all whitespace from the beginning of this node's content
+     *
+     * If this is a text-node then this node's text is left-trimmed
+     *
+     * If the first node in the content is afterwards only an empty string, then it is removed
+     *
+     * @return void
+     */
+    public function trimContentLeft() {
+        if ($this->hasContent()) {
+            $this->content[0]->trimContentLeft();
+            if ($this->content[0]->getText() === '') {
+                array_shift($this->content);
+            }
+            return;
+        }
+        if ($this->text !== null) {
+            $this->text = ltrim($this->text);
+        }
+    }
+
+    /**
+     * Trim all whitespace from the end of this node's content
+     *
+     * If this is a text-node then this node's text is right-trimmed
+     *
+     * If the last node in the content is afterwards only an empty string, then it is removed
+     *
+     * @return void
+     */
+    public function trimContentRight() {
+        if ($this->hasContent()) {
+            $contentLength = count($this->content) - 1;
+            $this->content[$contentLength]->trimContentRight();
+            if ($this->content[$contentLength]->getText() === '') {
+                array_pop($this->content);
+            }
+            return;
+        }
+        if ($this->text !== null) {
+            $this->text = rtrim($this->text);
+        }
+    }
 }
