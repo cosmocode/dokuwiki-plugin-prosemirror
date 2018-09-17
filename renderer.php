@@ -74,13 +74,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     // FIXME implement all methods of Doku_Renderer here
 
     /** @inheritDoc */
-    function document_start()
+    public function document_start()
     {
         $this->nodestack = new NodeStack();
     }
 
     /** @inheritDoc */
-    function document_end()
+    public function document_end()
     {
         if ($this->nodestack->isEmpty()) {
             $this->p_open();
@@ -90,19 +90,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function p_open()
+    public function p_open()
     {
         $this->nodestack->addTop(new Node('paragraph'));
     }
 
     /** @inheritdoc */
-    function p_close()
+    public function p_close()
     {
         $this->nodestack->drop('paragraph');
     }
 
     /** @inheritDoc */
-    function quote_open()
+    public function quote_open()
     {
         if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
@@ -111,7 +111,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function quote_close()
+    public function quote_close()
     {
         if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
@@ -122,7 +122,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     #region lists
 
     /** @inheritDoc */
-    function listu_open()
+    public function listu_open()
     {
         if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
@@ -132,13 +132,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function listu_close()
+    public function listu_close()
     {
         $this->nodestack->drop('bullet_list');
     }
 
     /** @inheritDoc */
-    function listo_open()
+    public function listo_open()
     {
         if ($this->nodestack->current()->getType() === 'paragraph') {
             $this->nodestack->drop('paragraph');
@@ -148,19 +148,19 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function listo_close()
+    public function listo_close()
     {
         $this->nodestack->drop('ordered_list');
     }
 
     /** @inheritDoc */
-    function listitem_open($level, $node = false)
+    public function listitem_open($level, $node = false)
     {
         $this->nodestack->addTop(new Node('list_item'));
     }
 
     /** @inheritDoc */
-    function listitem_close()
+    public function listitem_close()
     {
 
         if ($this->nodestack->current()->getType() === 'paragraph') {
@@ -174,51 +174,51 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     #region table
 
     /** @inheritDoc */
-    function table_open($maxcols = null, $numrows = null, $pos = null)
+    public function table_open($maxcols = null, $numrows = null, $pos = null)
     {
         $this->nodestack->addTop(new Node('table'));
     }
 
     /** @inheritDoc */
-    function table_close($pos = null)
+    public function table_close($pos = null)
     {
         $this->nodestack->drop('table');
     }
 
     /** @inheritDoc */
-    function tablerow_open()
+    public function tablerow_open()
     {
         $this->nodestack->addTop(new Node('table_row'));
         $this->colcount = 0;
     }
 
     /** @inheritDoc */
-    function tablerow_close()
+    public function tablerow_close()
     {
         $node = $this->nodestack->drop('table_row');
         $node->attr('columns', $this->colcount);
     }
 
     /** @inheritDoc */
-    function tablecell_open($colspan = 1, $align = null, $rowspan = 1)
+    public function tablecell_open($colspan = 1, $align = null, $rowspan = 1)
     {
         $this->openTableCell('table_cell', $colspan, $align, $rowspan);
     }
 
     /** @inheritdoc */
-    function tablecell_close()
+    public function tablecell_close()
     {
         $this->closeTableCell('table_cell');
     }
 
     /** @inheritDoc */
-    function tableheader_open($colspan = 1, $align = null, $rowspan = 1)
+    public function tableheader_open($colspan = 1, $align = null, $rowspan = 1)
     {
         $this->openTableCell('table_header', $colspan, $align, $rowspan);
     }
 
     /** @inheritdoc */
-    function tableheader_close()
+    public function tableheader_close()
     {
         $this->closeTableCell('table_header');
     }
@@ -264,7 +264,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     #endregion table
 
     /** @inheritDoc */
-    function header($text, $level, $pos)
+    public function header($text, $level, $pos)
     {
         $node = new Node('heading');
         $node->attr('level', $level);
@@ -277,7 +277,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function cdata($text)
+    public function cdata($text)
     {
         if ($text === '') {
             return;
@@ -379,7 +379,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /**
      * @inheritDoc
      */
-    function rss($url, $params)
+    public function rss($url, $params)
     {
         $this->clearBlock();
         $node = new Node('rss');
@@ -403,7 +403,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
 
-    function footnote_open()
+    public function footnote_open()
     {
         $footnoteNode = new Node('footnote');
         $this->nodestack->addTop($footnoteNode);
@@ -412,7 +412,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
     }
 
-    function footnote_close()
+    public function footnote_close()
     {
         $json = json_encode($this->nodestack->doc());
         $this->nodestack = array_pop($this->nodestackBackup);
@@ -423,7 +423,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /**
      * @inheritDoc
      */
-    function internalmedia(
+    public function internalmedia(
         $src,
         $title = null,
         $align = null,
@@ -449,7 +449,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /**
      * @inheritDoc
      */
-    function externalmedia(
+    public function externalmedia(
         $src,
         $title = null,
         $align = null,
@@ -505,18 +505,18 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function linebreak()
+    public function linebreak()
     {
         $this->nodestack->add(new Node('hard_break'));
     }
 
     /** @inheritDoc */
-    function hr()
+    public function hr()
     {
         $this->nodestack->add(new Node('horizontal_rule'));
     }
 
-    function plugin($name, $data, $state = '', $match = '')
+    public function plugin($name, $data, $state = '', $match = '')
     {
         if (empty($match)) {
             return;
@@ -544,7 +544,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         }
     }
 
-    function smiley($smiley)
+    public function smiley($smiley)
     {
         if(array_key_exists($smiley, $this->smileys)) {
             $node = new Node('smiley');
@@ -559,55 +559,55 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     #region elements with no special WYSIWYG representation
 
     /** @inheritDoc */
-    function entity($entity)
+    public function entity($entity)
     {
         $this->cdata($entity); // FIXME should we handle them special?
     }
 
     /** @inheritDoc */
-    function multiplyentity($x, $y)
+    public function multiplyentity($x, $y)
     {
         $this->cdata($x . 'x' . $y);
     }
 
     /** @inheritDoc */
-    function acronym($acronym)
+    public function acronym($acronym)
     {
         $this->cdata($acronym);
     }
 
     /** @inheritDoc */
-    function apostrophe()
+    public function apostrophe()
     {
         $this->cdata("'");
     }
 
     /** @inheritDoc */
-    function singlequoteopening()
+    public function singlequoteopening()
     {
         $this->cdata("'");
     }
 
     /** @inheritDoc */
-    function singlequoteclosing()
+    public function singlequoteclosing()
     {
         $this->cdata("'");
     }
 
     /** @inheritDoc */
-    function doublequoteopening()
+    public function doublequoteopening()
     {
         $this->cdata('"');
     }
 
     /** @inheritDoc */
-    function doublequoteclosing()
+    public function doublequoteclosing()
     {
         $this->cdata('"');
     }
 
     /** @inheritDoc */
-    function camelcaselink($link)
+    public function camelcaselink($link)
     {
         $this->cdata($link); // FIXME should/could we decorate it?
     }
@@ -617,13 +617,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     #region formatter marks
 
     /** @inheritDoc */
-    function strong_open()
+    public function strong_open()
     {
         $this->marks['strong'] = 1;
     }
 
     /** @inheritDoc */
-    function strong_close()
+    public function strong_close()
     {
         if (isset($this->marks['strong'])) {
             unset($this->marks['strong']);
@@ -631,13 +631,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function emphasis_open()
+    public function emphasis_open()
     {
         $this->marks['em'] = 1;
     }
 
     /** @inheritDoc */
-    function emphasis_close()
+    public function emphasis_close()
     {
         if (isset($this->marks['em'])) {
             unset($this->marks['em']);
@@ -645,13 +645,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritdoc */
-    function subscript_open()
+    public function subscript_open()
     {
         $this->marks['subscript'] = 1;
     }
 
     /** @inheritDoc */
-    function subscript_close()
+    public function subscript_close()
     {
         if (isset($this->marks['subscript'])) {
             unset($this->marks['subscript']);
@@ -659,13 +659,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritdoc */
-    function superscript_open()
+    public function superscript_open()
     {
         $this->marks['superscript'] = 1;
     }
 
     /** @inheritDoc */
-    function superscript_close()
+    public function superscript_close()
     {
         if (isset($this->marks['superscript'])) {
             unset($this->marks['superscript']);
@@ -673,13 +673,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function monospace_open()
+    public function monospace_open()
     {
         $this->marks['code'] = 1;
     }
 
     /** @inheritDoc */
-    function monospace_close()
+    public function monospace_close()
     {
         if (isset($this->marks['code'])) {
             unset($this->marks['code']);
@@ -687,13 +687,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function deleted_open()
+    public function deleted_open()
     {
         $this->marks['deleted'] = 1;
     }
 
     /** @inheritDoc */
-    function deleted_close()
+    public function deleted_close()
     {
         if (isset($this->marks['deleted'])) {
             unset($this->marks['deleted']);
@@ -701,13 +701,13 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     }
 
     /** @inheritDoc */
-    function underline_open()
+    public function underline_open()
     {
         $this->marks['underline'] = 1;
     }
 
     /** @inheritDoc */
-    function underline_close()
+    public function underline_close()
     {
         if (isset($this->marks['underline'])) {
             unset($this->marks['underline']);
@@ -716,7 +716,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
 
     /** @inheritDoc */
-    function unformatted($text)
+    public function unformatted($text)
     {
         $this->marks['unformatted'] = 1;
         parent::unformatted($text);
