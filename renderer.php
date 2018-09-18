@@ -89,6 +89,17 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->doc = json_encode($this->nodestack->doc(), JSON_PRETTY_PRINT);
     }
 
+    public function nocache() {
+        $docNode = $this->nodestack->getDocNode();
+        $docNode->attr('nocache', true);
+    }
+
+    public function notoc()
+    {
+        $docNode = $this->nodestack->getDocNode();
+        $docNode->attr('notoc', true);
+    }
+
     /** @inheritDoc */
     public function p_open()
     {

@@ -13,6 +13,10 @@ export default function getSpec() {
 
     const doc = nodes.get('doc');
     doc.content = '(block | baseonly | container | protected_block | substitution_block)+';
+    doc.attrs = {
+        nocache: { default: false },
+        notoc: { default: false },
+    };
     nodes = nodes.update('doc', doc);
 
     // heading shall only contain unmarked text
