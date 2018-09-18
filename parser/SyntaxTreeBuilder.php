@@ -14,7 +14,7 @@ class SyntaxTreeBuilder
      */
     public static function parseDataIntoTree($prosemirrorData)
     {
-        $rootNode = new RootNode($prosemirrorData['content']);
+        $rootNode = new RootNode($prosemirrorData);
 //        var_dump($rootNode);
         return $rootNode;
     }

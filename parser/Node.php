@@ -4,7 +4,7 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 use dokuwiki\plugin\prosemirror\ProsemirrorException;
 
-abstract class Node
+abstract class Node implements NodeInterface
 {
 
     private static $nodeclass = [

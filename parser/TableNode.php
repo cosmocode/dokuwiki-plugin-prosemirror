@@ -10,7 +10,7 @@ class TableNode extends Node
     protected $rowSpans = [];
     protected $numCols;
 
-    public function __construct($data)
+    public function __construct($data, Node $parent = null)
     {
         foreach ($data['content'] as $row) {
             $this->tableRows[] = new TableRowNode($row, $this);

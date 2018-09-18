@@ -19,7 +19,7 @@ class ListNode extends Node
 
     protected $depth = 0;
 
-    public function __construct($data, $parent)
+    public function __construct($data, Node $parent)
     {
         $this->parent = &$parent;
         if (is_a($this->parent, 'dokuwiki\plugin\prosemirror\parser\ListItemNode')) {

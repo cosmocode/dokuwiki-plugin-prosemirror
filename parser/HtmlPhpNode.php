@@ -8,7 +8,7 @@ class HtmlPhpNode extends Node
     protected $parent;
     protected $data;
 
-    public function __construct($data, $parent)
+    public function __construct($data, Node $parent)
     {
         $this->parent = &$parent;
         $this->data = $data;

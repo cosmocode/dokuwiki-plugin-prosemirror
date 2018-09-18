@@ -14,9 +14,9 @@ class RootNode extends Node
     /** @var Node[] */
     protected $subnodes = [];
 
-    public function __construct($subnodes)
+    public function __construct($data, Node $ignored = null)
     {
-        foreach ($subnodes as $node) {
+        foreach ($data['content'] as $node) {
             $this->subnodes[] = self::getSubNode($node, $this);
         }
     }
