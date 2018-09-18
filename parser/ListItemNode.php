@@ -21,7 +21,7 @@ class ListItemNode extends Node
      * @param          $data
      * @param ListNode $parent
      */
-    public function __construct($data, $parent)
+    public function __construct($data, Node $parent)
     {
         $this->parent = &$parent;
 

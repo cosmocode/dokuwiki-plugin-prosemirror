@@ -25,6 +25,14 @@ class NodeStack
     }
 
     /**
+     * @return Node
+     */
+    public function getDocNode()
+    {
+        return $this->stack[0];
+    }
+
+    /**
      * Get the current node (the one at the top of the stack)
      *
      * @return Node

@@ -32,6 +32,8 @@ import TCellMergeMenuItemDispatcher from './MenuItems/TCellMergeMenuItemDispatch
 import TCellSplitMenuItemDispatcher from './MenuItems/TCellSplitMenuItemDispatcher';
 import TRemoveMenuItemDispatcher from './MenuItems/TRemoveMenuItemDispatcher';
 import TCellAlignMenuItemDispatcher from './MenuItems/TCellAlignMenuItemDispatcher';
+import PageMacroDropdownDispatcher from './MenuItems/PageMacroDropdownDispatcher';
+import PageMacroMenuItemDispatcher from './MenuItems/PageMacroMenuItemDispatcher';
 
 class MenuInitializer {
     constructor(schema) {
@@ -116,6 +118,10 @@ class MenuInitializer {
                 PluginBlockMenuItemDispatcher,
                 PluginInlineMenuItemDispatcher,
                 ...window.Prosemirror.pluginMenuItemDispatchers,
+            ]),
+            new PageMacroDropdownDispatcher([
+                new PageMacroMenuItemDispatcher('NOCACHE'),
+                new PageMacroMenuItemDispatcher('NOTOC'),
             ]),
         ].filter(itemDispatcher => itemDispatcher.isAvailable(this.schema));
     }

@@ -14,9 +14,12 @@ class RootNode extends Node
     /** @var Node[] */
     protected $subnodes = [];
 
-    public function __construct($subnodes)
+    protected $attr = [];
+
+    public function __construct($data, Node $ignored = null)
     {
-        foreach ($subnodes as $node) {
+        $this->attr = $data['attrs'];
+        foreach ($data['content'] as $node) {
             $this->subnodes[] = self::getSubNode($node, $this);
         }
     }
@@ -26,8 +29,29 @@ class RootNode extends Node
         $doc = '';
         foreach ($this->subnodes as $subnode) {
             $doc .= $subnode->toSyntax();
+            $doc = rtrim($doc);
             $doc .= "\n\n";
         }
+        $doc .= $this->getMacroSyntax();
         return $doc;
+    }
+
+    /**
+     * Get the syntax for each active macro
+     *
+     * This produces the syntax representation for the and NOCACHE NOTOC macros
+     *
+     * @return string empty string or a string with a line for each active macro
+     */
+    protected function getMacroSyntax()
+    {
+        $syntax = '';
+        if (!empty($this->attr['nocache'])) {
+            $syntax .= "~~NOCACHE~~\n";
+        }
+        if (!empty($this->attr['notoc'])) {
+            $syntax .= "~~NOTOC~~\n";
+        }
+        return $syntax;
     }
 }

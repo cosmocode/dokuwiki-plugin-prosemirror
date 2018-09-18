@@ -9,7 +9,7 @@ class QuoteNode extends Node
 
     protected $parent;
 
-    public function __construct($data, $parent)
+    public function __construct($data, Node $parent)
     {
         $this->parent = &$parent;
 

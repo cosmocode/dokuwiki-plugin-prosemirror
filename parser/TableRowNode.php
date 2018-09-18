@@ -11,7 +11,7 @@ class TableRowNode extends Node
     /** @var TableNode */
     protected $parent;
 
-    public function __construct($data, TableNode $parent)
+    public function __construct($data, Node $parent)
     {
         $this->parent = $parent;
         foreach ($data['content'] as $cell) {
