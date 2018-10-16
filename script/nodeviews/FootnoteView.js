@@ -46,7 +46,7 @@ class FootnoteView extends AbstractNodeView {
             close: this.dispatchOuter.bind(this),
         });
         // And put a sub-ProseMirror into that
-        const footnoteSchema = new Schema(getFootnoteSpec());
+        const footnoteSchema = new Schema(getFootnoteSpec(() => this.innerView));
         const mi = new MenuInitializer(footnoteSchema);
         this.innerView = new EditorView(this.tooltip, {
             // You can use any node as an editor document

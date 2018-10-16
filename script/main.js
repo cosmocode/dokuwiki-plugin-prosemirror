@@ -12,7 +12,10 @@ import getNodeViews from './nodeviews';
 initializePublicAPI();
 
 window.Prosemirror.enableProsemirror = function enableProsemirror() {
-    const schema = new Schema(getSpec());
+
+    let view;
+
+    const schema = new Schema(getSpec(() => view));
 
     const mi = new MenuInitializer(schema);
 
@@ -24,7 +27,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
     ];
 
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);
-    const view = new EditorView(document.querySelector('#prosemirror__editor'), {
+    view = new EditorView(document.querySelector('#prosemirror__editor'), {
         state: EditorState.create({
             doc: Node.fromJSON(schema, JSON.parse(json.value)),
             schema,
