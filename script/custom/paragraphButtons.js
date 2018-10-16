@@ -25,10 +25,10 @@ function getInsertParagraphButton(getView, direction) {
     $paragraphButton.on('click', dispatchInsertingParagraph);
     $paragraphButton.text('Add paragraph');
     const $buttonWrapper = jQuery('<div>').append($paragraphButton);
-    $buttonWrapper.on('mouseleave', function () {
+    $buttonWrapper.on('mouseleave', () => {
         $paragraphButton.css('visibility', 'hidden');
     });
-    $buttonWrapper.on('mouseenter', function (event) {
+    $buttonWrapper.on('mouseenter', (event) => {
         const view = getView();
         const pos = view.posAtDOM(event.target.parentNode);
         const command = insertParagraphAtPos(pos, direction);

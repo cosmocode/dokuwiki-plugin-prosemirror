@@ -12,7 +12,6 @@ import getNodeViews from './nodeviews';
 initializePublicAPI();
 
 window.Prosemirror.enableProsemirror = function enableProsemirror() {
-
     let view;
 
     const schema = new Schema(getSpec(() => view));
