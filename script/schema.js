@@ -56,6 +56,12 @@ export default function getSpec() {
         },
     }));
 
+    const tableNode = nodes.get('table');
+    tableNode.toDOM = function toDOM() {
+        return ['div', { class: 'table' }, ['table', { class: 'inline' }, ['tbody', 0]]];
+    };
+    nodes.update('table', tableNode);
+
     // Nodes: https://prosemirror.net/docs/ref/#model.NodeSpec
     nodes = nodes.addToEnd('preformatted', {
         content: 'text*',
