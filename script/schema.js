@@ -34,7 +34,7 @@ export default function getSpec() {
     bulletList.content = 'list_item+';
     nodes = nodes.update('bullet_list', bulletList);
 
-    listItem.content = '(paragraph | protected_block | substitution_block)* (ordered_list | bullet_list)?';
+    listItem.content = '(paragraph | protected_block | substitution_block)+ (ordered_list | bullet_list)?';
     nodes = nodes.update('list_item', listItem);
 
     nodes = nodes.append(tableNodes({

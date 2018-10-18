@@ -168,6 +168,9 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     public function listitem_open($level, $node = false)
     {
         $this->nodestack->addTop(new Node('list_item'));
+
+        $paragraphNode = new Node('paragraph');
+        $this->nodestack->addTop($paragraphNode);
     }
 
     /** @inheritDoc */
