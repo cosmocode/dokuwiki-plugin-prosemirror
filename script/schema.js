@@ -7,17 +7,17 @@
 import { schema as schemaBasic } from 'prosemirror-schema-basic';
 import { tableNodes } from 'prosemirror-tables';
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
-import { getInsertParagraphBeforeButton, getInsertParagraphAfterButton } from './custom/paragraphButtons';
+import { getButtonSpec } from './custom/paragraphButtons';
 
 /**
- * @param {function} getView function that returns the current EditorView
+ * @param {string} viewID key that defines the view for this schema in window.Prosemirror.views
  *
  * @return {{nodes: OrderedMap, marks: OrderedMap }}
  */
-export default function getSpec(getView) {
+export default function getSpec(viewID = 'main') {
     let { nodes, marks } = schemaBasic.spec;
-    const buttonParagraphBefore = getInsertParagraphBeforeButton(getView);
-    const buttonParagraphAfter = getInsertParagraphAfterButton(getView);
+    const buttonParagraphBeforeSpec = getButtonSpec(viewID, 'before');
+    const buttonParagraphAfterSpec = getButtonSpec(viewID, 'after');
 
     const doc = nodes.get('doc');
     doc.content = '(block | baseonly | container | protected_block | substitution_block)+';
@@ -97,10 +97,11 @@ export default function getSpec(getView) {
         code: true,
         defining: true,
         toDOM(node) {
-            return ['div',
-                buttonParagraphBefore,
+            return [
+                'div',
+                buttonParagraphBeforeSpec,
                 ['pre', node.attrs, 0],
-                buttonParagraphAfter,
+                buttonParagraphAfterSpec,
             ];
         },
     });

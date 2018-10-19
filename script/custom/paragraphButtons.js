@@ -1,65 +1,49 @@
 import { insertParagraphAtPos } from '../customCommands';
 
 /**
- * @param {function} getView function that returns the current EditorView
- * @param {string}   direction should be either 'before' or 'after'
- * @return HTMLElement
+ * Attach event handler to buttons for inserting a paragraph
+ *
+ * @return {void}
  */
-function getInsertParagraphButton(getView, direction) {
-    if (typeof jQuery === 'undefined') {
-        // early return during js schema testing
-        return null;
+export function initializeButtons() {
+    if (window.Prosemirror.paragraphHandlingIsInitialized) {
+        return;
     }
-
-    function dispatchInsertingParagraph(event) {
-        event.preventDefault();
+    window.Prosemirror.paragraphHandlingIsInitialized = true;
+    jQuery(document).on('click', '.ProseMirror button.addParagraphButton', function insertParagraph(event) {
         event.stopPropagation();
-        const view = getView();
+        event.preventDefault();
+        const $button = jQuery(this);
+        const viewID = $button.data('viewid');
+        const direction = $button.data('direction');
+        const view = window.Prosemirror.views[viewID];
+
         const pos = view.posAtDOM(event.target.parentNode);
         const command = insertParagraphAtPos(pos, direction);
         command(view.state, view.dispatch);
+    });
+}
+
+/**
+ * Produce the spec for a button to insert a paragraph before or after the respective element
+ *
+ * @param viewID
+ * @param direction
+ * @return {array}
+ */
+export function getButtonSpec(viewID, direction) {
+    if (typeof LANG === 'undefined') {
+        // early return during js schema testing
+        return [];
     }
-
-    const $paragraphButton = jQuery('<button>');
-    $paragraphButton.css('visibility', 'hidden');
-    $paragraphButton.on('click', dispatchInsertingParagraph);
-    $paragraphButton.text('Add paragraph');
-    const $buttonWrapper = jQuery('<div>').append($paragraphButton);
-    $buttonWrapper.on('mouseleave', () => {
-        $paragraphButton.css('visibility', 'hidden');
-    });
-    $buttonWrapper.on('mouseenter', (event) => {
-        const view = getView();
-        const pos = view.posAtDOM(event.target.parentNode);
-        const command = insertParagraphAtPos(pos, direction);
-        if (command(view.state)) {
-            $paragraphButton.css('visibility', 'visible');
-        }
-    });
-
-    return $buttonWrapper.get(0);
-}
-
-/**
- * Returns a DOM.Node for a div with a button to insert a new paragraph before the node to which it is attached
- *
- * This button has functionality to only appear when it is actually available
- *
- * @param {function} getView function that returns the current EditorView
- * @return HTMLElement
- */
-export function getInsertParagraphBeforeButton(getView) {
-    return getInsertParagraphButton(getView, 'before');
-}
-
-/**
- * Returns a DOM.Node for a div with a button to insert a new paragraph after the node to which it is attached
- *
- * This button has functionality to only appear when it is actually available
- *
- * @param {function} getView function that returns the current EditorView
- * @return HTMLElement
- */
-export function getInsertParagraphAfterButton(getView) {
-    return getInsertParagraphButton(getView, 'after');
+    return [
+        'button',
+        {
+            class: 'addParagraphButton',
+            type: 'button',
+            'data-direction': direction,
+            'data-viewid': viewID,
+        },
+        LANG.plugins.prosemirror['button:insert paragraph'],
+    ];
 }

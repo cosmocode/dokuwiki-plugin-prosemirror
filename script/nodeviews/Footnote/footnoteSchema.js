@@ -1,7 +1,7 @@
 import getSpec from '../../schema';
 
-export default function getFootnoteSpec(getView) {
-    const baseSpec = getSpec(getView);
+export default function getFootnoteSpec(viewID) {
+    const baseSpec = getSpec(viewID);
     let footnoteSchemaNodes = baseSpec.nodes.remove('footnote').remove('heading');
     const doc = { ...footnoteSchemaNodes.get('doc') };
     const { notoc: ommitted, nocache: ommitted2, ...newDocAttrs } = doc.attrs;
