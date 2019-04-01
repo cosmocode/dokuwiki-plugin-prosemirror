@@ -4,6 +4,7 @@ dist: trusty
 language: php
 php:
   - "nightly"
+  - "7.3"
   - "7.2"
   - "7.1"
   - "7.0"
@@ -27,7 +28,7 @@ before_install:
   - yarn install
 install: sh travis.sh
 script:
-  - cd _test && phpunit --stderr --group plugin_prosemirror
+  - cd _test && ./phpunit.phar --stderr --group plugin_prosemirror
   - cd ../lib/plugins/prosemirror
   - yarn test
   - yarn lint
