@@ -150,7 +150,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
 
-        $linkForm->addButton('linkwiz', '⛓️')->attrs([
+        $linkForm->addButtonHTML('linkwiz', inlineSVG(DOKU_PLUGIN . 'prosemirror/images/link.svg'))->attrs([
             'type' => 'button',
             'class' => 'js-open-linkwiz linkform_linkwiz'
         ]);
@@ -201,7 +201,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             'style' => 'display: none;',
         ]);
         $mediaForm->addFieldsetOpen($this->getLang('legend:media'))->addClass('js-media-fieldset');
-        $mediaForm->addButton('mediamanager', '🖼️')->attrs([
+        $mediaForm->addButtonHTML('mediamanager', inlineSVG(DOKU_PLUGIN . 'prosemirror/images/image.svg'))->attrs([
             'type' => 'button',
             'class' => 'js-open-mediamanager mediaform_mediamanager'
         ]);

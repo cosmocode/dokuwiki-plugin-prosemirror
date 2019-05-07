@@ -70,6 +70,13 @@
         }
     }
 
+    // reset user agent margins for placeholder p in tables
+    th > p:only-child,
+    td > p:only-child {
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
     .selectedCell {
         background-color: rgba(200, 200, 255, 0.4);
     }
@@ -129,6 +136,14 @@
             padding: 0;
             background: transparent;
             border: none;
+
+            svg {
+                width: 22px;
+                height: 22px;
+                fill: #252525;
+                margin: 0;
+            }
+
         }
     }
 }
