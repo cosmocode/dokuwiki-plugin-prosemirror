@@ -18,10 +18,10 @@ export default class TableMenuItemDispatcher extends AbstractMenuItemDispatcher 
                     return false;
                 }
                 if (dispatch) {
-                    const tableCell = schema.nodes.table_cell.create();
-                    const rowCells = [tableCell, tableCell.copy()];
+                    const tableCell = schema.nodes.table_cell.create({}, schema.nodes.paragraph.create());
+                    const rowCells = [tableCell, tableCell.copy(tableCell.content)];
                     const tableRow = schema.nodes.table_row.create({}, rowCells);
-                    const tableRows = [tableRow, tableRow.copy()];
+                    const tableRows = [tableRow, tableRow.copy(tableRow.content)];
                     const tableNode = schema.nodes.table.create({}, tableRows);
                     dispatch(state.tr.replaceSelectionWith(tableNode));
                 }
