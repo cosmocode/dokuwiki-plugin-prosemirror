@@ -1,6 +1,7 @@
 import { keymap } from 'prosemirror-keymap';
 import { splitListItem } from 'prosemirror-schema-list';
 import { baseKeymap, chainCommands } from 'prosemirror-commands';
+import { redo, undo } from 'prosemirror-history';
 
 function getKeymapPlugin(schema) {
     const customKeymap = {};
@@ -14,10 +15,13 @@ function getKeymapPlugin(schema) {
         return acc;
     }, {});
 
+    const historyKeymap = { 'Mod-z': undo, 'Mod-y': redo };
+
     const mergedKeymap = {
         ...baseKeymap,
         ...customKeymap,
         ...combinedKeymapUnion,
+        ...historyKeymap,
     };
 
     return keymap(mergedKeymap);
