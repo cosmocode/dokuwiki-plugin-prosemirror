@@ -5,6 +5,7 @@ import { Schema, Node } from 'prosemirror-model';
 import { tableEditing } from 'prosemirror-tables';
 import getSpec from './schema';
 import getKeymapPlugin from './plugins/Keymap/keymap';
+import buildInputRules from './plugins/InputRules/inputrules';
 import initializePublicAPI from './initializePublicAPI';
 import MenuInitializer from './plugins/Menu/MenuInitializer';
 import getNodeViews from './nodeviews';
@@ -20,6 +21,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
     const plugins = [
         mi.getMenuPlugin(),
         getKeymapPlugin(schema),
+        buildInputRules(schema),
         tableEditing(schema),
     ];
 
