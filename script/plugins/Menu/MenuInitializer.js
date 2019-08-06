@@ -34,6 +34,8 @@ import TRemoveMenuItemDispatcher from './MenuItems/TRemoveMenuItemDispatcher';
 import TCellAlignMenuItemDispatcher from './MenuItems/TCellAlignMenuItemDispatcher';
 import PageMacroDropdownDispatcher from './MenuItems/PageMacroDropdownDispatcher';
 import PageMacroMenuItemDispatcher from './MenuItems/PageMacroMenuItemDispatcher';
+import UndoMenuItemDispatcher from './MenuItems/UndoMenuItemDispatcher';
+import RedoMenuItemDispatcher from './MenuItems/RedoMenuItemDispatcher';
 
 class MenuInitializer {
     constructor(schema) {
@@ -64,6 +66,8 @@ class MenuInitializer {
             OrderedListMenuItemDispatcher,
             LiftListItemMenuItemDispatcher,
             SinkListItemMenuItemDispatcher,
+            UndoMenuItemDispatcher,
+            RedoMenuItemDispatcher,
             CodeMenuItemDispatcher,
             ParagraphMenuItemDispatcher,
             BlockquoteMenuItemDispatcher,
