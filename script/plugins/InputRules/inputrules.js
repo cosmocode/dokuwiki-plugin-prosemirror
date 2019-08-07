@@ -11,7 +11,16 @@ export function smileyRule() {
     return new InputRule(SmileyConf.getRegex(), ((state, match) => {
         const { tr } = state;
         const syntax = match[0];
-        const icon = SmileyConf.getFilename(syntax);
+
+        // get icon corresponding to the captured group
+        let group = 0;
+        for (let i = 0; i < match.length; i += 1) {
+            if (i > 0 && match[i] === syntax) {
+                group = i;
+                break;
+            }
+        }
+        const { icon } = SmileyConf.getSmileys()[group - 1];
 
         tr.setSelection(TextSelection.create(tr.doc, tr.selection.from, tr.selection.from - syntax.length + 1));
         return tr.replaceSelectionWith(state.schema.nodes.smiley.create({ icon, syntax }));
@@ -26,8 +35,7 @@ export function smileyRule() {
  */
 export default function buildInputRules(schema) {
     const rules = [];
-    const type = schema.nodes.smiley;
-    if (type) {
+    if (schema.nodes.smiley) {
         rules.push(smileyRule());
     }
     return inputRules({ rules });
