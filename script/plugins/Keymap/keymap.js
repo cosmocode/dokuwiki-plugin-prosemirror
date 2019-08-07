@@ -4,6 +4,9 @@ import { baseKeymap, chainCommands } from 'prosemirror-commands';
 import { redo, undo } from 'prosemirror-history';
 
 function getKeymapPlugin(schema) {
+    // Mac OS has its own typical shortcuts
+    const isMac = typeof navigator !== 'undefined' ? /Mac/.test(navigator.platform) : false;
+
     const customKeymap = {};
 
     customKeymap.Enter = splitListItem(schema.nodes.list_item); // eslint-disable-line import/no-named-as-default-member
@@ -15,7 +18,10 @@ function getKeymapPlugin(schema) {
         return acc;
     }, {});
 
-    const historyKeymap = { 'Mod-z': undo, 'Mod-y': redo };
+    const historyKeymap = { 'Mod-z': undo, 'Mod-Shift-z': redo };
+    if (!isMac) {
+        historyKeymap['Mod-y'] = redo;
+    }
 
     const mergedKeymap = {
         ...baseKeymap,
