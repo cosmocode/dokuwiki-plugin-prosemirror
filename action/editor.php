@@ -270,6 +270,9 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         echo $datalistHTML;
     }
 
+    /**
+     * Provide the current smiley configuration to Javascript
+     */
     public function addJSINFO()
     {
         global $JSINFO;

@@ -21,6 +21,6 @@ export default class SmileyConf {
     static getRegex() {
         const smileyGroups = this.getSmileys().map(smiley => `(${SmileyConf.escapeRegExp(smiley.syntax)})`);
         const regexstring = smileyGroups.join('|');
-        return new RegExp(`${regexstring}`);
+        return new RegExp(regexstring);
     }
 }
