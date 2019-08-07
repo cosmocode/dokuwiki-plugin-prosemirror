@@ -91,6 +91,8 @@ $lang['js']['label:superscript'] = 'hoch stellen';
 $lang['js']['label:subscript'] = 'tief stellen';
 $lang['js']['label:deleted'] = 'durchstreichen';
 $lang['js']['label:monospaced'] = 'feste Zeichenbreite';
+$lang['js']['label:undo'] = 'rückgängig machen';
+$lang['js']['label:redo'] = 'wiederherstellen';
 
 $lang['js']['label:rss url'] = 'URL des RSS-Feeds';
 $lang['js']['label:rss nOfItems'] = 'Maximale Anzahl an Einträgen';

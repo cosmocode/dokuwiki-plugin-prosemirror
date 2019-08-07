@@ -3,6 +3,7 @@ import { EditorView } from 'prosemirror-view';
 import { Schema, Node } from 'prosemirror-model';
 
 import { tableEditing } from 'prosemirror-tables';
+import { history } from 'prosemirror-history';
 import getSpec from './schema';
 import getKeymapPlugin from './plugins/Keymap/keymap';
 import initializePublicAPI from './initializePublicAPI';
@@ -19,6 +20,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
     // PLUGIN ORDER IS IMPORTANT!
     const plugins = [
         mi.getMenuPlugin(),
+        history(),
         getKeymapPlugin(schema),
         tableEditing(schema),
     ];
