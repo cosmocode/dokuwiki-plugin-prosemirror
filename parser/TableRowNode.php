@@ -29,7 +29,7 @@ class TableRowNode extends Node
             if (!empty($rowSpans[$colIndex])) {
                 $doc .= '| ::: ';
                 $rowSpans[$colIndex] -= 1;
-                $colspan = 1;
+                $colSpan = 1;
                 continue;
             }
             $tableCell = array_shift($this->tableCells);
