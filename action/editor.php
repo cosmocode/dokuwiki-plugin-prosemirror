@@ -276,13 +276,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     public function addJSINFO()
     {
         global $JSINFO;
-
-        $smileyConf = [];
-        $smileys = getSmileys();
-        foreach ($smileys as $syntax => $icon) {
-            $smileyConf[] = ['syntax' => $syntax, 'icon' => $icon];
-        }
-        $JSINFO['SMILEY_CONF'] = $smileyConf;
+        $JSINFO['SMILEY_CONF'] = getSmileys();
     }
 }
 

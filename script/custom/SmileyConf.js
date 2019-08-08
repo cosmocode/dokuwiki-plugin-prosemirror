@@ -14,13 +14,16 @@ export default class SmileyConf {
     }
 
     /**
-     * Regex from conf
+     * Build Regex from conf
+     *
+     * Similar to DokuWiki parser but without lookbehind (currently supported only by Chrome)
+     * @see \Doku_Parser_Mode_smiley
      *
      * @returns {RegExp}
      */
     static getRegex() {
-        const smileyGroups = this.getSmileys().map(smiley => `(${SmileyConf.escapeRegExp(smiley.syntax)})`);
-        const regexstring = smileyGroups.join('|');
-        return new RegExp(regexstring);
+        const smileyGroups = Object.keys(this.getSmileys())
+            .map(smiley => SmileyConf.escapeRegExp(smiley));
+        return new RegExp(`(?:\\W|^)(${smileyGroups.join('|')})(?=\\W|$)`);
     }
 }

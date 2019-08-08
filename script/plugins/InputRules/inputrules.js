@@ -10,17 +10,8 @@ import SmileyConf from '../../custom/SmileyConf';
 export function smileyRule() {
     return new InputRule(SmileyConf.getRegex(), ((state, match) => {
         const { tr } = state;
-        const syntax = match[0];
-
-        // get icon corresponding to the captured group
-        let group = 0;
-        for (let i = 0; i < match.length; i += 1) {
-            if (i > 0 && match[i] === syntax) {
-                group = i;
-                break;
-            }
-        }
-        const { icon } = SmileyConf.getSmileys()[group - 1];
+        const syntax = match[1];
+        const icon = SmileyConf.getSmileys()[syntax];
 
         tr.setSelection(TextSelection.create(tr.doc, tr.selection.from, tr.selection.from - syntax.length + 1));
         return tr.replaceSelectionWith(state.schema.nodes.smiley.create({ icon, syntax }));
