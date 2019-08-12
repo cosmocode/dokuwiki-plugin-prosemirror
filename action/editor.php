@@ -23,6 +23,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('ACTION_HEADERS_SEND', 'BEFORE', $this, 'forceWYSIWYG');
+        $controller->register_hook('ACTION_HEADERS_SEND', 'AFTER', $this, 'addJSINFO');
         $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
     }
@@ -267,6 +268,15 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         }
         $datalistHTML .= '</datalist>';
         echo $datalistHTML;
+    }
+
+    /**
+     * Provide the current smiley configuration to Javascript
+     */
+    public function addJSINFO()
+    {
+        global $JSINFO;
+        $JSINFO['SMILEY_CONF'] = getSmileys();
     }
 }
 
