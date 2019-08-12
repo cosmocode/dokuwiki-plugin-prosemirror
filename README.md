@@ -103,7 +103,10 @@ The scripts in `script/` are also checked when building with eslint.
 Eslint can also be run on its own with `yarn eslint`.
 
 ## Copyright
-Copyright (C) Andreas Gohr <gohr@cosmocode.de>
+Copyright (C) CosmoCode GmbH <dokuwiki@cosmocode.de>
+    Andreas Gohr
+    Michael Grosse
+    Anna Dabrowska
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
