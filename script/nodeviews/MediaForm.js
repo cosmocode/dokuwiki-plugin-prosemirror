@@ -36,6 +36,12 @@ class MediaForm extends CustomForm {
      */
     mediaSelect(edid, mediaid, opts, align) {
         this.setSource(mediaid);
+
+        // there are no options when media is not an image, nothing to set
+        if (!opts) {
+            return;
+        }
+
         const [, linking, width] = /\?([a-z]+)?&?(\d+)?/.exec(opts);
         this.setWidth(width);
         this.setHeight();
