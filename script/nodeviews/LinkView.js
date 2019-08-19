@@ -115,6 +115,7 @@ class LinkView extends AbstractNodeView {
                     newAttrs,
                     this.node.marks,
                 ));
+                this.deselectNode();
             },
         ));
     }

@@ -65,6 +65,7 @@ class MediaView extends AbstractNodeView {
                     newAttrs,
                     this.node.marks,
                 ));
+                this.deselectNode();
             },
         ));
     }

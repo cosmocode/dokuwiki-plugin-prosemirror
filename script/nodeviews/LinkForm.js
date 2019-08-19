@@ -1,18 +1,25 @@
 import CustomForm from './CustomForm';
 import MediaForm from './MediaForm';
 
+let lfInstance = null;
+
 class LinkForm extends CustomForm {
     constructor() {
         super('prosemirror-linkform');
 
-        this.name = LANG.plugins.prosemirror.linkConfig;
+        // prevent repeated initialization
+        if (!lfInstance) {
+            this.name = LANG.plugins.prosemirror.linkConfig;
 
-        if (jQuery('#prosemirror-linkform').length) {
-            this.initializeLinkForm();
-            return;
+            if (jQuery('#prosemirror-linkform').length) {
+                this.initializeLinkForm();
+                lfInstance = this;
+                return;
+            }
+
+            jQuery(this.initializeLinkForm.bind(this));
+            lfInstance = this;
         }
-
-        jQuery(this.initializeLinkForm.bind(this));
     }
 
     getLinkType() {
