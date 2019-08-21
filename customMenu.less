@@ -1,16 +1,13 @@
-@menuitem_size: 2.5em;
-@menuicon_size: 1.5em;
-@menu_padding: 0.5em;
+@menuitem_size: 2em;
+@menuicon_size: 1.2em;
+@menu_padding: 0.1em;
 
 .prosemirror_wrapper {
     position: relative;
-    padding-top: @menuitem_size;
 }
 
 .menubar {
-    position: absolute;
     top: 0;
-    display: flex;
     background: @ini_background;
 
     .menuicon {
@@ -97,6 +94,10 @@
             .menulabel {
                 display: inline;
             }
+        }
+
+        img {
+            float: left;
         }
     }
 }
