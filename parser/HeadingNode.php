@@ -17,7 +17,7 @@ class HeadingNode extends Node
 
     public function __construct($data, Node $parent)
     {
-        if (empty($data['content'][0]['text'])) {
+        if (trim($data['content'][0]['text']) === '') {
             return;
         }
 
