@@ -17,6 +17,10 @@ class HeadingNode extends Node
 
     public function __construct($data, Node $parent)
     {
+        if (trim($data['content'][0]['text']) === '') {
+            return;
+        }
+
         $this->parent = &$parent;
         $this->level = $data['attrs']['level'];
         $this->text = $data['content'][0]['text'];
