@@ -29,7 +29,9 @@ class ParagraphNode extends Node
     {
         $doc = '';
         foreach ($this->subnodes as $subnode) {
+            if (is_a($subnode, ParagraphNode::class)) $doc .= "\n";
             $doc .= $subnode->toSyntax();
+            if (is_a($subnode, ParagraphNode::class)) $doc .= "\n";
         }
         return $doc;
     }
