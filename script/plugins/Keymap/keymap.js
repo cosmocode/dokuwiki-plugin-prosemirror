@@ -1,6 +1,6 @@
 import { keymap } from 'prosemirror-keymap';
 import { splitListItem } from 'prosemirror-schema-list';
-import { baseKeymap, chainCommands } from 'prosemirror-commands';
+import { baseKeymap, chainCommands, newlineInCode } from 'prosemirror-commands';
 import { redo, undo } from 'prosemirror-history';
 
 function getKeymapPlugin(schema) {
@@ -22,12 +22,15 @@ function getKeymapPlugin(schema) {
     if (!isMac) {
         historyKeymap['Mod-y'] = redo;
     }
-
+	
+    const newLineInCodeblock = { 'Shift-Enter': chainCommands(newlineInCode) };
+	
     const mergedKeymap = {
         ...baseKeymap,
         ...customKeymap,
         ...combinedKeymapUnion,
         ...historyKeymap,
+        ...newLineInCodeblock,
     };
 
     return keymap(mergedKeymap);
