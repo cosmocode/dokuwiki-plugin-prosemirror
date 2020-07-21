@@ -20,12 +20,12 @@ $lang['type:image'] = 'Bild als Titel nutzen';
 
 $lang['placeholder:link name'] = '(automatisch)';
 
-$lang['legend:media'] = 'Bild';
+$lang['legend:media'] = 'Bild oder Datei';
 $lang['legend:alignment'] = 'Ausrichtung';
 $lang['legend:linking'] = 'Verlinkung';
 $lang['legend:caching'] = 'Caching';
-$lang['media target'] = 'Bilddatei';
-$lang['label:caption'] = 'Titel';
+$lang['media target'] = 'Bilddatei oder Dokument';
+$lang['label:caption'] = 'Titel / Linktext';
 $lang['label:width'] = 'Breite (px)';
 $lang['label:height'] = 'Höhe (px)';
 $lang['label:default alignment'] = 'Standard';

@@ -202,7 +202,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             'style' => 'display: none;',
         ]);
         $mediaForm->addFieldsetOpen($this->getLang('legend:media'))->addClass('js-media-fieldset');
-        $mediaForm->addButtonHTML('mediamanager', inlineSVG(DOKU_PLUGIN . 'prosemirror/images/image.svg'))->attrs([
+        $mediaForm->addButtonHTML('mediamanager', inlineSVG(DOKU_PLUGIN . 'prosemirror/images/file-image-outline.svg'))->attrs([
             'type' => 'button',
             'class' => 'js-open-mediamanager mediaform_mediamanager'
         ]);
