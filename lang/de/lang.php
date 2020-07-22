@@ -21,6 +21,8 @@ $lang['type:image'] = 'Bild als Titel nutzen';
 $lang['placeholder:link name'] = '(automatisch)';
 
 $lang['legend:media'] = 'Bild oder Datei';
+$lang['label:image_properties'] = 'Bildeigenschaften';
+$lang['legend:size'] = 'Größe';
 $lang['legend:alignment'] = 'Ausrichtung';
 $lang['legend:linking'] = 'Verlinkung';
 $lang['legend:caching'] = 'Caching';

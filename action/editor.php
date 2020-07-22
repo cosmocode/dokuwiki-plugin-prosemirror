@@ -213,10 +213,23 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             ]
         );
         $mediaForm->addTextInput('mediacaption', $this->getLang('label:caption'));
+
+        $mediaForm->addTagOpen('div')->addClass('image-properties');
+        $mediaForm->addTagOpen('p');
+        $mediaForm->addHTML($this->getLang('label:image_properties'));
+        $mediaForm->addTagClose('p');
+
+        $mediaForm->addTagOpen('div')->addClass('input-wrapper');
+        $mediaForm->addTagOpen('fieldset');
+        $mediaForm->addTagOpen('legend');
+        $mediaForm->addHTML($this->getLang('legend:size'));
+        $mediaForm->addTagClose('legend');
         $mediaForm->addTextInput('width', $this->getLang('label:width'))->attr('type', 'number');
         $mediaForm->addTextInput('height', $this->getLang('label:height'))->attr('type', 'number');
+        $mediaForm->addTagClose('fieldset');
+        $mediaForm->addTagClose('div');
 
-        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addTagOpen('div')->addClass('input-wrapper');
         $mediaForm->addTagOpen('fieldset');
         $mediaForm->addTagOpen('legend');
         $mediaForm->addHTML($this->getLang('legend:alignment'));
@@ -228,7 +241,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $mediaForm->addTagClose('fieldset');
         $mediaForm->addTagClose('div');
 
-        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addTagOpen('div')->addClass('input-wrapper');
         $mediaForm->addTagOpen('fieldset');
         $mediaForm->addTagOpen('legend');
         $mediaForm->addHTML($this->getLang('legend:linking'));
@@ -240,7 +253,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $mediaForm->addTagClose('fieldset');
         $mediaForm->addTagClose('div');
 
-        $mediaForm->addTagOpen('div')->addClass('radio-wrapper');
+        $mediaForm->addTagOpen('div')->addClass('input-wrapper');
         $mediaForm->addTagOpen('fieldset');
         $mediaForm->addTagOpen('legend');
         $mediaForm->addHTML($this->getLang('legend:caching'));
@@ -250,6 +263,8 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $mediaForm->addRadioButton('caching', $this->getLang('label:nocache'))->val('nocache');
         $mediaForm->addTagClose('fieldset');
         $mediaForm->addTagClose('div');
+
+        $mediaForm->addTagClose('div'); // end of image-properties
 
         $mediaForm->addFieldsetClose();
         $mediaForm->addButton('ok-button', 'OK')->attr('type', 'submit');
