@@ -20,12 +20,14 @@ $lang['type:image'] = 'Use an image as title';
 
 $lang['placeholder:link name'] = '(automatic)';
 
-$lang['legend:media'] = 'Media';
+$lang['legend:media'] = 'Media or file';
+$lang['label:image_properties'] = 'Image properties';
+$lang['legend:size'] = 'Dimensions';
 $lang['legend:alignment'] = 'Alignment';
 $lang['legend:linking'] = 'Linking';
 $lang['legend:caching'] = 'Caching';
-$lang['media target'] = 'Image file';
-$lang['label:caption'] = 'Caption';
+$lang['media target'] = 'Image or document file';
+$lang['label:caption'] = 'Caption / link text';
 $lang['label:width'] = 'Width (px)';
 $lang['label:height'] = 'Height (px)';
 $lang['label:default alignment'] = 'Default';

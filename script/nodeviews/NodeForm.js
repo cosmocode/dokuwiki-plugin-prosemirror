@@ -9,7 +9,7 @@ class NodeForm {
         this.$form.dialog({
             title: this.name,
             closeText: LANG.plugins.prosemirror.cancel,
-            width: 800,
+            width: 600,
             appendTo: '.dokuwiki',
             modal: true,
             open: () => {
