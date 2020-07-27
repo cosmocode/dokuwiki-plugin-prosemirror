@@ -335,13 +335,42 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->nodestack->drop('preformatted');
     }
 
-    public function code($text, $lang = null, $file = null)
+    public function code($text, $lang = null, $file = null, $ext = null)
     {
         $this->clearBlock();
         $node = new Node('code_block');
         $node->attr('class', 'code ' . $lang);
         $node->attr('data-language', $lang);
-        $node->attr('data-filename', $file);
+		$node->attr('data-filename', rtrim($file));
+		if ($ext)
+		{
+			if (isset($ext['start_line_numbers_at']))
+			{
+				$start_line_numbers_at = $ext['start_line_numbers_at'];
+				if (isset($ext['enable_line_numbers']) && ($ext['enable_line_numbers'] === false))
+				{
+					$start_line_numbers_at = -$start_line_numbers_at;
+				}
+				$node->attr('data-sln', $start_line_numbers_at);
+				$node->attr('data-sln-old', $start_line_numbers_at);
+			}
+			else
+			{
+				$node->attr('data-sln-old', '1');
+			}		
+			if (isset($ext['highlight_lines_extra']))
+			{
+				$str = '';
+				asort($ext['highlight_lines_extra']);
+				foreach($ext['highlight_lines_extra'] as $hle)
+				{
+					if ($str) $str .= ',';
+					if ($start_line_numbers_at > 0) $hle += $start_line_numbers_at - 1;
+					$str .= $hle;
+				}
+				$node->attr('data-hle', $str);
+			}
+		}
         $this->nodestack->addTop($node);
         $this->cdata(trim($text, "\n"));
         $this->nodestack->drop('code_block');
