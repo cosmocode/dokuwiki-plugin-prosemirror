@@ -20,13 +20,13 @@ $lang['type:image'] = 'Bild als Titel nutzen';
 
 $lang['placeholder:link name'] = '(automatisch)';
 
-$lang['legend:media'] = 'Bild oder Datei';
+$lang['legend:media'] = 'Medien (Bild oder Datei)';
 $lang['label:image_properties'] = 'Bildeigenschaften';
 $lang['legend:size'] = 'Größe';
 $lang['legend:alignment'] = 'Ausrichtung';
 $lang['legend:linking'] = 'Verlinkung';
 $lang['legend:caching'] = 'Caching';
-$lang['media target'] = 'Bilddatei oder Dokument';
+$lang['media target'] = 'Mediendatei';
 $lang['label:caption'] = 'Titel / Linktext';
 $lang['label:width'] = 'Breite (px)';
 $lang['label:height'] = 'Höhe (px)';
@@ -46,8 +46,8 @@ $lang['cancel'] = 'Abbrechen';
 
 $lang['js']['cancel'] = $lang['cancel'];
 
-$lang['js']['linkConfig'] = 'Link-Einstellungen';
-$lang['js']['mediaConfig'] = 'Bildeinstellungen';
+$lang['js']['linkConfig'] = 'Link-Einstellungenn';
+$lang['js']['mediaConfig'] = 'Medieneinstellungen';
 $lang['js']['rssConfig'] = 'RSS-Feed konfigurieren';
 $lang['js']['footnoteViewTitle'] = 'Fußnote bearbeiten';
 $lang['js']['placeholder:page'] = 'namensraum:seite';
@@ -58,7 +58,7 @@ $lang['js']['label:code'] = 'Code Block';
 $lang['js']['label:footnote'] = 'Fußnote hinzufügen';
 $lang['js']['label:headings'] = 'Überschriften';
 $lang['js']['label:heading'] = 'Überschrift %s';
-$lang['js']['label:image'] = 'Bild oder Datei einfügen';
+$lang['js']['label:media'] = 'Mediendatei einfügen';
 $lang['js']['label:liftLI'] = 'Listenelement einrücken';
 $lang['js']['label:link'] = 'Link einfügen';
 $lang['js']['label:orderedList'] = 'geordnete Liste';
