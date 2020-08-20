@@ -47,7 +47,7 @@ $lang['cancel'] = 'Cancel';
 $lang['js']['cancel'] = $lang['cancel'];
 
 $lang['js']['linkConfig'] = 'Link Configuration';
-$lang['js']['mediaConfig'] = 'Image Configuration';
+$lang['js']['mediaConfig'] = 'Media Configuration';
 $lang['js']['rssConfig'] = 'RSS-Feed Configuration';
 $lang['js']['footnoteViewTitle'] = 'Edit footnote';
 $lang['js']['placeholder:page'] = 'namespace:page';
@@ -58,7 +58,7 @@ $lang['js']['label:code'] = 'Code Block';
 $lang['js']['label:footnote'] = 'Add a footnote';
 $lang['js']['label:headings'] = 'Headings';
 $lang['js']['label:heading'] = 'Heading %s';
-$lang['js']['label:image'] = 'Insert image or file';
+$lang['js']['label:media'] = 'Insert image or file';
 $lang['js']['label:liftLI'] = 'Lift list item';
 $lang['js']['label:link'] = 'Insert Link';
 $lang['js']['label:orderedList'] = 'Wrap in ordered list';
