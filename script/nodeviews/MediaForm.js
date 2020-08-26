@@ -1,7 +1,5 @@
 import CustomForm from './CustomForm';
 
-let mfInstance = null;
-
 class MediaForm extends CustomForm {
     /**
      * @param {string} id ID of the form
@@ -10,13 +8,9 @@ class MediaForm extends CustomForm {
     constructor(id = 'prosemirror-mediaform') {
         super(id);
 
-        // prevent repeated initialization
-        if (!mfInstance) {
-            this.name = LANG.plugins.prosemirror.mediaConfig;
-            this.$form.find('.js-open-mediamanager').on('click', MediaForm.openMediaManager);
-            window.pmMediaSelect = this.mediaSelect.bind(this);
-            mfInstance = this;
-        }
+        this.name = LANG.plugins.prosemirror.mediaConfig;
+        this.$form.find('.js-open-mediamanager').on('click', MediaForm.openMediaManager);
+        window.pmMediaSelect = this.mediaSelect.bind(this);
     }
 
     /**
