@@ -1,0 +1,103 @@
+@menuitem_size: 2em;
+@menuicon_size: 1.2em;
+@menu_padding: 0.1em;
+
+.prosemirror_wrapper {
+    position: relative;
+}
+
+.menubar {
+    top: 0;
+    background: @ini_background;
+
+    .menuicon {
+        width: @menuitem_size;
+        text-align: center;
+
+        svg {
+            width: @menuicon_size;
+            height: @menuicon_size;
+            fill: @ini_text;
+        }
+    }
+
+    .menulabel {
+        display: none;
+        min-width: @menuitem_size;
+        padding: 0 3px;
+        color: @ini_text;
+    }
+
+    .menuitem {
+        display: inline-flex;
+        align-items: center;
+        box-sizing: border-box;
+        height: @menuitem_size;
+        padding: @menu_padding;
+        border-right: 1px solid fade(@ini_border, 30%);
+        cursor: pointer;
+
+        &:hover {
+            background-color: fade(@ini_border, 30%);
+        }
+
+        &.dropdown {
+            position: relative;
+
+            .menulabel {
+                display: block;
+            }
+
+            .dropdown-indicator {
+                width: 1em;
+            }
+        }
+
+        &.is-active {
+            border: 1px solid @ini_link;
+
+            > .menuicon svg {
+                fill: @ini_link;
+            }
+
+            > .menulabel {
+                color: @ini_link;
+            }
+        }
+
+        &.is-disabled {
+            pointer-events: none;
+
+            > .menuicon svg,
+            > .dropdown-indicator svg {
+                fill: @ini_border;
+            }
+
+            > .menulabel {
+                color: @ini_border;
+            }
+        }
+    }
+
+    .dropdown_content {
+        position: absolute;
+        top: @menuitem_size;
+        left: 0;
+        max-width: 300px;
+        white-space: nowrap;
+        background-color: @ini_background;
+        outline: 1px dotted @ini_border;
+
+        .menuitem {
+            display: flex;
+
+            .menulabel {
+                display: inline;
+            }
+        }
+
+        img {
+            float: left;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+# auto replies used by probot/auto-comment
+
+issuesOpened: >
+  Thank you for opening this issue.
+
+  [CosmoCode](https://www.cosmocode.de) is a software company in Berlin providing services for wiki, app and web development. As such we can't guarantee quick responses for issues opened on our Open Source projects.
+
+  If you require certain features or bugs fixed, you can always hire us. Feel free to contact us at dokuwiki@cosmocode.de for an offer.
+

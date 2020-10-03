@@ -1,0 +1,164 @@
+@import "customMenu.less";
+
+@highlight-odd-ini_text: fade(@ini_background, 95%);
+@highlight-even-ini_text: fade(@ini_text, 5%);
+
+.ProseMirror {
+    padding: 4px 8px 4px 14px;
+    white-space: pre-wrap;
+    background: repeating-linear-gradient(
+        -45deg,
+        @highlight-odd-ini_text,
+        @highlight-odd-ini_text 10px,
+        @highlight-even-ini_text 10px,
+        @highlight-even-ini_text 20px,
+    );
+    outline: none;
+    counter-reset: prosemirror-footnote;
+
+    &::after {
+        display: block;
+        clear: both;
+        content: '';
+    }
+
+    .ProseMirror-selectednode {
+        outline: 2px solid #8cf;
+    }
+
+    li p {
+        margin: 0;
+        color: @ini_text;
+    }
+
+    .dwplugin {
+        border: 1px solid greenyellow;
+    }
+
+    .dwplugin::before {
+        content: '🔧';
+        color: greenyellow;
+        cursor: grab;
+        cursor: -webkit-grab;
+    }
+
+    .nodeHasForm {
+        &:hover {
+            background-color: #e8f1fd;
+            box-shadow: inset 0 0 0 1px #c6e0ff;
+        }
+    }
+
+    dl.code dd {
+        pre {
+            &::after {
+                content: attr(data-exithint);
+                float: right;
+                padding: 2px;
+                background: transparent;
+                border: 1px solid @ini_border;
+                border-radius: 7px;
+                box-shadow: 1px 3px @ini_border;
+            }
+        }
+    }
+
+    .footnote {
+        &::after {
+            content: counter(prosemirror-footnote) ')';
+            counter-increment: prosemirror-footnote;
+        }
+    }
+
+    // reset user agent margins for placeholder p in tables
+    th > p:only-child,
+    td > p:only-child {
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
+    .selectedCell {
+        background-color: rgba(200, 200, 255, 0.4);
+    }
+}
+
+.dokuwiki {
+    .plugin_prosemirror_useWYSIWYG {
+        position: absolute;
+        top: 55px;
+        right: 30px;
+        padding: 5px;
+        color: black;
+        background: yellow none;
+    }
+
+    .footnote-tooltip {
+        .menubar {
+            position: static;
+        }
+    }
+
+    .plugin_prosemirror_linkform,
+    .plugin_prosemirror_mediaform,
+    .plugin_prosemirror_keyvalueform {
+        padding: 0;
+        background-color: white;
+
+        fieldset {
+            width: auto;
+        }
+
+        label {
+            display: block;
+            padding: 0.2rem;
+
+            input,
+            select {
+                width: 45%;
+            }
+
+            span {
+                display: inline-block;
+                width: 48%;
+                padding-right: 0.5em;
+            }
+
+            &:hover {
+                background-color: @ini_background_alt;
+            }
+        }
+
+        .mediaform_mediamanager,
+        .linkform_linkwiz {
+            float: right;
+            height: 30px;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+
+            svg {
+                width: 22px;
+                height: 22px;
+                margin: 0;
+                fill: #252525;
+            }
+        }
+
+        div.image-properties {
+            div.input-wrapper {
+                label {
+                    padding: 0.2rem 0 0 0;
+                }
+            }
+
+            p {
+                margin: 0.75em 0 0.25rem 0;
+            }
+        }
+    }
+
+    #link__wiz {
+        z-index: 105; // set to what plugin edittable defines
+    }
+}
