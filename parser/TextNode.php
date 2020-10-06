@@ -105,7 +105,25 @@ class TextNode extends Node implements InlineNodeInterface
 
     public function getInnerSyntax()
     {
-        return $this->text;
+        if ($this->marks['unformatted']) {
+            return $this->text;
+        }
+        return preg_replace_callback(
+            "/\bhttps?:\/\/|__+|\/\/+|%%+|''+|\*\*+/",
+            function ($matches)
+            {
+                switch ($matches[0][0]) {
+                    case 'h':
+                        // We matched http(s)://
+                        return $matches[0];
+                    case '%':
+                        return '<nowiki>' . $matches[0] . '</nowiki>';
+                    default:
+                        return '%%' . $matches[0] . '%%';
+                }
+            },
+            $this->text
+        );
     }
 
 
