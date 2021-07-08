@@ -103,4 +103,6 @@ $lang['js']['label:rss date'] = 'Zeige das Datum des Eintrages';
 $lang['js']['label:rss details'] = 'Zeige die Beschreibung des Eintrages';
 $lang['js']['label:rss refresh'] = 'Abfragerhythmus';
 
+$lang['js']['button:insert paragraph'] = 'Absatz einfügen';
+
 $lang['js']['code_block_hint'] = '💡 Zum Verlassen drücken Sie STRG+Enter';

@@ -7,9 +7,17 @@
 import { schema as schemaBasic } from 'prosemirror-schema-basic';
 import { tableNodes } from 'prosemirror-tables';
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
+import { getButtonSpec } from './custom/paragraphButtons';
 
-export default function getSpec() {
+/**
+ * @param {string} viewID key that defines the view for this schema in window.Prosemirror.views
+ *
+ * @return {{nodes: OrderedMap, marks: OrderedMap }}
+ */
+export default function getSpec(viewID = 'main') {
     let { nodes, marks } = schemaBasic.spec;
+    const buttonParagraphBeforeSpec = getButtonSpec(viewID, 'before');
+    const buttonParagraphAfterSpec = getButtonSpec(viewID, 'after');
 
     const doc = nodes.get('doc');
     doc.content = '(block | baseonly | container | protected_block | substitution_block)+';
@@ -95,7 +103,12 @@ export default function getSpec() {
         code: true,
         defining: true,
         toDOM(node) {
-            return ['pre', node.attrs, 0];
+            return [
+                'div',
+                buttonParagraphBeforeSpec,
+                ['pre', node.attrs, 0],
+                buttonParagraphAfterSpec,
+            ];
         },
     });
 
