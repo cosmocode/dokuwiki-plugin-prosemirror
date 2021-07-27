@@ -1,12 +1,12 @@
 # prosemirror Plugin for DokuWiki
-[![Build Status](https://travis-ci.org/cosmocode/dokuwiki-plugin-prosemirror.svg?branch=master)](https://travis-ci.org/cosmocode/dokuwiki-plugin-prosemirror) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cosmocode/dokuwiki-plugin-prosemirror/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cosmocode/dokuwiki-plugin-prosemirror/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cosmocode/dokuwiki-plugin-prosemirror/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cosmocode/dokuwiki-plugin-prosemirror/?branch=master)
 
 A WYSIWYG editor for DokuWiki
 
-All documentation for this plugin can be found at 
+All documentation for this plugin can be found at
 https://www.dokuwiki.org/plugin:prosemirror
 
-If you install this plugin manually, make sure it is installed in 
+If you install this plugin manually, make sure it is installed in
 ``lib/plugins/prosemirror/`` - if the folder is called different it
 will not work!
 
