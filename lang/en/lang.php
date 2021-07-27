@@ -43,8 +43,7 @@ $lang['label:recache'] = 'Recache';
 $lang['label:nocache'] = 'Nocache';
 
 $lang['cancel'] = 'Cancel';
-
-$lang['js']['cancel'] = $lang['cancel'];
+$lang['js']['cancel'] = 'Cancel';
 
 $lang['js']['linkConfig'] = 'Link Configuration';
 $lang['js']['mediaConfig'] = 'Media Configuration';
