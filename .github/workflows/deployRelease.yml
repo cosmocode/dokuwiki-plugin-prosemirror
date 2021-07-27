@@ -1,0 +1,42 @@
+name: Deploy Release
+
+on:
+    workflow_run:
+        workflows: ["PHP Tests on Linux"]
+        branches: [master]
+        types:
+            - completed
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        steps:
+            -   name: Checkout 🛎️
+                uses: actions/checkout@v2.3.1
+
+            -   name: Install and Build 🔧
+                run: |
+                    yarn install
+                    yarn build
+                    rm -rf .babelrc
+                    rm -rf .eslintrc.js
+                    rm -rf .github
+                    rm -rf .gitignore
+                    rm -rf .travis.yml
+                    rm -rf _jstest
+                    rm -rf _test
+                    rm -rf node_modules
+                    rm -rf package.json
+                    rm -rf pre-commit.hook.sh
+                    rm -rf requirements.txt
+                    rm -rf script
+                    rm -rf stylelint.config.js
+                    rm -rf webpack.config.js
+                    rm -rf yarn.lock
+
+            -   name: Deploy 🚀
+                uses: JamesIves/github-pages-deploy-action@4.1.4
+                with:
+                    branch: release
+                    folder: .
