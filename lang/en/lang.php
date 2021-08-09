@@ -103,4 +103,6 @@ $lang['js']['label:rss date'] = 'Show item dates';
 $lang['js']['label:rss details'] = 'Show the item description';
 $lang['js']['label:rss refresh'] = 'Refresh period';
 
+$lang['js']['button:insert paragraph'] = 'Insert paragraph';
+
 $lang['js']['code_block_hint'] = '💡 Press CTRL+Enter to exit';

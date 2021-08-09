@@ -10,11 +10,13 @@ import buildInputRules from './plugins/InputRules/inputrules';
 import initializePublicAPI from './initializePublicAPI';
 import MenuInitializer from './plugins/Menu/MenuInitializer';
 import getNodeViews from './nodeviews';
+import { initializeButtons } from './custom/paragraphButtons';
 
 initializePublicAPI();
 
 window.Prosemirror.enableProsemirror = function enableProsemirror() {
     const schema = new Schema(getSpec());
+    initializeButtons();
 
     const mi = new MenuInitializer(schema);
 
@@ -44,7 +46,9 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
         },
         nodeViews: getNodeViews(),
     });
-    window.view = view;
+    window.Prosemirror.views = {
+        main: view,
+    };
     jQuery(window).on('scroll.prosemirror_menu', () => {
         const $container = jQuery('#prosemirror__editor');
         const $menuBar = $container.find('.menubar');
@@ -60,8 +64,8 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
 };
 
 window.Prosemirror.destroyProsemirror = function destroyProsemirror() {
-    if (window.view && typeof window.view.destroy === 'function') {
-        window.view.destroy();
+    if (window.Prosemirror.views.main && typeof window.Prosemirror.views.main.destroy === 'function') {
+        window.Prosemirror.views.main.destroy();
     }
     jQuery(window).off('scroll.prosemirror_menu');
 };
