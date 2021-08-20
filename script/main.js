@@ -45,23 +45,10 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
         nodeViews: getNodeViews(),
     });
     window.view = view;
-    jQuery(window).on('scroll.prosemirror_menu', () => {
-        const $container = jQuery('#prosemirror__editor');
-        const $menuBar = $container.find('.menubar');
-        const docViewTop = jQuery(window).scrollTop();
-        const containerTop = $container.offset().top;
-
-        if (docViewTop > containerTop) {
-            $menuBar.css('position', 'fixed');
-        } else {
-            $menuBar.css('position', '');
-        }
-    });
 };
 
 window.Prosemirror.destroyProsemirror = function destroyProsemirror() {
     if (window.view && typeof window.view.destroy === 'function') {
         window.view.destroy();
     }
-    jQuery(window).off('scroll.prosemirror_menu');
 };
