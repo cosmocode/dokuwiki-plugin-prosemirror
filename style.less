@@ -3,11 +3,14 @@
 @highlight-odd-ini_text: fade(@ini_background, 95%);
 @highlight-even-ini_text: fade(@ini_text, 5%);
 
+@border-radius: 6px;
+@border-style: 1px solid #ddd;
+
 .ProseMirror {
     padding: 4px 8px 4px 14px;
     white-space: pre-wrap;
-	border-radius: 6px;
-	border: 1px solid #ddd;
+	border-radius: @border-radius;
+	border: @border-style;
     outline: none;
     counter-reset: prosemirror-footnote;
 
@@ -74,6 +77,14 @@
 
     .selectedCell {
         background-color: rgba(200, 200, 255, 0.4);
+    }
+}
+
+.prosemirror_wrapper {
+    .menubar {
+	    border-radius: @border-radius;
+        border: @border-style;
+	    margin-bottom: 0.5rem;
     }
 }
 
