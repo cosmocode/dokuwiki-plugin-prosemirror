@@ -1,5 +1,8 @@
 @import "customMenu.less";
 
+// This can be used to have the menu bar stick below the header
+@sticky-offset: 0rem;
+
 @highlight-odd-ini_text: fade(@ini_background, 95%);
 @highlight-even-ini_text: fade(@ini_text, 5%);
 
@@ -81,7 +84,11 @@
 }
 
 .prosemirror_wrapper {
+    position: relative;
+    display: block;
     .menubar {
+        position: sticky;
+        top: @sticky-offset;
 	    border-radius: @border-radius;
         border: @border-style;
 	    margin-bottom: 0.5rem;
