@@ -175,3 +175,9 @@
         z-index: 105; // set to what plugin edittable defines
     }
 }
+
+// Workaround for sticky menubar in argon
+main {
+    // Sticky elements can't have parents with overflow: hidden
+    overflow: unset !important;
+}
