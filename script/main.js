@@ -10,6 +10,7 @@ import buildInputRules from './plugins/InputRules/inputrules';
 import initializePublicAPI from './initializePublicAPI';
 import MenuInitializer from './plugins/Menu/MenuInitializer';
 import getNodeViews from './nodeviews';
+import { disableDefaultTabBehavior } from './plugins/disableDefaultTabBehavior';
 
 initializePublicAPI();
 
@@ -25,6 +26,7 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
         getKeymapPlugin(schema),
         buildInputRules(schema),
         tableEditing(schema),
+        disableDefaultTabBehavior(),
     ];
 
     const json = jQuery('#dw__editform').find('[name=prosemirror_json]').get(0);
