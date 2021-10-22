@@ -1,8 +1,5 @@
 @import "customMenu.less";
 
-// This can be used to have the menu bar stick below the header
-@sticky-offset: 0rem;
-
 @highlight-odd-ini_text: fade(@ini_background, 95%);
 @highlight-even-ini_text: fade(@ini_text, 5%);
 
@@ -88,7 +85,7 @@
     display: block;
     .menubar {
         position: sticky;
-        top: @sticky-offset;
+        top: 0; // Users/Theme developers can override this to stick it below a sticky header
 	    border-radius: @border-radius;
         border: @border-style;
 	    margin-bottom: 0.5rem;
