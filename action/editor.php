@@ -7,6 +7,8 @@
  */
 
 // must be run within Dokuwiki
+use dokuwiki\Form\ButtonElement;
+
 if (!defined('DOKU_INC')) {
     die();
 }
@@ -25,6 +27,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $controller->register_hook('ACTION_HEADERS_SEND', 'BEFORE', $this, 'forceWYSIWYG');
         $controller->register_hook('ACTION_HEADERS_SEND', 'AFTER', $this, 'addJSINFO');
         $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
+        $controller->register_hook('FORM_EDIT_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
     }
 
@@ -60,8 +63,6 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             return;
         }
 
-        /** @var Doku_Form $form */
-        $form =& $event->data;
         $useWYSIWYG = get_doku_pref('plugin_prosemirror_useWYSIWYG', false);
 
         $prosemirrorJSON = '';
@@ -84,11 +85,19 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             }
         }
 
-        $form->addElement($this->buildToggleButton());
+        /** @var Doku_Form|\dokuwiki\Form\Form $form */
+        $form = $event->data;
 
-        // output data and editor field
-        $form->addHidden('prosemirror_json',$prosemirrorJSON);
-        $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
+        if(is_a($form, \dokuwiki\Form\Form::class)) {
+            $form->addElement($this->buildToggleButton());
+            $form->setHiddenField('prosemirror_json',$prosemirrorJSON);
+            $form->addHTML('<div class="prosemirror_wrapper" id="prosemirror__editor"></div>', 1);
+        } else {
+            // todo remove when old stable is no longer supported
+            $form->addElement($this->buildOldToggleButton());
+            $form->addHidden('prosemirror_json',$prosemirrorJSON);
+            $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
+        }
     }
 
     /**
@@ -96,10 +105,12 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      *
      * Creates it as hidden if forcing WYSIWYG
      *
+     * @deprecated use buildToggleButton instead
      * @return array the pseudo-tag expected by \Doku_Form::addElement
      */
-    protected function buildToggleButton()
+    protected function buildOldToggleButton()
     {
+        dbg_deprecated('buildToggleButton');
         $attr = [
             'class' => 'button plugin_prosemirror_useWYSIWYG'
         ];
@@ -107,6 +118,23 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             $attr['style'] = 'display: none;';
         }
         return form_makeButton('button', '', $this->getLang('switch_editors'), $attr);
+    }
+
+    /**
+     * Create the button to toggle the WYSIWYG editor
+     *
+     * Creates it as hidden if forcing WYSIWYG
+     *
+     * @return ButtonElement
+     */
+    protected function buildToggleButton()
+    {
+        $button = new ButtonElement('prosemirror', $this->getLang('switch_editors'));
+        $button->addClass('button plugin_prosemirror_useWYSIWYG');
+        if ($this->isForceWYSIWYG()) {
+            $button->attr('style', 'display: none;');
+        }
+        return $button;
     }
 
     /**
