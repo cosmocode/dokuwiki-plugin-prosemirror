@@ -3,16 +3,14 @@
 @highlight-odd-ini_text: fade(@ini_background, 95%);
 @highlight-even-ini_text: fade(@ini_text, 5%);
 
+@border-radius: 6px;
+@border-style: 1px solid #ddd;
+
 .ProseMirror {
     padding: 4px 8px 4px 14px;
     white-space: pre-wrap;
-    background: repeating-linear-gradient(
-        -45deg,
-        @highlight-odd-ini_text,
-        @highlight-odd-ini_text 10px,
-        @highlight-even-ini_text 10px,
-        @highlight-even-ini_text 20px,
-    );
+    border: @border-style;
+    border-radius: @border-radius;
     outline: none;
     counter-reset: prosemirror-footnote;
 
@@ -82,14 +80,27 @@
     }
 }
 
+.prosemirror_wrapper {
+    position: relative;
+    display: block;
+
+    .menubar {
+        position: sticky;
+        top: 0; // Users/Theme developers can override this to stick it below a sticky header
+        margin-bottom: 0.5rem;
+        border: @border-style;
+        border-radius: @border-radius;
+    }
+}
+
 .dokuwiki {
     .plugin_prosemirror_useWYSIWYG {
         position: absolute;
-        top: 55px;
-        right: 30px;
-        padding: 5px;
-        color: black;
-        background: yellow none;
+        top: 2.9em;
+        right: 2em;
+        padding: 3px 8px;
+        color: #444;
+        background-color: white;
     }
 
     .footnote-tooltip {
