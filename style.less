@@ -9,8 +9,8 @@
 .ProseMirror {
     padding: 4px 8px 4px 14px;
     white-space: pre-wrap;
-    border-radius: @border-radius;
     border: @border-style;
+    border-radius: @border-radius;
     outline: none;
     counter-reset: prosemirror-footnote;
 
@@ -87,9 +87,9 @@
     .menubar {
         position: sticky;
         top: 0; // Users/Theme developers can override this to stick it below a sticky header
-        border-radius: @border-radius;
-        border: @border-style;
         margin-bottom: 0.5rem;
+        border: @border-style;
+        border-radius: @border-radius;
     }
 }
 
@@ -99,8 +99,8 @@
         top: 2.9em;
         right: 2em;
         padding: 3px 8px;
-        background-color: white;
         color: #444;
+        background-color: white;
     }
 
     .footnote-tooltip {
@@ -173,4 +173,3 @@
         z-index: 105; // set to what plugin edittable defines
     }
 }
-
