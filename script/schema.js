@@ -255,7 +255,7 @@ export default function getSpec() {
         toDOM: node => ['img', {
             src: `${DOKU_BASE}lib/images/smileys/${node.attrs.icon}`,
             alt: node.attrs.syntax,
-            class: 'icon',
+            class: 'icon smiley',
         }],
         parseDOM: [{
             tag: 'img.icon',
