@@ -131,6 +131,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     {
         $button = new ButtonElement('prosemirror', $this->getLang('switch_editors'));
         $button->addClass('button plugin_prosemirror_useWYSIWYG');
+        $button->attr('type', 'button');
         if ($this->isForceWYSIWYG()) {
             $button->attr('style', 'display: none;');
         }
