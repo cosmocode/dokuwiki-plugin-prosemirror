@@ -6,6 +6,7 @@ export default class SmileyDropdownDispatcher extends AbstractDropdownDispatcher
         return super.getMenuItem(schema, {
             icon: svgIcon('emoticon'),
             label: LANG.plugins.prosemirror['label:smileys'],
+            cssClass: ['smileys'],
         });
     }
 }

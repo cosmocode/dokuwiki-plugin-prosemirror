@@ -12,6 +12,7 @@ class Dropdown extends MenuItem {
      */
     constructor(content, options) {
         super({
+            cssClass: [],
             ...options,
             command: () => true,
         });
@@ -47,6 +48,7 @@ class Dropdown extends MenuItem {
 
     renderDOM() {
         const dom = jQuery('<span>').addClass('menuitem');
+        this.options.cssClass.forEach(cssClass => dom.addClass(cssClass));
         if (this.options.icon instanceof Element) {
             dom.append(MenuItem.renderSVGIcon(this.options.icon, this.options.label));
         } else if (typeof this.options.label === 'string') {
