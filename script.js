@@ -153,6 +153,7 @@ function toggleEditor() {
 
     const $current = DokuCookie.getValue('plugin_prosemirror_useWYSIWYG');
     DokuCookie.setValue('plugin_prosemirror_useWYSIWYG', $current ? '' : '1');
+    return false;
 }
 
 /**
