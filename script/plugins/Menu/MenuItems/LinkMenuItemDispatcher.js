@@ -27,7 +27,7 @@ export default class LinkMenuItemDispatcher extends AbstractMenuItemDispatcher {
                         textContent += node.textContent;
                         return false;
                     });
-                    const linkForm = new LinkForm();
+                    const linkForm = LinkForm.getInstance();
                     linkForm.setLinkType('internallink');
                     if (textContent) {
                         linkForm.setLinkTarget(false, textContent);

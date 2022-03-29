@@ -13,7 +13,7 @@ class LinkView extends AbstractNodeView {
     constructor(node, view, getPos) {
         super(node, view, getPos);
 
-        this.linkForm = new LinkForm();
+        this.linkForm = LinkForm.getInstance();
     }
 
     renderNode(attributes) {
