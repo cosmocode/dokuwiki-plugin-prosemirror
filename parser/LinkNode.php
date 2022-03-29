@@ -27,7 +27,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
         $this->attrs = $data['attrs'];
 
         // every inline node needs a TextNode to track marks
-        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
+        $this->textNode = new TextNode(['marks' => $data['marks'] ?? null], $parent, $previousNode);
     }
 
 

@@ -71,6 +71,9 @@ class TableCellNode extends Node
      */
     protected function calculateAlignmentPadding()
     {
+        if (empty($this->data['attrs']['align'])) {
+            return [' ', ' '];
+        }
         if ($this->data['attrs']['align'] === 'right') {
             return ['  ', ' '];
         }

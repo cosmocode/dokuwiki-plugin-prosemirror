@@ -23,7 +23,7 @@ class TextNode extends Node implements InlineNodeInterface
             $this->previous = &$previous;
         }
 
-        $this->text = $data['text'];
+        $this->text = $data['text'] ?? '';
         if (isset($data['marks'])) {
             $this->setMarks($data['marks']);
         }
