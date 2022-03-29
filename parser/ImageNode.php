@@ -18,37 +18,39 @@ class ImageNode extends Node implements InlineNodeInterface
         $this->attrs = $data['attrs'];
 
         // every inline node needs a TextNode to track marks
-        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previousNode);
+        $this->textNode = new TextNode(['marks' => $data['marks'] ?? null], $parent, $previousNode);
     }
 
     public function toSyntax()
     {
         $title = '';
-        if ($this->attrs['title']) {
+        if (!empty($this->attrs['title'])) {
             $title = '|' . $this->attrs['title'];
         }
 
         $leftAlign = '';
         $rightAlign = '';
-        if ($this->attrs['align'] === 'left') {
-            $rightAlign = ' ';
-        } elseif ($this->attrs['align'] === 'right') {
-            $leftAlign = ' ';
-        } elseif ($this->attrs['align'] === 'center') {
-            $leftAlign = ' ';
-            $rightAlign = ' ';
+        if (!empty($this->attrs['align'])) {
+            if ($this->attrs['align'] === 'left') {
+                $rightAlign = ' ';
+            } elseif ($this->attrs['align'] === 'right') {
+                $leftAlign = ' ';
+            } elseif ($this->attrs['align'] === 'center') {
+                $leftAlign = ' ';
+                $rightAlign = ' ';
+            }
         }
 
         $query = [];
-        if ($this->attrs['height']) {
+        if (!empty($this->attrs['height'])) {
             $query[] = $this->attrs['width'] . 'x' . $this->attrs['height'];
-        } elseif ($this->attrs['width']) {
+        } elseif (!empty($this->attrs['width'])) {
             $query[] = $this->attrs['width'];
         }
-        if ($this->attrs['linking'] && $this->attrs['linking'] !== 'details') {
+        if (!empty($this->attrs['linking']) && $this->attrs['linking'] !== 'details') {
             $query[] = $this->attrs['linking'];
         }
-        if ($this->attrs['cache'] && $this->attrs['cache'] !== 'cache') {
+        if (!empty($this->attrs['cache']) && $this->attrs['cache'] !== 'cache') {
             $query[] = $this->attrs['cache'];
         }
 

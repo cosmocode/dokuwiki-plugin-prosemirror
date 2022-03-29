@@ -18,7 +18,7 @@ class SmileyNode extends Node implements InlineNodeInterface
         $this->data = $data;
 
         // every inline node needs a TextNode to track marks
-        $this->textNode = new TextNode(['marks' => $data['marks']], $parent, $previous);
+        $this->textNode = new TextNode(['marks' => $data['marks'] ?? null], $parent, $previous);
     }
 
     /**
