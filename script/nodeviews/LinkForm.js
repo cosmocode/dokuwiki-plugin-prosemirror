@@ -6,20 +6,24 @@ class LinkForm extends CustomForm {
         super('prosemirror-linkform');
 
         // prevent repeated initialization
-        if (!this.instance) {
+        if (!LinkForm.instance) {
             this.name = LANG.plugins.prosemirror.linkConfig;
 
             if (jQuery('#prosemirror-linkform').length) {
                 this.initializeLinkForm();
-                this.instance = this;
-                return this;
+                LinkForm.instance = this;
+                return LinkForm.instance;
             }
 
             jQuery(this.initializeLinkForm.bind(this));
-            this.instance = this;
         }
+    }
 
-        return this.instance;
+    static getInstance() {
+        if (!LinkForm.instance) {
+            LinkForm.instance = new LinkForm();
+        }
+        return LinkForm.instance;
     }
 
     getLinkType() {
