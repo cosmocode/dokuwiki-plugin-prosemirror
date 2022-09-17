@@ -86,11 +86,17 @@
 
     .menubar {
         position: sticky;
+        position: -webkit-sticky;
         top: 0; // Users/Theme developers can override this to stick it below a sticky header
         margin-bottom: 0.5rem;
         border: @border-style;
         border-radius: @border-radius;
     }
+}
+
+// Needed to make menubar sticky on top when scrolling down
+#dokuwiki__content {
+        overflow: visible !important;
 }
 
 .dokuwiki {
