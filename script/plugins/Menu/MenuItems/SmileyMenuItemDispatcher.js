@@ -34,8 +34,9 @@ export default class SmileyMenuItemDispatcher extends AbstractMenuItemDispatcher
         }
 
         return new MenuItem({
-            render: () => jQuery(`<img src="${DOKU_BASE}lib/images/smileys/${this.icon}" title="${this.syntax}">`)
-                .css('margin', '3px')
+            render: () => jQuery(`<img class="icon smiley"
+                                       src="${DOKU_BASE}lib/images/smileys/${this.icon}" title="${this.syntax}">`)
+                .css({ margin: '3px' })
                 .get(0),
             command: insertSmiley(this.icon, this.syntax),
         });
