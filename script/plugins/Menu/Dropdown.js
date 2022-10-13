@@ -84,7 +84,7 @@ class Dropdown extends MenuItem {
     showContent() {
         this.contentDom.style.display = 'block';
         jQuery(document).on(
-            `mousedown.prosemirror${btoa(this.options.label)}`,
+            `mousedown.prosemirror${btoa(encodeURIComponent(this.options.label))}`,
             this.closeOnNextClick.bind(this, Date.now()),
         );
     }
@@ -113,7 +113,7 @@ class Dropdown extends MenuItem {
      */
     hideContent() {
         this.contentDom.style.display = 'none';
-        jQuery(document).off(`mousedown.prosemirror${btoa(this.options.label)}`);
+        jQuery(document).off(`mousedown.prosemirror${btoa(encodeURIComponent(this.options.label))}`);
     }
 
     /**
