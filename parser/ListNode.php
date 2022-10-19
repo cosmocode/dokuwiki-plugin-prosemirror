@@ -41,7 +41,7 @@ class ListNode extends Node
             $liText = str_repeat('  ', $this->depth);
             $liText .= $this->prefix;
             $lines = $li->toSyntax();
-            if ($lines[0] !== ' ') {
+            if (!empty($lines) && $lines[0] !== ' ') {
                 $liText .= ' ';
             }
             $liText .= $lines . "\n";

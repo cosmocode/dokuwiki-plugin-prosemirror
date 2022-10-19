@@ -130,6 +130,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     protected function buildToggleButton()
     {
         $button = new ButtonElement('prosemirror', $this->getLang('switch_editors'));
+        $button->attr('type', 'button');
         $button->addClass('button plugin_prosemirror_useWYSIWYG');
         if ($this->isForceWYSIWYG()) {
             $button->attr('style', 'display: none;');
