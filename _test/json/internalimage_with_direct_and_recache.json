@@ -12,7 +12,7 @@
                         "id": ":wiki:dokuwiki-128.png",
                         "cache": "recache",
                         "linking": "direct",
-                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/fetch.php?cache=recache&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?cache=recache&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\":wiki:dokuwiki-128.png\" alt=\":wiki:dokuwiki-128.png\" \/><\/a>"
+                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/fetch.php?cache=recache&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?cache=recache&amp;media=wiki:dokuwiki-128.png\" class=\"media\" loading=\"lazy\" title=\":wiki:dokuwiki-128.png\" alt=\":wiki:dokuwiki-128.png\" \/><\/a>"
                     }
                 }
             ]

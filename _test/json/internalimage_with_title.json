@@ -12,7 +12,7 @@
                         "title": "imagetitle",
                         "id": "wiki:dokuwiki-128.png",
                         "linking": "details",
-                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/detail.php?id=wiki%3Asyntax&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"media\" title=\"imagetitle\" alt=\"imagetitle\" \/><\/a>"
+                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/detail.php?id=wiki%3Asyntax&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"media\" loading=\"lazy\" title=\"imagetitle\" alt=\"imagetitle\" \/><\/a>"
                     }
                 }
             ]

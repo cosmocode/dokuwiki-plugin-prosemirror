@@ -503,7 +503,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         \dokuwiki\plugin\prosemirror\parser\ExternalLinkNode::render($this, $link, $title);
     }
 
-    public function interwikilink($link, $title = null, $wikiName, $wikiUri)
+    public function interwikilink($link, $title, $wikiName, $wikiUri)
     {
         \dokuwiki\plugin\prosemirror\parser\InterwikiLinkNode::render($this, $title, $wikiName, $wikiUri);
     }

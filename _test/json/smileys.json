@@ -17,7 +17,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_cool.gif",
+                                        "icon": "cool.svg",
                                         "syntax": "8-)"
                                     }
                                 },
@@ -51,7 +51,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_eek.gif",
+                                        "icon": "eek.svg",
                                         "syntax": "8-O"
                                     }
                                 },
@@ -85,7 +85,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_sad.gif",
+                                        "icon": "sad.svg",
                                         "syntax": ":-("
                                     }
                                 },
@@ -119,7 +119,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_smile.gif",
+                                        "icon": "smile.svg",
                                         "syntax": ":-)"
                                     }
                                 },
@@ -153,7 +153,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_wink.gif",
+                                        "icon": "wink.svg",
                                         "syntax": ";-)"
                                     }
                                 },
@@ -187,7 +187,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_fun.gif",
+                                        "icon": "fun.svg",
                                         "syntax": "^_^"
                                     }
                                 },
@@ -221,7 +221,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_question.gif",
+                                        "icon": "question.svg",
                                         "syntax": ":?:"
                                     }
                                 },
@@ -255,7 +255,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "icon_lol.gif",
+                                        "icon": "lol.svg",
                                         "syntax": "LOL"
                                     }
                                 },
@@ -289,7 +289,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "fixme.gif",
+                                        "icon": "fixme.svg",
                                         "syntax": "FIXME"
                                     }
                                 },
@@ -323,7 +323,7 @@
                                 {
                                     "type": "smiley",
                                     "attrs": {
-                                        "icon": "delete.gif",
+                                        "icon": "deleteme.svg",
                                         "syntax": "DELETEME"
                                     }
                                 },
