@@ -36,6 +36,7 @@ import PageMacroDropdownDispatcher from './MenuItems/PageMacroDropdownDispatcher
 import PageMacroMenuItemDispatcher from './MenuItems/PageMacroMenuItemDispatcher';
 import UndoMenuItemDispatcher from './MenuItems/UndoMenuItemDispatcher';
 import RedoMenuItemDispatcher from './MenuItems/RedoMenuItemDispatcher';
+import SmileyConf from '../../custom/SmileyConf';
 
 class MenuInitializer {
     constructor(schema) {
@@ -50,6 +51,11 @@ class MenuInitializer {
 
     collectMenuItems() {
         const lang = LANG.plugins.prosemirror;
+
+        const smileys = SmileyConf.getSmileys();
+        const smileyItems = Object.keys(smileys)
+            .map(smiley => new SmileyMenuItemDispatcher(smileys[smiley], smiley));
+
         return [
             new MarkDropdownDispatcher([
                 new MarkMenuItemDispatcher('strong', 'format-bold', lang['label:strong']),
@@ -73,28 +79,7 @@ class MenuInitializer {
             BlockquoteMenuItemDispatcher,
             FootnoteMenuItemDispatcher,
             RSSMenuItemDispatcher,
-            new SmileyDropdownDispatcher([
-                new SmileyMenuItemDispatcher('icon_cool.gif', '8-)'),
-                new SmileyMenuItemDispatcher('icon_eek.gif', '8-O'),
-                new SmileyMenuItemDispatcher('icon_sad.gif', ':-('),
-                new SmileyMenuItemDispatcher('icon_smile.gif', ':-)'),
-                new SmileyMenuItemDispatcher('icon_smile2.gif', '=)'),
-                new SmileyMenuItemDispatcher('icon_doubt.gif', ':-/'),
-                new SmileyMenuItemDispatcher('icon_doubt2.gif', ':-\\'),
-                new SmileyMenuItemDispatcher('icon_confused.gif', ':-?'),
-                new SmileyMenuItemDispatcher('icon_biggrin.gif', ':-D'),
-                new SmileyMenuItemDispatcher('icon_razz.gif', ':-P'),
-                new SmileyMenuItemDispatcher('icon_surprised.gif', ':-O'),
-                new SmileyMenuItemDispatcher('icon_silenced.gif', ':-X'),
-                new SmileyMenuItemDispatcher('icon_neutral.gif', ':-|'),
-                new SmileyMenuItemDispatcher('icon_wink.gif', ';-)'),
-                new SmileyMenuItemDispatcher('icon_fun.gif', '^_^'),
-                new SmileyMenuItemDispatcher('icon_question.gif', ':?:'),
-                new SmileyMenuItemDispatcher('icon_exclaim.gif', ':!:'),
-                new SmileyMenuItemDispatcher('icon_lol.gif', 'LOL'),
-                new SmileyMenuItemDispatcher('fixme.gif', 'FIXME'),
-                new SmileyMenuItemDispatcher('delete.gif', 'DELETEME'),
-            ]),
+            new SmileyDropdownDispatcher(smileyItems),
             new HeadingDropdownDispatcher([
                 new HeadingMenuItemDispatcher(1),
                 new HeadingMenuItemDispatcher(2), // eslint-disable-line no-magic-numbers
