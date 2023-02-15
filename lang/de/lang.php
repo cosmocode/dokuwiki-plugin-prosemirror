@@ -6,7 +6,7 @@
  */
 
 // custom language strings for the plugin
-$lang['switch_editors'] = 'Schalte WYSIWYG-Editor um';
+$lang['switch_editors'] = 'Syntax &#11020; Visueller Editor umschalten';
 
 $lang['link target'] = 'Linkziel';
 $lang['type:wiki page'] = 'Eine Seite in diesem Wiki';

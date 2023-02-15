@@ -89,12 +89,12 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         $form = $event->data;
 
         if(is_a($form, \dokuwiki\Form\Form::class)) {
-            $form->addElement($this->buildToggleButton());
+            $form->addElement($this->buildToggleButton(), 0);
             $form->setHiddenField('prosemirror_json',$prosemirrorJSON);
             $form->addHTML('<div class="prosemirror_wrapper" id="prosemirror__editor"></div>', 1);
         } else {
             // todo remove when old stable is no longer supported
-            $form->addElement($this->buildOldToggleButton());
+            $form->insertElement(0, $this->buildOldToggleButton());
             $form->addHidden('prosemirror_json',$prosemirrorJSON);
             $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
         }
@@ -106,7 +106,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      * Creates it as hidden if forcing WYSIWYG
      *
      * @deprecated use buildToggleButton instead
-     * @return array the pseudo-tag expected by \Doku_Form::addElement
+     * @return array the pseudo-tag expected by \Doku_Form::insertElement
      */
     protected function buildOldToggleButton()
     {
