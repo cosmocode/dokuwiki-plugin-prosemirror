@@ -63,6 +63,13 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             return;
         }
 
+        /** @var Doku_Form|\dokuwiki\Form\Form $form */
+        $form = $event->data;
+
+        // return early if content is not editable
+        if ($this->isReadOnly($form)) return;
+
+
         $useWYSIWYG = get_doku_pref('plugin_prosemirror_useWYSIWYG', false);
 
         $prosemirrorJSON = '';
@@ -85,16 +92,13 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             }
         }
 
-        /** @var Doku_Form|\dokuwiki\Form\Form $form */
-        $form = $event->data;
-
-        if(is_a($form, \dokuwiki\Form\Form::class)) {
-            $form->addElement($this->buildToggleButton());
+        if (is_a($form, \dokuwiki\Form\Form::class)) {
+            $form->addElement($this->buildToggleButton(), 0);
             $form->setHiddenField('prosemirror_json',$prosemirrorJSON);
             $form->addHTML('<div class="prosemirror_wrapper" id="prosemirror__editor"></div>', 1);
         } else {
             // todo remove when old stable is no longer supported
-            $form->addElement($this->buildOldToggleButton());
+            $form->insertElement(0, $this->buildOldToggleButton());
             $form->addHidden('prosemirror_json',$prosemirrorJSON);
             $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
         }
@@ -106,7 +110,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      * Creates it as hidden if forcing WYSIWYG
      *
      * @deprecated use buildToggleButton instead
-     * @return array the pseudo-tag expected by \Doku_Form::addElement
+     * @return array the pseudo-tag expected by \Doku_Form::insertElement
      */
     protected function buildOldToggleButton()
     {
@@ -321,6 +325,27 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
     {
         global $JSINFO;
         $JSINFO['SMILEY_CONF'] = getSmileys();
+    }
+
+    /**
+     * Returns true if the current content is read only
+     *
+     * @todo remove Doku_Form case when the class is removed
+     *
+     * @param $form
+     * @return bool
+     */
+    protected function isReadOnly($form)
+    {
+        if (is_a($form, \dokuwiki\Form\Form::class)) {
+            $textareaPos = $form->findPositionByType('textarea');
+            $readonly = $textareaPos !== false && !empty($form->getElementAt($textareaPos)->attr('readonly'));
+        } else {
+            /** @var Doku_Form $form */
+            $textareaPos = $form->findElementByType('wikitext');
+            $readonly = $textareaPos !== false && !empty($form->getElementAt($textareaPos)['readonly']);
+        }
+        return $readonly;
     }
 }
 
