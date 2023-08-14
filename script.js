@@ -167,9 +167,33 @@ function handleEditSession() {
     $toggleEditorButton.on('click', toggleEditor);
 }
 
+/**
+ * when the editor switch button moves out of the view-port, the menubar gets a class
+ * @see https://codepen.io/hey-nick/pen/mLpmMV
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+ */
+
+function menubar() {
+    const editorswitch = document.querySelector('button[name=prosemirror]');
+    const menubar = document.querySelector('#prosemirror__editor div.menubar');
+    const observer = new IntersectionObserver(
+        ([e]) => {
+            return menubar.classList.toggle('prosemirror-menubar-fixed', e.intersectionRatio !== 1);
+        },
+        {
+            root: null,
+            threshold: [0, 1]
+        }
+    );
+    observer.observe(editorswitch);
+}
+
+
 jQuery(function () {
     initializeProsemirror();
     window.proseMirrorIsActive = false;
+
+    jQuery(menubar);
 
     if (jQuery('#dw__editform').find('[name=prosemirror_json]').length) {
         handleEditSession();
