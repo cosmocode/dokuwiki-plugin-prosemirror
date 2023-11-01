@@ -1,7 +1,0 @@
-Foo
-
-<HTML>
-<p style="border:2px dashed red;">And this is some block HTML</p>
-</HTML>
-
-Bar
