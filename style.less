@@ -85,11 +85,16 @@
     display: block;
 
     .menubar {
-        position: sticky;
-        top: 0; // Users/Theme developers can override this to stick it below a sticky header
         margin-bottom: 0.5rem;
         border: @border-style;
         border-radius: @border-radius;
+
+        &.prosemirror-menubar-fixed {
+            position: fixed;
+            top: 0;
+            padding: 1em;
+            border: 3px solid @ini_border;
+        }
     }
 }
 
