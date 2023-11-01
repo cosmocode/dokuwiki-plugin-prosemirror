@@ -1,1 +1,0 @@
-Foo <php>    echo 'The PHP version: ';    echo phpversion();    echo ' (generated inline HTML)';    </php> Bar

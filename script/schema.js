@@ -85,64 +85,6 @@ export default function getSpec() {
     codeBlock.group = 'protected_block';
     nodes = nodes.update('code_block', codeBlock);
 
-    nodes = nodes.addToEnd('html_block', {
-        content: 'text*',
-        marks: '',
-        group: 'protected_block',
-        attrs: {
-            class: { default: 'html_block' },
-        },
-        code: true,
-        defining: true,
-        toDOM(node) {
-            return ['pre', node.attrs, 0];
-        },
-    });
-
-    nodes = nodes.addToEnd('html_inline', {
-        content: 'text*',
-        marks: '',
-        group: 'inline',
-        attrs: {
-            class: { default: 'html_inline' },
-        },
-        inline: true,
-        code: true,
-        defining: true,
-        toDOM(node) {
-            return ['code', node.attrs, 0];
-        },
-    });
-
-    nodes = nodes.addToEnd('php_block', {
-        content: 'text*',
-        marks: '',
-        group: 'protected_block',
-        attrs: {
-            class: { default: 'php_block' },
-        },
-        code: true,
-        defining: true,
-        toDOM(node) {
-            return ['pre', node.attrs, 0];
-        },
-    });
-
-    nodes = nodes.addToEnd('php_inline', {
-        content: 'text*',
-        marks: '',
-        group: 'inline',
-        attrs: {
-            class: { default: 'php_inline' },
-        },
-        inline: true,
-        code: true,
-        defining: true,
-        toDOM(node) {
-            return ['code', node.attrs, 0];
-        },
-    });
-
     const quote = nodes.get('blockquote');
     quote.content = '(block | blockquote | protected_block)+';
     quote.group = 'container';
