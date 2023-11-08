@@ -2,6 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
+use dokuwiki\File\MediaResolver;
+
 abstract class LinkNode extends Node implements InlineNodeInterface
 {
 
@@ -128,7 +130,11 @@ abstract class LinkNode extends Node implements InlineNodeInterface
         $xhtml_renderer = p_get_renderer('xhtml');
         $src = $imageId;
         if (!media_isexternal($src)) {
-            resolve_mediaid(getNS($pageId), $src, $exists);
+            $resolver = new MediaResolver(getNS($pageId));
+            $media = $resolver->resolveId($src);
+            if (!media_exists($media)) {
+                return '';
+            }
         }
         return $xhtml_renderer->_media(
             $src,
