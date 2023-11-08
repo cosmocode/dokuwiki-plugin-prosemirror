@@ -185,7 +185,9 @@ function menubar() {
             threshold: [0, 1]
         }
     );
-    observer.observe(editorswitch);
+    if (editorswitch && menubar) {
+        observer.observe(editorswitch);
+    }
 }
 
 

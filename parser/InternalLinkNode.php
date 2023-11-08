@@ -2,6 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
+use dokuwiki\File\PageResolver;
+
 class InternalLinkNode extends LinkNode
 {
     public function toSyntax()
@@ -43,10 +45,10 @@ class InternalLinkNode extends LinkNode
         if (count($parts) === 2) {
             $params = $parts[1];
         }
-        $ns = getNS($curId);
         $xhtml_renderer = p_get_renderer('xhtml');
         $default = $xhtml_renderer->_simpleTitle($parts[0]);
-        resolve_pageid($ns, $resolvedPageId, $exists);
+        $resolver = new PageResolver($curId);
+        $resolvedPageId = $resolver->resolveId($resolvedPageId);
 
         if (useHeading('content')) {
             $heading = p_get_first_heading($resolvedPageId);
@@ -59,7 +61,7 @@ class InternalLinkNode extends LinkNode
 
         return [
             'id' => $resolvedPageId,
-            'exists' => $exists,
+            'exists' => page_exists($resolvedPageId),
             'heading' => $heading,
             'url' => $url,
         ];
