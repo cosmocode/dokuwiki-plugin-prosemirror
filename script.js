@@ -22,6 +22,7 @@ function showProsemirror(json) {
     const $prosemirrorJsonInput = jQuery('#dw__editform').find('[name=prosemirror_json]').val(json);
     try {
         window.Prosemirror.enableProsemirror();
+        stickyMenubar();
         disableNativeFirefoxTableControls();
     } catch (e) {
         console.error(e);
@@ -173,9 +174,10 @@ function handleEditSession() {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
  */
 
-function menubar() {
+function stickyMenubar() {
     const editorswitch = document.querySelector('button[name=prosemirror]');
     const menubar = document.querySelector('#prosemirror__editor div.menubar');
+
     const observer = new IntersectionObserver(
         ([e]) => {
             return menubar.classList.toggle('prosemirror-menubar-fixed', e.intersectionRatio !== 1);
@@ -194,8 +196,6 @@ function menubar() {
 jQuery(function () {
     initializeProsemirror();
     window.proseMirrorIsActive = false;
-
-    jQuery(menubar);
 
     if (jQuery('#dw__editform').find('[name=prosemirror_json]').length) {
         handleEditSession();
