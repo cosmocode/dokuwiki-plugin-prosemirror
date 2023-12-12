@@ -92,6 +92,7 @@ $lang['js']['label:superscript'] = 'superscript';
 $lang['js']['label:subscript'] = 'subscript';
 $lang['js']['label:deleted'] = 'strike through';
 $lang['js']['label:monospaced'] = 'monospaced';
+$lang['js']['label:unformatted'] = 'ignore wiki formatting';
 $lang['js']['label:undo'] = 'undo';
 $lang['js']['label:redo'] = 'redo';
 

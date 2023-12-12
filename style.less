@@ -61,6 +61,11 @@
         }
     }
 
+    span.unformatted {
+        padding: 0.2rem;
+        border: 1px dotted @ini_border;
+    }
+
     .footnote {
         &::after {
             content: counter(prosemirror-footnote) ')';
@@ -97,7 +102,7 @@
         }
 
         div.dropdown_content {
-            width: 10rem;
+            min-width: 12rem;
 
             img {
                 max-width: 1.5rem;

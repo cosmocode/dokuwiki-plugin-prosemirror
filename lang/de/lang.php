@@ -92,6 +92,7 @@ $lang['js']['label:superscript'] = 'hoch stellen';
 $lang['js']['label:subscript'] = 'tief stellen';
 $lang['js']['label:deleted'] = 'durchstreichen';
 $lang['js']['label:monospaced'] = 'feste Zeichenbreite';
+$lang['js']['label:unformatted'] = 'Wiki-Formatierung ignorieren';
 $lang['js']['label:undo'] = 'rückgängig machen';
 $lang['js']['label:redo'] = 'wiederherstellen';
 
