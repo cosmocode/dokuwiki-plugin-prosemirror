@@ -326,9 +326,7 @@ export default function getSpec() {
     });
 
     marks = marks.addToEnd('unformatted', {
-        parseDOM: [
-            { tag: 'span', class: 'unformatted' },
-        ],
+        excludes: '_',
         toDOM() {
             return ['span', { class: 'unformatted' }];
         },

@@ -65,6 +65,7 @@ class MenuInitializer {
                 new MarkMenuItemDispatcher('subscript', 'format-subscript', lang['label:subscript']),
                 new MarkMenuItemDispatcher('deleted', 'format-strikethrough', lang['label:deleted']),
                 new MarkMenuItemDispatcher('code', 'console-line', lang['label:monospaced']),
+                new MarkMenuItemDispatcher('unformatted', 'translate-off', lang['label:unformatted']),
             ]),
             LinkMenuItemDispatcher,
             ImageMenuItemDispatcher,
