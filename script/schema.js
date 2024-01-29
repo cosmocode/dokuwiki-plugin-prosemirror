@@ -78,6 +78,9 @@ export default function getSpec() {
         class: { default: 'code' },
         'data-filename': { default: '' },
         'data-language': { default: '' },
+		'data-sln': { default: '' },
+		'data-sln-old': { default: '' },
+		'data-hle': { default: '' },
     };
     codeBlock.toDOM = function toDOM(node) {
         return ['pre', node.attrs, 0];
