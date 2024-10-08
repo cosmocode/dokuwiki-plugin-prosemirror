@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+
 /**
  * DokuWiki Plugin prosemirror (Renderer Component)
  *
@@ -7,7 +9,6 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
-// must be run within Dokuwiki
 use dokuwiki\plugin\prosemirror\parser\ImageNode;
 use dokuwiki\plugin\prosemirror\parser\LocalLinkNode;
 use dokuwiki\plugin\prosemirror\parser\InternalLinkNode;
@@ -19,12 +20,6 @@ use dokuwiki\Extension\Event;
 use dokuwiki\plugin\prosemirror\schema\Mark;
 use dokuwiki\plugin\prosemirror\schema\Node;
 use dokuwiki\plugin\prosemirror\schema\NodeStack;
-
-if (!defined('DOKU_INC')) {
-    die();
-}
-
-require_once DOKU_INC . 'inc/parser/renderer.php';
 
 class renderer_plugin_prosemirror extends Doku_Renderer
 {

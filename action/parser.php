@@ -7,15 +7,10 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
-// must be run within Dokuwiki
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
 use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
-
-if (!defined('DOKU_INC')) {
-    die();
-}
 
 class action_plugin_prosemirror_parser extends ActionPlugin
 {
@@ -28,8 +23,8 @@ class action_plugin_prosemirror_parser extends ActionPlugin
      */
     public function register(EventHandler $controller)
     {
-        $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handle_preprocess');
-        $controller->register_hook('DRAFT_SAVE', 'BEFORE', $this, 'handle_draft');
+        $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handlePreprocess');
+        $controller->register_hook('DRAFT_SAVE', 'BEFORE', $this, 'handleDraft');
     }
 
     /**
@@ -38,7 +33,7 @@ class action_plugin_prosemirror_parser extends ActionPlugin
      * @param Event $event
      * @param            $param
      */
-    public function handle_draft(Event $event, $param)
+    public function handleDraft(Event $event, $param)
     {
         global $INPUT;
         $unparsedJSON = $INPUT->post->str('prosemirror_json');
@@ -80,7 +75,7 @@ class action_plugin_prosemirror_parser extends ActionPlugin
      *
      * @return void
      */
-    public function handle_preprocess(Event $event, $param)
+    public function handlePreprocess(Event $event, $param)
     {
         global $TEXT, $INPUT;
         if (

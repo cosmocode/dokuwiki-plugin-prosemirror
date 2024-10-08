@@ -87,7 +87,9 @@ class NodeStack
         $node = array_pop($this->stack);
         $this->stacklength--;
         if ($node->getType() != $type) {
-            throw new \RuntimeException("Expected the current node to be of type $type found " . $node->getType() . " instead.");
+            throw new \RuntimeException(
+                "Expected the current node to be of type $type found " . $node->getType() . " instead."
+            );
         }
         return $node;
     }

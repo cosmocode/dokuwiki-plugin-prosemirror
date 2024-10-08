@@ -7,7 +7,6 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
-// must be run within Dokuwiki
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
@@ -16,10 +15,6 @@ use dokuwiki\plugin\prosemirror\parser\RSSNode;
 use dokuwiki\plugin\prosemirror\parser\LocalLinkNode;
 use dokuwiki\plugin\prosemirror\parser\InternalLinkNode;
 use dokuwiki\plugin\prosemirror\parser\LinkNode;
-
-if (!defined('DOKU_INC')) {
-    die();
-}
 
 class action_plugin_prosemirror_ajax extends ActionPlugin
 {
@@ -42,12 +37,10 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
      * Event: AJAX_CALL_UNKNOWN
      *
      * @param Event $event event object by reference
-     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
-     *                           handler was registered]
      *
      * @return void
      */
-    public function handleAjax(Event $event, $param)
+    public function handleAjax(Event $event)
     {
         if ($event->data !== 'plugin_prosemirror') {
             return;
@@ -61,61 +54,52 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         foreach ($INPUT->arr('actions') as $action) {
             switch ($action) {
                 case 'resolveInternalLink':
-                    {
-                        $inner = $INPUT->str('inner');
-                        $responseData[$action] = $this->resolveInternalLink($inner, $ID);
-                        break;
-                }
+                    $inner = $INPUT->str('inner');
+                    $responseData[$action] = $this->resolveInternalLink($inner, $ID);
+                    break;
                 case 'resolveInterWikiLink':
-                    {
-                        $inner = $INPUT->str('inner');
-                        [$shortcut, $reference] = explode('>', $inner);
-                        $responseData[$action] = $this->resolveInterWikiLink($shortcut, $reference);
-                        break;
-                }
+                    $inner = $INPUT->str('inner');
+                    [$shortcut, $reference] = explode('>', $inner);
+                    $responseData[$action] = $this->resolveInterWikiLink($shortcut, $reference);
+                    break;
                 case 'resolveMedia':
-                    {
-                        $attrs = $INPUT->arr('attrs');
-                        $responseData[$action] = [
-                            'data-resolvedHtml' => ImageNode::resolveMedia(
-                                $attrs['id'],
-                                $attrs['title'],
-                                $attrs['align'],
-                                $attrs['width'],
-                                $attrs['height'],
-                                $attrs['cache'],
-                                $attrs['linking']
-                            )
-                        ];
-                        break;
-                }
+                    $attrs = $INPUT->arr('attrs');
+                    $responseData[$action] = [
+                        'data-resolvedHtml' => ImageNode::resolveMedia(
+                            $attrs['id'],
+                            $attrs['title'],
+                            $attrs['align'],
+                            $attrs['width'],
+                            $attrs['height'],
+                            $attrs['cache'],
+                            $attrs['linking']
+                        )
+                    ];
+                    break;
                 case 'resolveImageTitle':
-                    {
-                        $image = $INPUT->arr('image');
-                        $responseData[$action] = [];
-                        $responseData[$action]['data-resolvedImage'] = LinkNode::resolveImageTitle(
-                            $ID,
-                            $image['id'],
-                            $image['title'],
-                            $image['align'],
-                            $image['width'],
-                            $image['height'],
-                            $image['cache']
-                        );
-                        break;
-                }
+                    $image = $INPUT->arr('image');
+                    $responseData[$action] = [];
+                    $responseData[$action]['data-resolvedImage'] = LinkNode::resolveImageTitle(
+                        $ID,
+                        $image['id'],
+                        $image['title'],
+                        $image['align'],
+                        $image['width'],
+                        $image['height'],
+                        $image['cache']
+                    );
+                    break;
                 case 'resolveRSS':
-                    {
-                        $attrs = json_decode($INPUT->str('attrs'), true);
-                        $responseData[$action] = RSSNode::renderAttrsToHTML($attrs);
-                        break;
-                }
+                    $attrs = json_decode($INPUT->str('attrs'), true);
+                    $responseData[$action] = RSSNode::renderAttrsToHTML($attrs);
+                    break;
                 default:
-                    {
-                        dbglog('Unknown action: ' . $action, __FILE__ . ': ' . __LINE__);
-                        http_status(400, 'unknown action');
-                        return;
-                }
+                    dokuwiki\Logger::getInstance(dokuwiki\Logger::LOG_DEBUG)->log(
+                        __FILE__ . ': ' . __LINE__,
+                        'Unknown action: ' . $action
+                    );
+                    http_status(400, 'unknown action');
+                    return;
             }
         }
 
@@ -148,12 +132,10 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
      * Event: AJAX_CALL_UNKNOWN
      *
      * @param Event $event event object by reference
-     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
-     *                           handler was registered]
      *
      * @return void
      */
-    public function switchEditors(Event $event, $param)
+    public function switchEditors(Event $event)
     {
         if ($event->data !== 'plugin_prosemirror_switch_editors') {
             return;

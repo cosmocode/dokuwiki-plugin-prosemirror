@@ -7,16 +7,11 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
-// must be run within Dokuwiki
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
 use dokuwiki\Form\Form;
 use dokuwiki\Form\ButtonElement;
-
-if (!defined('DOKU_INC')) {
-    die();
-}
 
 class action_plugin_prosemirror_editor extends ActionPlugin
 {
@@ -208,7 +203,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
         $linkForm->addRadioButton('linktype', $this->getLang('type:wiki page'))->val('internallink');
         $linkForm->addRadioButton('linktype', $this->getLang('type:interwiki'))->val('interwikilink');
         $linkForm->addRadioButton('linktype', $this->getLang('type:email'))->val('emaillink');
-        $linkForm->addRadioButton('linktype', $this->getLang('type:external'))->val('externallink')->attr('checked', 'checked');
+        $linkForm->addRadioButton('linktype', $this->getLang('type:external'))
+            ->val('externallink')
+            ->attr('checked', 'checked');
         $linkForm->addRadioButton('linktype', $this->getLang('type:other'))->val('other');
         $linkForm->addTagClose('fieldset');
         $linkForm->addTagClose('div');
@@ -218,7 +215,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
         $linkForm->addTagOpen('legend');
         $linkForm->addHTML('Link Name Type');
         $linkForm->addTagClose('legend');
-        $linkForm->addRadioButton('nametype', $this->getLang('type:automatic title'))->val('automatic')->attr('checked', 'checked');
+        $linkForm->addRadioButton('nametype', $this->getLang('type:automatic title'))
+            ->val('automatic')
+            ->attr('checked', 'checked');
         $linkForm->addRadioButton('nametype', $this->getLang('type:custom title'))->val('custom');
         $linkForm->addRadioButton('nametype', $this->getLang('type:image'))->val('image');
         $linkForm->addTextInput('linkname', 'Link name')->attr('placeholder', $this->getLang('placeholder:link name'));
@@ -240,9 +239,12 @@ class action_plugin_prosemirror_editor extends ActionPlugin
             'style' => 'display: none;',
         ]);
         $mediaForm->addFieldsetOpen($this->getLang('legend:media'))->addClass('js-media-fieldset');
-        $mediaForm->addButtonHTML('mediamanager', inlineSVG(DOKU_PLUGIN . 'prosemirror/images/file-image-outline.svg'))->attrs([
-            'type' => 'button',
-            'class' => 'js-open-mediamanager mediaform_mediamanager'
+        $mediaForm->addButtonHTML(
+            'mediamanager',
+            inlineSVG(DOKU_PLUGIN . 'prosemirror/images/file-image-outline.svg')
+        )->attrs([
+                'type' => 'button',
+                'class' => 'js-open-mediamanager mediaform_mediamanager'
         ]);
         $mediaForm->addTextInput('mediatarget', $this->getLang('media target'))->attrs(
             [
@@ -272,7 +274,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
         $mediaForm->addTagOpen('legend');
         $mediaForm->addHTML($this->getLang('legend:alignment'));
         $mediaForm->addTagClose('legend');
-        $mediaForm->addRadioButton('alignment', $this->getLang('label:default alignment'))->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('alignment', $this->getLang('label:default alignment'))
+            ->val('')
+            ->attr('checked', 'checked');
         $mediaForm->addRadioButton('alignment', $this->getLang('label:float left'))->val('left');
         $mediaForm->addRadioButton('alignment', $this->getLang('label:center alignment'))->val('center');
         $mediaForm->addRadioButton('alignment', $this->getLang('label:float right'))->val('right');
@@ -284,7 +288,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
         $mediaForm->addTagOpen('legend');
         $mediaForm->addHTML($this->getLang('legend:linking'));
         $mediaForm->addTagClose('legend');
-        $mediaForm->addRadioButton('linking', $this->getLang('label:default linking'))->val('details')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('linking', $this->getLang('label:default linking'))
+            ->val('details')
+            ->attr('checked', 'checked');
         $mediaForm->addRadioButton('linking', $this->getLang('label:direct linking'))->val('direct');
         $mediaForm->addRadioButton('linking', $this->getLang('label:nolink'))->val('nolink');
         $mediaForm->addRadioButton('linking', $this->getLang('label:linkonly'))->val('linkonly');
@@ -296,7 +302,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
         $mediaForm->addTagOpen('legend');
         $mediaForm->addHTML($this->getLang('legend:caching'));
         $mediaForm->addTagClose('legend');
-        $mediaForm->addRadioButton('caching', $this->getLang('label:default caching'))->val('')->attr('checked', 'checked');
+        $mediaForm->addRadioButton('caching', $this->getLang('label:default caching'))
+            ->val('')
+            ->attr('checked', 'checked');
         $mediaForm->addRadioButton('caching', $this->getLang('label:recache'))->val('recache');
         $mediaForm->addRadioButton('caching', $this->getLang('label:nocache'))->val('nocache');
         $mediaForm->addTagClose('fieldset');

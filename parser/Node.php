@@ -76,7 +76,11 @@ abstract class Node implements NodeInterface
             }
             return $eventData['newNode'];
         } catch (\Error $e) {
-            $exception = new ProsemirrorException('FIXME: better message for general error! Invalid node type received: ' . $node['type'], 0, $e);
+            $exception = new ProsemirrorException(
+                'FIXME: better message for general error! Invalid node type received: ' . $node['type'],
+                0,
+                $e
+            );
             $exception->addExtraData('nodeData', $node);
             $exception->addExtraData('parentNodeType', get_class($parent));
 
