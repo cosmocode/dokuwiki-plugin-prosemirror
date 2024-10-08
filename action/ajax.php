@@ -7,6 +7,7 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
+use dokuwiki\Logger;
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
@@ -94,7 +95,7 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
                     $responseData[$action] = RSSNode::renderAttrsToHTML($attrs);
                     break;
                 default:
-                    dokuwiki\Logger::getInstance(dokuwiki\Logger::LOG_DEBUG)->log(
+                    Logger::getInstance(Logger::LOG_DEBUG)->log(
                         __FILE__ . ': ' . __LINE__,
                         'Unknown action: ' . $action
                     );
