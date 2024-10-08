@@ -7,13 +7,13 @@
                 {
                     "type": "image",
                     "attrs": {
-                        "src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "src": "\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
                         "title": "foo and bar",
                         "class": "medialeft",
                         "align": "left",
                         "id": "wiki:dokuwiki-128.png",
                         "linking": "details",
-                        "data-resolvedHtml": "<a href=\"\/.\/lib\/exe\/detail.php?id=wiki%3Asyntax&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"medialeft\" loading=\"lazy\" title=\"foo and bar\" alt=\"foo and bar\" \/><\/a>"
+                        "data-resolvedHtml": "<a href=\"\/lib\/exe\/detail.php?id=wiki%3Asyntax&amp;media=wiki:dokuwiki-128.png\" class=\"media\" title=\"wiki:dokuwiki-128.png\"><img src=\"\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"medialeft\" loading=\"lazy\" title=\"foo and bar\" alt=\"foo and bar\" \/><\/a>"
                     }
                 }
             ]

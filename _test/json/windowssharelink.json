@@ -69,11 +69,11 @@
                     "attrs": {
                         "data-type": "other",
                         "data-inner": "\\\\server\\share",
-                        "image-src": "\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-src": "\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png",
                         "image-class": "media",
                         "image-width": "20",
                         "image-id": "wiki:dokuwiki-128.png",
-                        "data-resolvedImage": "<img src=\"\/.\/lib\/exe\/fetch.php?w=20&amp;tok=b935e2&amp;media=wiki:dokuwiki-128.png\" class=\"media\" loading=\"lazy\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" width=\"20\" \/>"
+                        "data-resolvedImage": "<img src=\"\/lib\/exe\/fetch.php?w=20&amp;tok=b935e2&amp;media=wiki:dokuwiki-128.png\" class=\"media\" loading=\"lazy\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" width=\"20\" \/>"
                     }
                 },
                 {

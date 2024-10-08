@@ -9,10 +9,10 @@
                     "attrs": {
                         "data-type": "internallink",
                         "data-inner": "wiki:syntax",
-                        "image-src": "/./lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
+                        "image-src": "/lib/exe/fetch.php?media=wiki:dokuwiki-128.png",
                         "image-class": "media",
                         "image-id": "wiki:dokuwiki-128.png",
-                        "data-resolvedImage": "<img src=\"\/.\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"media\" loading=\"lazy\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" \/>",
+                        "data-resolvedImage": "<img src=\"\/lib\/exe\/fetch.php?media=wiki:dokuwiki-128.png\" class=\"media\" loading=\"lazy\" title=\"wiki:dokuwiki-128.png\" alt=\"wiki:dokuwiki-128.png\" \/>",
                         "data-resolvedTitle": "wiki:syntax",
                         "data-resolvedID": "wiki:syntax"
                     }
