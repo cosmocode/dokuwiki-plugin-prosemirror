@@ -37,8 +37,6 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
             plugins,
         }),
         dispatchTransaction(tr) {
-            console.log('run');
-
             view.updateState(view.state.apply(tr));
 
             const spaces = 4;
@@ -46,11 +44,11 @@ window.Prosemirror.enableProsemirror = function enableProsemirror() {
         },
         nodeViews: getNodeViews(),
     });
-    window.view = view;
+    window.Prosemirror.view = view;
 };
 
 window.Prosemirror.destroyProsemirror = function destroyProsemirror() {
-    if (window.view && typeof window.view.destroy === 'function') {
-        window.view.destroy();
+    if (window.Prosemirror.view && typeof window.Prosemirror.view.destroy === 'function') {
+        window.Prosemirror.view.destroy();
     }
 };
