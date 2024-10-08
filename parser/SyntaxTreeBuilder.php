@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class SyntaxTreeBuilder
 {
-
     /**
      * Expects the array decoded from prosemirror's JSON
      *

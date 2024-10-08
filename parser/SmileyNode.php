@@ -2,10 +2,8 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
-
 class SmileyNode extends Node implements InlineNodeInterface
 {
-
     protected $parent;
     protected $data;
 

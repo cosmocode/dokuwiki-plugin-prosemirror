@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin prosemirror (Action Component)
  *
@@ -7,23 +8,29 @@
  */
 
 // must be run within Dokuwiki
-
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
+use dokuwiki\plugin\prosemirror\parser\ImageNode;
+use dokuwiki\plugin\prosemirror\parser\RSSNode;
+use dokuwiki\plugin\prosemirror\parser\LocalLinkNode;
+use dokuwiki\plugin\prosemirror\parser\InternalLinkNode;
 use dokuwiki\plugin\prosemirror\parser\LinkNode;
 
 if (!defined('DOKU_INC')) {
     die();
 }
 
-class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
+class action_plugin_prosemirror_ajax extends ActionPlugin
 {
     /**
      * Registers a callback function for a given event
      *
-     * @param Doku_Event_Handler $controller DokuWiki's event controller object
+     * @param EventHandler $controller DokuWiki's event controller object
      *
      * @return void
      */
-    public function register(Doku_Event_Handler $controller)
+    public function register(EventHandler $controller)
     {
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjax');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'switchEditors');
@@ -34,13 +41,13 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
      *
      * Event: AJAX_CALL_UNKNOWN
      *
-     * @param Doku_Event $event  event object by reference
+     * @param Event $event event object by reference
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
      *
      * @return void
      */
-    public function handleAjax(Doku_Event $event, $param)
+    public function handleAjax(Event $event, $param)
     {
         if ($event->data !== 'plugin_prosemirror') {
             return;
@@ -58,19 +65,19 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                         $inner = $INPUT->str('inner');
                         $responseData[$action] = $this->resolveInternalLink($inner, $ID);
                         break;
-                    }
+                }
                 case 'resolveInterWikiLink':
                     {
                         $inner = $INPUT->str('inner');
-                        list($shortcut, $reference) = explode('>', $inner);
+                        [$shortcut, $reference] = explode('>', $inner);
                         $responseData[$action] = $this->resolveInterWikiLink($shortcut, $reference);
                         break;
-                    }
+                }
                 case 'resolveMedia':
                     {
                         $attrs = $INPUT->arr('attrs');
                         $responseData[$action] = [
-                            'data-resolvedHtml' => \dokuwiki\plugin\prosemirror\parser\ImageNode::resolveMedia(
+                            'data-resolvedHtml' => ImageNode::resolveMedia(
                                 $attrs['id'],
                                 $attrs['title'],
                                 $attrs['align'],
@@ -81,7 +88,7 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                             )
                         ];
                         break;
-                    }
+                }
                 case 'resolveImageTitle':
                     {
                         $image = $INPUT->arr('image');
@@ -96,19 +103,19 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
                             $image['cache']
                         );
                         break;
-                    }
+                }
                 case 'resolveRSS':
                     {
                         $attrs = json_decode($INPUT->str('attrs'), true);
-                        $responseData[$action] = \dokuwiki\plugin\prosemirror\parser\RSSNode::renderAttrsToHTML($attrs);
+                        $responseData[$action] = RSSNode::renderAttrsToHTML($attrs);
                         break;
-                    }
+                }
                 default:
                     {
                         dbglog('Unknown action: ' . $action, __FILE__ . ': ' . __LINE__);
                         http_status(400, 'unknown action');
                         return;
-                    }
+                }
             }
         }
 
@@ -130,9 +137,9 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
     protected function resolveInternalLink($inner, $curId)
     {
         if ($inner[0] === '#') {
-            return dokuwiki\plugin\prosemirror\parser\LocalLinkNode::resolveLocalLink($inner, $curId);
+            return LocalLinkNode::resolveLocalLink($inner, $curId);
         }
-       return \dokuwiki\plugin\prosemirror\parser\InternalLinkNode::resolveLink($inner, $curId);
+        return InternalLinkNode::resolveLink($inner, $curId);
     }
 
     /**
@@ -140,13 +147,13 @@ class action_plugin_prosemirror_ajax extends DokuWiki_Action_Plugin
      *
      * Event: AJAX_CALL_UNKNOWN
      *
-     * @param Doku_Event $event  event object by reference
+     * @param Event $event event object by reference
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
      *
      * @return void
      */
-    public function switchEditors(Doku_Event $event, $param)
+    public function switchEditors(Event $event, $param)
     {
         if ($event->data !== 'plugin_prosemirror_switch_editors') {
             return;

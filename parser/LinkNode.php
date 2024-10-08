@@ -2,20 +2,19 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
+use dokuwiki\plugin\prosemirror\schema\Mark;
 use dokuwiki\File\MediaResolver;
 
 abstract class LinkNode extends Node implements InlineNodeInterface
 {
-
-
     /** @var  InlineNodeInterface */
-    public $previous = null;
+    public $previous;
 
     /** @var  Node */
     protected $parent;
 
     /** @var TextNode */
-    protected $textNode = null;
+    protected $textNode;
 
     protected $attrs = [];
 
@@ -57,7 +56,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
         } elseif (!empty($this->attrs['image-id'])) {
             $imageAttrs = [];
             foreach ($this->attrs as $key => $value) {
-                @list ($keyPrefix, $attrKey) = explode('-', $key, 2);
+                @[$keyPrefix, $attrKey] = explode('-', $key, 2);
                 if ($keyPrefix === 'image') {
                     $imageAttrs[$attrKey] = $value;
                 }
@@ -118,14 +117,20 @@ abstract class LinkNode extends Node implements InlineNodeInterface
             $linkNode->attr($attributeName, $attributeValue);
         }
         foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
-            $linkNode->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+            $linkNode->addMark(new Mark($mark));
         }
         $renderer->addToNodestack($linkNode);
     }
 
-    public static function resolveImageTitle($pageId, $imageId, $title = null, $align = null, $width = null,
-        $height = null, $cache = null)
-    {
+    public static function resolveImageTitle(
+        $pageId,
+        $imageId,
+        $title = null,
+        $align = null,
+        $width = null,
+        $height = null,
+        $cache = null
+    ) {
         /** @var \Doku_Renderer_xhtml $xhtml_renderer */
         $xhtml_renderer = p_get_renderer('xhtml');
         $src = $imageId;

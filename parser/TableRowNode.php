@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class TableRowNode extends Node
 {
-
     /** @var TableCellNode[] */
     protected $tableCells = [];
 
@@ -28,7 +27,7 @@ class TableRowNode extends Node
         for ($colIndex = 1; $colIndex <= $numColsInTable; $colIndex += $colSpan) {
             if (!empty($rowSpans[$colIndex])) {
                 $doc .= '| ::: ';
-                $rowSpans[$colIndex] -= 1;
+                --$rowSpans[$colIndex];
                 $colSpan = 1;
                 continue;
             }
@@ -38,12 +37,11 @@ class TableRowNode extends Node
             $rowSpan = $tableCell->getRowSpan();
             $colSpan = $tableCell->getColSpan();
             // does nothing if $rowSpan==1 and $colSpan==1
-            for ($colSpanIndex = 0; $colSpanIndex < $colSpan; $colSpanIndex += 1) {
+            for ($colSpanIndex = 0; $colSpanIndex < $colSpan; ++$colSpanIndex) {
                 $rowSpans[$colIndex + $colSpanIndex] = $rowSpan - 1;
             }
 
             $doc .= str_repeat('|', $colSpan - 1);
-
         }
         $this->parent->setRowSpans($rowSpans);
 
@@ -59,7 +57,8 @@ class TableRowNode extends Node
      *
      * @return int
      */
-    public function countCols() {
+    public function countCols()
+    {
         $cols = 0;
         foreach ($this->tableCells as $cell) {
             $cols += $cell->getColSpan();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by IntelliJ IDEA.
  * User: michael
@@ -10,7 +11,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class ListNode extends Node
 {
-
     protected $parent;
     /** @var string */
     protected $prefix;

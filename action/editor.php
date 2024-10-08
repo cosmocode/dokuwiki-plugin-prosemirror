@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin prosemirror (Action Component)
  *
@@ -7,22 +8,26 @@
  */
 
 // must be run within Dokuwiki
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
+use dokuwiki\Form\Form;
 use dokuwiki\Form\ButtonElement;
 
 if (!defined('DOKU_INC')) {
     die();
 }
 
-class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
+class action_plugin_prosemirror_editor extends ActionPlugin
 {
     /**
      * Registers a callback function for a given event
      *
-     * @param Doku_Event_Handler $controller DokuWiki's event controller object
+     * @param EventHandler $controller DokuWiki's event controller object
      *
      * @return void
      */
-    public function register(Doku_Event_Handler $controller)
+    public function register(EventHandler $controller)
     {
         $controller->register_hook('ACTION_HEADERS_SEND', 'BEFORE', $this, 'forceWYSIWYG');
         $controller->register_hook('ACTION_HEADERS_SEND', 'AFTER', $this, 'addJSINFO');
@@ -36,10 +41,10 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      *
      * Triggered by event: ACTION_HEADERS_SEND
      *
-     * @param Doku_Event $event
+     * @param Event $event
      * @param            $param
      */
-    public function forceWYSIWYG(Doku_Event $event, $param)
+    public function forceWYSIWYG(Event $event, $param)
     {
         if ($this->isForceWYSIWYG()) {
             set_doku_pref('plugin_prosemirror_useWYSIWYG', true);
@@ -51,19 +56,19 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      *
      * Triggered by event: HTML_EDITFORM_OUTPUT
      *
-     * @param Doku_Event $event  event object
+     * @param Event $event event object
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
      *
      * @return void
      */
-    public function addDataAndToggleButton(Doku_Event $event, $param)
+    public function addDataAndToggleButton(Event $event, $param)
     {
         if (!$this->allowWYSIWYG()) {
             return;
         }
 
-        /** @var Doku_Form|\dokuwiki\Form\Form $form */
+        /** @var Doku_Form|Form $form */
         $form = $event->data;
 
         // return early if content is not editable
@@ -92,14 +97,14 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             }
         }
 
-        if (is_a($form, \dokuwiki\Form\Form::class)) {
+        if (is_a($form, Form::class)) {
             $form->addElement($this->buildToggleButton(), 0);
-            $form->setHiddenField('prosemirror_json',$prosemirrorJSON);
+            $form->setHiddenField('prosemirror_json', $prosemirrorJSON);
             $form->addHTML('<div class="prosemirror_wrapper" id="prosemirror__editor"></div>', 1);
         } else {
             // todo remove when old stable is no longer supported
             $form->insertElement(0, $this->buildOldToggleButton());
-            $form->addHidden('prosemirror_json',$prosemirrorJSON);
+            $form->addHidden('prosemirror_json', $prosemirrorJSON);
             $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
         }
     }
@@ -165,7 +170,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         return !$INPUT->has('target') || $INPUT->str('target') === 'section';
     }
 
-    public function addAddtionalForms(Doku_Event $event)
+    public function addAddtionalForms(Event $event)
     {
         if (!$this->allowWYSIWYG()) {
             return;
@@ -175,12 +180,13 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
             return;
         }
 
-        $linkForm = new dokuwiki\Form\Form([
+        $linkForm = new Form([
             'class' => 'plugin_prosemirror_linkform',
             'id' => 'prosemirror-linkform',
             'style' => 'display: none;',
         ]);
-        $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');;
+        $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');
+        ;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
 
@@ -190,7 +196,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         ]);
         $linkForm->addTextInput('linktarget', $this->getLang('link target'))->attrs(
             [
-            'required'=> 'required',
+            'required' => 'required',
             'autofocus' => 'autofocus',
             ]
         );
@@ -229,7 +235,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
 
         echo $linkForm->toHTML();
 
-        $mediaForm = new dokuwiki\Form\Form([
+        $mediaForm = new Form([
             'class' => 'plugin_prosemirror_mediaform',
             'id' => 'prosemirror-mediaform',
             'style' => 'display: none;',
@@ -241,7 +247,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
         ]);
         $mediaForm->addTextInput('mediatarget', $this->getLang('media target'))->attrs(
             [
-                'required'=> 'required',
+                'required' => 'required',
                 'autofocus' => 'autofocus',
             ]
         );
@@ -337,7 +343,7 @@ class action_plugin_prosemirror_editor extends DokuWiki_Action_Plugin
      */
     protected function isReadOnly($form)
     {
-        if (is_a($form, \dokuwiki\Form\Form::class)) {
+        if (is_a($form, Form::class)) {
             $textareaPos = $form->findPositionByType('textarea');
             $readonly = $textareaPos !== false && !empty($form->getElementAt($textareaPos)->attr('readonly'));
         } else {

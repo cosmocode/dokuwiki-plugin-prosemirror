@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class Mark
 {
-
     public static $markOrder = [
         'strong' => 1,
         'underline' => 2,
@@ -22,10 +21,10 @@ class Mark
     protected $tailLength = 0;
 
     /** @var  Mark */
-    protected $previousMark = null;
+    protected $previousMark;
 
     /** @var  Mark */
-    protected $nextMark = null;
+    protected $nextMark;
 
     /** @var  TextNode */
     protected $parent;
@@ -61,7 +60,7 @@ class Mark
 
     public function incrementTail()
     {
-        $this->tailLength += 1;
+        ++$this->tailLength;
     }
 
     public function getTailLength()

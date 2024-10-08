@@ -38,7 +38,8 @@ class InternalLinkNode extends LinkNode
         );
     }
 
-    public static function resolveLink($inner, $curId) {
+    public static function resolveLink($inner, $curId)
+    {
         $params = '';
         $parts = explode('?', $inner, 2);
         $resolvedPageId = $parts[0];

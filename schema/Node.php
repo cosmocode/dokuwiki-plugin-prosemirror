@@ -10,7 +10,6 @@ namespace dokuwiki\plugin\prosemirror\schema;
  */
 class Node implements \JsonSerializable
 {
-
     /** @var  string The type of node that this is */
     protected $type;
 
@@ -18,7 +17,7 @@ class Node implements \JsonSerializable
     protected $content = [];
 
     /** @var  string For text nodes, this contains the node's text content. */
-    protected $text = null;
+    protected $text;
 
     /** @var Mark[] The marks (things like whether it is emphasized or part of a link) associated with this node */
     protected $marks = [];
@@ -113,7 +112,7 @@ class Node implements \JsonSerializable
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $json = [
             'type' => $this->type,
@@ -139,8 +138,9 @@ class Node implements \JsonSerializable
      *
      * @return bool
      */
-    public function hasContent() {
-        return !empty($this->content);
+    public function hasContent()
+    {
+        return $this->content !== [];
     }
 
     /**
@@ -152,7 +152,8 @@ class Node implements \JsonSerializable
      *
      * @return void
      */
-    public function trimContentLeft() {
+    public function trimContentLeft()
+    {
         if ($this->hasContent()) {
             $this->content[0]->trimContentLeft();
             if ($this->content[0]->getText() === '') {
@@ -174,7 +175,8 @@ class Node implements \JsonSerializable
      *
      * @return void
      */
-    public function trimContentRight() {
+    public function trimContentRight()
+    {
         if ($this->hasContent()) {
             $contentLength = count($this->content) - 1;
             $this->content[$contentLength]->trimContentRight();

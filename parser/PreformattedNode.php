@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class PreformattedNode extends Node
 {
-
     protected $parent;
     protected $data;
 

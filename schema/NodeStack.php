@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\schema;
 
 class NodeStack
 {
-
     /** @var Node[] */
     protected $stack = [];
 

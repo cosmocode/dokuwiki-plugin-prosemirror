@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class CodeBlockNode extends Node
 {
-
     protected $parent;
     protected $data;
 

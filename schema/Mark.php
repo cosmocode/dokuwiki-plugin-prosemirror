@@ -10,7 +10,6 @@ namespace dokuwiki\plugin\prosemirror\schema;
  */
 class Mark implements \JsonSerializable
 {
-
     /** @var  string The type of this mark */
     protected $type;
 
@@ -55,7 +54,7 @@ class Mark implements \JsonSerializable
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $json = [
             'type' => $this->type,

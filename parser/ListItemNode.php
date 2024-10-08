@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by IntelliJ IDEA.
  * User: michael
@@ -10,7 +11,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class ListItemNode extends Node
 {
-
     protected $parent;
     /** @var Node[] */
     protected $subnodes = [];
@@ -47,7 +47,7 @@ class ListItemNode extends Node
              * current <li>
              */
             $prefixLinebreak = '';
-            if (is_a($node, ListNode::class)) {
+            if ($node instanceof ListNode) {
                 $prefixLinebreak = "\n";
             }
             $lines[] = $prefixLinebreak . $node->toSyntax();
