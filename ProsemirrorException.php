@@ -9,7 +9,8 @@ namespace dokuwiki\plugin\prosemirror;
  *
  * @package dokuwiki\plugin\prosemirror
  */
-class ProsemirrorException extends \RuntimeException {
+class ProsemirrorException extends \RuntimeException
+{
     public $data = [];
 
     /**

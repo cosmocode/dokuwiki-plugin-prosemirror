@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class ParagraphNode extends Node
 {
-
     /** @var TextNode[] */
     protected $subnodes = [];
 
@@ -29,9 +28,9 @@ class ParagraphNode extends Node
     {
         $doc = '';
         foreach ($this->subnodes as $subnode) {
-            if (is_a($subnode, ParagraphNode::class)) $doc .= "\n";
+            if ($subnode instanceof \dokuwiki\plugin\prosemirror\parser\ParagraphNode) $doc .= "\n";
             $doc .= $subnode->toSyntax();
-            if (is_a($subnode, ParagraphNode::class)) $doc .= "\n";
+            if ($subnode instanceof \dokuwiki\plugin\prosemirror\parser\ParagraphNode) $doc .= "\n";
         }
         return $doc;
     }

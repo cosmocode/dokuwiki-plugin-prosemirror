@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class LocalLinkNode extends LinkNode
 {
-
     public function toSyntax()
     {
         return $this->getDefaultLinkSyntax($this->attrs['href']);

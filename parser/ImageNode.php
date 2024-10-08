@@ -2,15 +2,16 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
+use dokuwiki\plugin\prosemirror\schema\Mark;
+
 class ImageNode extends Node implements InlineNodeInterface
 {
-
     /** @var  Node */
     protected $parent;
 
     protected $attrs = [];
 
-    protected $textNode = null;
+    protected $textNode;
 
     public function __construct($data, Node $parent, Node $previousNode = null)
     {
@@ -87,12 +88,14 @@ class ImageNode extends Node implements InlineNodeInterface
         );
 
         foreach (array_keys($renderer->getCurrentMarks()) as $mark) {
-            $node->addMark(new \dokuwiki\plugin\prosemirror\schema\Mark($mark));
+            $node->addMark(new Mark($mark));
         }
 
         global $ID;
-        $node->attr('data-resolvedHtml',
-            self::resolveMedia($src, $title, $align, $width, $height, $cache, $linking));
+        $node->attr(
+            'data-resolvedHtml',
+            self::resolveMedia($src, $title, $align, $width, $height, $cache, $linking)
+        );
 
         $renderer->addToNodestack($node);
     }

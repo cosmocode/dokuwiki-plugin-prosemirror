@@ -1,4 +1,7 @@
 <?php
+
+// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+
 /**
  * DokuWiki Plugin prosemirror (Renderer Component)
  *
@@ -6,20 +9,20 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
-// must be run within Dokuwiki
+use dokuwiki\plugin\prosemirror\parser\ImageNode;
+use dokuwiki\plugin\prosemirror\parser\LocalLinkNode;
+use dokuwiki\plugin\prosemirror\parser\InternalLinkNode;
+use dokuwiki\plugin\prosemirror\parser\ExternalLinkNode;
+use dokuwiki\plugin\prosemirror\parser\InterwikiLinkNode;
+use dokuwiki\plugin\prosemirror\parser\EmailLinkNode;
+use dokuwiki\plugin\prosemirror\parser\WindowsShareLinkNode;
+use dokuwiki\Extension\Event;
 use dokuwiki\plugin\prosemirror\schema\Mark;
 use dokuwiki\plugin\prosemirror\schema\Node;
 use dokuwiki\plugin\prosemirror\schema\NodeStack;
 
-if (!defined('DOKU_INC')) {
-    die();
-}
-
-require_once DOKU_INC . 'inc/parser/renderer.php';
-
 class renderer_plugin_prosemirror extends Doku_Renderer
 {
-
     /** @var  NodeStack */
     public $nodestack;
 
@@ -66,7 +69,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     protected function clearBlock()
     {
         $parentNode = $this->nodestack->current()->getType();
-        if (in_array($parentNode, ['paragraph'])) {
+        if ($parentNode == 'paragraph') {
             $this->nodestack->drop($parentNode);
         }
     }
@@ -89,7 +92,8 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->doc = json_encode($this->nodestack->doc(), JSON_PRETTY_PRINT);
     }
 
-    public function nocache() {
+    public function nocache()
+    {
         $docNode = $this->nodestack->getDocNode();
         $docNode->attr('nocache', true);
     }
@@ -245,13 +249,15 @@ class renderer_plugin_prosemirror extends Doku_Renderer
      * @param string|null $align   either null/left, center or right
      * @param int         $rowspan
      */
-    protected function openTableCell($type, $colspan, $align, $rowspan) {
+    protected function openTableCell($type, $colspan, $align, $rowspan)
+    {
         $this->colcount += $colspan;
 
         $node = new Node($type);
         $node->attr('colspan', $colspan);
         $node->attr('rowspan', $rowspan);
         $node->attr('align', $align);
+
         $this->nodestack->addTop($node);
 
         $node = new Node('paragraph');
@@ -272,6 +278,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $curNode = $this->nodestack->current();
         $curNode->trimContentLeft();
         $curNode->trimContentRight();
+
         $this->nodestack->drop($type);
     }
 
@@ -285,6 +292,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
         $tnode = new Node('text');
         $tnode->setText($text);
+
         $node->addChild($tnode);
 
         $this->nodestack->add($node);
@@ -342,6 +350,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $node->attr('class', 'code ' . $lang);
         $node->attr('data-language', $lang);
         $node->attr('data-filename', $file);
+
         $this->nodestack->addTop($node);
         $this->cdata(trim($text, "\n"));
         $this->nodestack->drop('code_block');
@@ -356,6 +365,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     {
         $node = new Node('html_inline');
         $node->attr('class', 'html_inline');
+
         $this->nodestack->addTop($node);
         $this->cdata(str_replace("\n", ' ', $text));
         $this->nodestack->drop('html_inline');
@@ -366,6 +376,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->clearBlock();
         $node = new Node('html_block');
         $node->attr('class', 'html_block');
+
         $this->nodestack->addTop($node);
         $this->cdata(trim($text, "\n"));
         $this->nodestack->drop('html_block');
@@ -375,6 +386,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     {
         $node = new Node('php_inline');
         $node->attr('class', 'php_inline');
+
         $this->nodestack->addTop($node);
         $this->cdata(str_replace("\n", ' ', $text));
         $this->nodestack->drop('php_inline');
@@ -385,6 +397,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->clearBlock();
         $node = new Node('php_block');
         $node->attr('class', 'php_block');
+
         $this->nodestack->addTop($node);
         $this->cdata(trim($text, "\n"));
         $this->nodestack->drop('php_block');
@@ -405,11 +418,11 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $node->attr('details', (bool)$params['details']);
 
         if ($params['refresh'] % 86400 === 0) {
-            $refresh = $params['refresh']/86400 . 'd';
-        } else if ($params['refresh'] % 3600 === 0) {
-            $refresh = $params['refresh']/3600 . 'h';
+            $refresh = $params['refresh'] / 86400 . 'd';
+        } elseif ($params['refresh'] % 3600 === 0) {
+            $refresh = $params['refresh'] / 3600 . 'h';
         } else {
-            $refresh = $params['refresh']/60 . 'm';
+            $refresh = $params['refresh'] / 60 . 'm';
         }
 
         $node->attr('refresh', trim($refresh));
@@ -423,7 +436,6 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->nodestack->addTop($footnoteNode);
         $this->nodestackBackup[] = $this->nodestack;
         $this->nodestack = new NodeStack();
-
     }
 
     public function footnote_close()
@@ -448,7 +460,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     ) {
 
         // FIXME how do we handle non-images, e.g. pdfs or audio?
-        \dokuwiki\plugin\prosemirror\parser\ImageNode::render(
+        ImageNode::render(
             $this,
             $src,
             $title,
@@ -472,7 +484,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $cache = null,
         $linking = null
     ) {
-        \dokuwiki\plugin\prosemirror\parser\ImageNode::render(
+        ImageNode::render(
             $this,
             $src,
             $title,
@@ -487,7 +499,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
     public function locallink($hash, $name = null)
     {
-        \dokuwiki\plugin\prosemirror\parser\LocalLinkNode::render($this, $hash, $name);
+        LocalLinkNode::render($this, $hash, $name);
     }
 
     /**
@@ -495,27 +507,27 @@ class renderer_plugin_prosemirror extends Doku_Renderer
      */
     public function internallink($id, $name = null)
     {
-        \dokuwiki\plugin\prosemirror\parser\InternalLinkNode::render($this, $id, $name);
+        InternalLinkNode::render($this, $id, $name);
     }
 
     public function externallink($link, $title = null)
     {
-        \dokuwiki\plugin\prosemirror\parser\ExternalLinkNode::render($this, $link, $title);
+        ExternalLinkNode::render($this, $link, $title);
     }
 
     public function interwikilink($link, $title, $wikiName, $wikiUri)
     {
-        \dokuwiki\plugin\prosemirror\parser\InterwikiLinkNode::render($this, $title, $wikiName, $wikiUri);
+        InterwikiLinkNode::render($this, $title, $wikiName, $wikiUri);
     }
 
     public function emaillink($address, $name = null)
     {
-        \dokuwiki\plugin\prosemirror\parser\EmailLinkNode::render($this, $address, $name);
+        EmailLinkNode::render($this, $address, $name);
     }
 
     public function windowssharelink($link, $title = null)
     {
-        \dokuwiki\plugin\prosemirror\parser\WindowsShareLinkNode::render($this, $link, $title);
+        WindowsShareLinkNode::render($this, $link, $title);
     }
 
     /** @inheritDoc */
@@ -542,7 +554,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
             'match' => $match,
             'renderer' => $this,
         ];
-        $event = new Doku_Event('PROSEMIRROR_RENDER_PLUGIN', $eventData);
+        $event = new Event('PROSEMIRROR_RENDER_PLUGIN', $eventData);
         if ($event->advise_before()) {
             if ($this->nodestack->current()->getType() === 'paragraph') {
                 $nodetype = 'dwplugin_inline';
@@ -560,7 +572,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
 
     public function smiley($smiley)
     {
-        if(array_key_exists($smiley, $this->smileys)) {
+        if (array_key_exists($smiley, $this->smileys)) {
             $node = new Node('smiley');
             $node->attr('icon', $this->smileys[$smiley]);
             $node->attr('syntax', $smiley);

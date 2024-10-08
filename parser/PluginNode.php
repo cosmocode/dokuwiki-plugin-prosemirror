@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class PluginNode extends Node implements InlineNodeInterface
 {
-
     protected $textNode;
 
     public function __construct($data, Node $parent, Node $previous = null)

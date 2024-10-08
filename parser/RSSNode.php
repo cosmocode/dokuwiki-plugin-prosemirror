@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class RSSNode extends Node
 {
-
     protected $parent;
     protected $data;
 
@@ -20,7 +19,8 @@ class RSSNode extends Node
         return self::attrToSyntax($attrs);
     }
 
-    protected static function attrToSyntax($attrs) {
+    protected static function attrToSyntax($attrs)
+    {
         $prefix = '{{rss>';
         $url = '';
         if (!empty($attrs['url'])) {
@@ -55,7 +55,8 @@ class RSSNode extends Node
         return $prefix . $url . $paramString . $postfix;
     }
 
-    public static function renderAttrsToHTML($attrs) {
+    public static function renderAttrsToHTML($attrs)
+    {
         $syntax = self::attrToSyntax($attrs);
         $ins = p_get_instructions($syntax);
         return p_render('xhtml', $ins, $info);

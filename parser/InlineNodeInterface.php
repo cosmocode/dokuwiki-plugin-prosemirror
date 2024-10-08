@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 interface InlineNodeInterface
 {
-
     public function __construct($data, Node $parent, Node $previous = null);
 
     /**

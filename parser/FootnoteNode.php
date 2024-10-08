@@ -12,8 +12,6 @@ class FootnoteNode extends Node
     public function __construct($data, Node $parent)
     {
         $this->parent = &$parent;
-
-        $previousNode = null;
         $json = $data['attrs']['contentJSON'];
         $contentDoc = json_decode($json, true);
         foreach ($contentDoc['content'] as $subnode) {

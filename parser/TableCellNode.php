@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class TableCellNode extends Node
 {
-
     protected $data;
 
     /** @var Node[] */
@@ -45,7 +44,7 @@ class TableCellNode extends Node
         foreach ($this->subnodes as $subnode) {
             $doc .= $subnode->toSyntax();
         }
-        list($paddingLeft, $paddingRight) = $this->calculateAlignmentPadding();
+        [$paddingLeft, $paddingRight] = $this->calculateAlignmentPadding();
         return $prefix . $paddingLeft . trim($doc) . $paddingRight;
     }
 
@@ -84,6 +83,5 @@ class TableCellNode extends Node
             return [' ', '  '];
         }
         return [' ', ' '];
-
     }
 }

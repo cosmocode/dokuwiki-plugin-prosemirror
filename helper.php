@@ -1,5 +1,6 @@
 <?php
 
+use dokuwiki\Extension\Plugin;
 use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
 use dokuwiki\plugin\sentry\Event;
 
@@ -9,9 +10,8 @@ use dokuwiki\plugin\sentry\Event;
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
-class helper_plugin_prosemirror extends DokuWiki_Plugin
+class helper_plugin_prosemirror extends Plugin
 {
-
     /**
      * Decode json and parse the data back into DokuWiki Syntax
      *
@@ -57,6 +57,7 @@ class helper_plugin_prosemirror extends DokuWiki_Plugin
             ],
         ]);
         $sentryEvent->addException($exception);
+
         $sentry->logEvent($sentryEvent);
         return true;
     }

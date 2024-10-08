@@ -2,11 +2,11 @@
 
 namespace dokuwiki\plugin\prosemirror\parser;
 
+use dokuwiki\Extension\Event;
 use dokuwiki\plugin\prosemirror\ProsemirrorException;
 
 abstract class Node implements NodeInterface
 {
-
     private static $nodeclass = [
         'text' => TextNode::class,
         'paragraph' => ParagraphNode::class,
@@ -66,8 +66,8 @@ abstract class Node implements NodeInterface
                 'previous' => $previous,
                 'newNode' => null,
             ];
-            $event = new \Doku_Event('PROSEMIRROR_PARSE_UNKNOWN', $eventData);
-            if ($event->advise_before() || !is_a($eventData['newNode'], __CLASS__)) {
+            $event = new Event('PROSEMIRROR_PARSE_UNKNOWN', $eventData);
+            if ($event->advise_before() || !is_a($eventData['newNode'], self::class)) {
                 $exception = new ProsemirrorException('Invalid node type received: ' . $node['type'], 0);
                 $exception->addExtraData('nodeData', $node);
                 $exception->addExtraData('parentNodeType', get_class($parent));
@@ -75,9 +75,12 @@ abstract class Node implements NodeInterface
                 throw $exception;
             }
             return $eventData['newNode'];
-
         } catch (\Error $e) {
-            $exception = new ProsemirrorException('FIXME: better message for general error! Invalid node type received: ' . $node['type'], 0, $e);
+            $exception = new ProsemirrorException(
+                'FIXME: better message for general error! Invalid node type received: ' . $node['type'],
+                0,
+                $e
+            );
             $exception->addExtraData('nodeData', $node);
             $exception->addExtraData('parentNodeType', get_class($parent));
 

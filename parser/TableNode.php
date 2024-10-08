@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class TableNode extends Node
 {
-
     /** @var TableRowNode[] */
     protected $tableRows = [];
     protected $rowSpans = [];
@@ -26,7 +25,8 @@ class TableNode extends Node
      * rowspan, as every other row could have.
      *
      */
-    protected function countColNum() {
+    protected function countColNum()
+    {
         $this->numCols = $this->tableRows[0]->countCols();
     }
 
@@ -35,7 +35,8 @@ class TableNode extends Node
      *
      * @return int
      */
-    public function getNumTableCols() {
+    public function getNumTableCols()
+    {
         return $this->numCols;
     }
 

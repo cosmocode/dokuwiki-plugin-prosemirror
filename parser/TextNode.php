@@ -4,9 +4,8 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 class TextNode extends Node implements InlineNodeInterface
 {
-
     /** @var  TextNode */
-    public $previous = null;
+    public $previous;
 
     /** @var  Node */
     protected $parent;
@@ -47,11 +46,6 @@ class TextNode extends Node implements InlineNodeInterface
         }
 
         if (!empty($openingMarks)) {
-            foreach ($openingMarks as $mark) {
-                while (!$mark->sort()) {
-                }
-            }
-
             $mark = $openingMarks[0]->getFirst();
             $doc .= $mark->getOpeningSyntax();
             while ($mark = $mark->getNext()) {
@@ -83,11 +77,6 @@ class TextNode extends Node implements InlineNodeInterface
         }
 
         if (!empty($closingMarks)) {
-            foreach ($closingMarks as $mark) {
-                while (!$mark->sort()) {
-                }
-            }
-
             $mark = $closingMarks[0]->getLast();
             $doc .= $mark->getClosingSyntax();
             while ($mark = $mark->getPrevious()) {
