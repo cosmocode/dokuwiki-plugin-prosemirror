@@ -1,0 +1,24 @@
+name: JS Test and DokuWiki Default Tasks
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '15 6 20 * *'
+jobs:
+  testJavaScript:
+    name: JavaScript Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        run: |
+          yarn install
+
+      - name: Run Tests
+        run: |
+          yarn test
+          yarn lint
+  testPHP:
+    uses: dokuwiki/github-action/.github/workflows/all.yml@main

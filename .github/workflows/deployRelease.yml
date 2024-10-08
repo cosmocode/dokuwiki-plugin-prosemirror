@@ -2,7 +2,7 @@ name: Deploy Release
 
 on:
     workflow_run:
-        workflows: ["PHP Tests on Linux"]
+        workflows: ["JS Test and DokuWiki Default Tasks"]
         branches: [master]
         types:
             - completed
