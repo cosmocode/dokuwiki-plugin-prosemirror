@@ -186,7 +186,6 @@ class action_plugin_prosemirror_editor extends ActionPlugin
             'style' => 'display: none;',
         ]);
         $linkForm->addFieldsetOpen('Links')->addClass('js-link-fieldset');
-        ;
         $iwOptions = array_keys(getInterwiki());
         $linkForm->addDropdown('iwshortcut', $iwOptions, 'InterWiki')->attr('required', 'required');
 
