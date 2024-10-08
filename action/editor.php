@@ -26,7 +26,6 @@ class action_plugin_prosemirror_editor extends ActionPlugin
     {
         $controller->register_hook('ACTION_HEADERS_SEND', 'BEFORE', $this, 'forceWYSIWYG');
         $controller->register_hook('ACTION_HEADERS_SEND', 'AFTER', $this, 'addJSINFO');
-        $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('FORM_EDIT_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
     }
@@ -92,36 +91,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
             }
         }
 
-        if (is_a($form, Form::class)) {
-            $form->addElement($this->buildToggleButton(), 0);
-            $form->setHiddenField('prosemirror_json', $prosemirrorJSON);
-            $form->addHTML('<div class="prosemirror_wrapper" id="prosemirror__editor"></div>', 1);
-        } else {
-            // todo remove when old stable is no longer supported
-            $form->insertElement(0, $this->buildOldToggleButton());
-            $form->addHidden('prosemirror_json', $prosemirrorJSON);
-            $form->insertElement(1, '<div class="prosemirror_wrapper" id="prosemirror__editor"></div>');
-        }
-    }
-
-    /**
-     * Create the button to toggle the WYSIWYG editor
-     *
-     * Creates it as hidden if forcing WYSIWYG
-     *
-     * @deprecated use buildToggleButton instead
-     * @return array the pseudo-tag expected by \Doku_Form::insertElement
-     */
-    protected function buildOldToggleButton()
-    {
-        dbg_deprecated('buildToggleButton');
-        $attr = [
-            'class' => 'button plugin_prosemirror_useWYSIWYG'
-        ];
-        if ($this->isForceWYSIWYG()) {
-            $attr['style'] = 'display: none;';
-        }
-        return form_makeButton('button', '', $this->getLang('switch_editors'), $attr);
+        $form->addElement($this->buildToggleButton(), 0);
+        $form->setHiddenField('prosemirror_json', $prosemirrorJSON);
+        $form->addHTML('<div class="prosemirror_wrapper" id="prosemirror__editor"></div>', 1);
     }
 
     /**
