@@ -1,3 +1,4 @@
+import { DOMParser } from 'prosemirror-model';
 import KeyValueForm from './nodeviews/KeyValueForm';
 import AbstractMenuItemDispatcher from './plugins/Menu/MenuItems/AbstractMenuItemDispatcher';
 import MenuItem from './plugins/Menu/MenuItem';
@@ -13,6 +14,7 @@ export default function initializePublicAPI() {
     window.Prosemirror.classes.KeyValueForm = KeyValueForm;
     window.Prosemirror.classes.MenuItem = MenuItem;
     window.Prosemirror.classes.AbstractMenuItemDispatcher = AbstractMenuItemDispatcher;
+    window.Prosemirror.classes.DOMParser = DOMParser;
 
     window.Prosemirror.commands = {};
     window.Prosemirror.commands.setBlockTypeNoAttrCheck = setBlockTypeNoAttrCheck;
