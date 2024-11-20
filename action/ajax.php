@@ -143,7 +143,8 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         $event->preventDefault();
         $event->stopPropagation();
 
-        global $INPUT;
+        global $INPUT, $ID;
+        $ID = $INPUT->str('id');
 
         if ($INPUT->bool('getJSON')) {
             $text = $INPUT->str('data');
