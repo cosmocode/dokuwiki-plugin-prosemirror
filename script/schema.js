@@ -125,7 +125,8 @@ export default function getSpec() {
                     align = 'center';
                 }
                 return {
-                    id: attrs.media,
+                    // a relative ID might be preferred (see imgpaste plugin)
+                    id: dom.dataset.relID || attrs.media,
                     title: dom.getAttribute('alt'),
                     width: attrs.w,
                     height: attrs.h,
