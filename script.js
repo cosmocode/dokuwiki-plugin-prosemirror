@@ -122,6 +122,7 @@ function toggleEditor() {
         call: 'plugin_prosemirror_switch_editors',
         data: window.proseMirrorIsActive ? $jsonField.val() : $textArea.val(),
         getJSON: window.proseMirrorIsActive ? '0' : '1',
+        id: JSINFO.id
     }).done(function handleSwitchEditorResponse(data) {
         if (window.proseMirrorIsActive) {
             showDefaultEditor(data.text);
