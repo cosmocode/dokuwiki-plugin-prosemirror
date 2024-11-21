@@ -4,18 +4,18 @@
  * extends the basic schemas provided by ProseMirror
  */
 
-import {schema as schemaBasic} from 'prosemirror-schema-basic';
-import {tableNodes} from 'prosemirror-tables';
-import {bulletList, listItem, orderedList} from 'prosemirror-schema-list';
+import { schema as schemaBasic } from 'prosemirror-schema-basic';
+import { tableNodes } from 'prosemirror-tables';
+import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 
 export default function getSpec() {
-    let {nodes, marks} = schemaBasic.spec;
+    let { nodes, marks } = schemaBasic.spec;
 
     const doc = nodes.get('doc');
     doc.content = '(block | baseonly | container | protected_block | substitution_block)+';
     doc.attrs = {
-        nocache: {default: false},
-        notoc: {default: false},
+        nocache: { default: false },
+        notoc: { default: false },
     };
     nodes = nodes.update('doc', doc);
 
@@ -58,7 +58,7 @@ export default function getSpec() {
 
     const tableNode = nodes.get('table');
     tableNode.toDOM = function toDOM() {
-        return ['div', {class: 'table'}, ['table', {class: 'inline'}, ['tbody', 0]]];
+        return ['div', { class: 'table' }, ['table', { class: 'inline' }, ['tbody', 0]]];
     };
     nodes.update('table', tableNode);
 
@@ -69,15 +69,15 @@ export default function getSpec() {
         group: 'protected_block',
         code: true,
         toDOM() {
-            return ['pre', {class: 'code'}, 0];
+            return ['pre', { class: 'code' }, 0];
         },
     });
 
     const codeBlock = nodes.get('code_block');
     codeBlock.attrs = {
-        class: {default: 'code'},
-        'data-filename': {default: ''},
-        'data-language': {default: ''},
+        class: { default: 'code' },
+        'data-filename': { default: '' },
+        'data-language': { default: '' },
     };
     codeBlock.toDOM = function toDOM(node) {
         return ['pre', node.attrs, 0];
@@ -88,16 +88,16 @@ export default function getSpec() {
     const quote = nodes.get('blockquote');
     quote.content = '(block | blockquote | protected_block)+';
     quote.group = 'container';
-    quote.toDom = () => ['blockquote', {}, ['div', {class: 'no'}, 0]];
+    quote.toDom = () => ['blockquote', {}, ['div', { class: 'no' }, 0]];
     nodes.update('blockquote', quote);
 
     const imageNode = nodes.get('image');
-    imageNode.attrs.width = {default: ''};
-    imageNode.attrs.height = {default: ''};
-    imageNode.attrs.align = {default: ''};
-    imageNode.attrs.linking = {default: ''};
-    imageNode.attrs.cache = {default: ''};
-    imageNode.attrs['data-resolvedHtml'] = {default: ''};
+    imageNode.attrs.width = { default: '' };
+    imageNode.attrs.height = { default: '' };
+    imageNode.attrs.align = { default: '' };
+    imageNode.attrs.linking = { default: '' };
+    imageNode.attrs.cache = { default: '' };
+    imageNode.attrs['data-resolvedHtml'] = { default: '' };
     imageNode.attrs.id = {};
     delete imageNode.attrs.src;
     imageNode.parseDOM = [
@@ -162,7 +162,7 @@ export default function getSpec() {
 
     const imageAttrs = {};
     Object.keys(imageNode.attrs).forEach((key) => {
-        imageAttrs[`image-${key}`] = {default: null};
+        imageAttrs[`image-${key}`] = { default: null };
     });
 
     nodes = nodes.addToEnd('link', {
@@ -171,13 +171,13 @@ export default function getSpec() {
         attrs: {
             'data-type': {},
             'data-inner': {},
-            'data-name': {default: null},
-            'data-resolvedID': {default: null},
-            'data-resolvedUrl': {default: null},
-            'data-resolvedName': {default: null},
-            'data-resolvedClass': {default: null},
-            'data-resolvedTitle': {default: null},
-            'data-resolvedImage': {default: ''},
+            'data-name': { default: null },
+            'data-resolvedID': { default: null },
+            'data-resolvedUrl': { default: null },
+            'data-resolvedName': { default: null },
+            'data-resolvedClass': { default: null },
+            'data-resolvedTitle': { default: null },
+            'data-resolvedImage': { default: '' },
             ...imageAttrs,
         },
         toDOM(node) {
@@ -189,7 +189,7 @@ export default function getSpec() {
         content: '',
         marks: '',
         attrs: {
-            contentJSON: {default: ''},
+            contentJSON: { default: '' },
         },
         group: 'inline',
         inline: true,
@@ -218,7 +218,7 @@ export default function getSpec() {
                     return false;
                 }
                 const syntax = dom.getAttribute('alt');
-                return {icon, syntax};
+                return { icon, syntax };
             },
         }],
     });
@@ -227,15 +227,15 @@ export default function getSpec() {
         group: 'substitution_block',
         atom: true,
         attrs: {
-            class: {default: 'rss'},
+            class: { default: 'rss' },
             url: {},
-            max: {default: 8},
-            reverse: {default: null},
-            author: {default: null},
-            date: {default: null},
-            details: {default: null},
-            refresh: {default: ''},
-            renderedHTML: {default: null},
+            max: { default: 8 },
+            reverse: { default: null },
+            author: { default: null },
+            date: { default: null },
+            details: { default: null },
+            refresh: { default: '' },
+            renderedHTML: { default: null },
         },
     });
 
@@ -243,8 +243,8 @@ export default function getSpec() {
         content: 'text*',
         marks: '',
         attrs: {
-            class: {default: 'dwplugin'},
-            'data-pluginname': {default: ' '},
+            class: { default: 'dwplugin' },
+            'data-pluginname': { default: ' ' },
         },
         draggable: true,
         inline: false,
@@ -261,8 +261,8 @@ export default function getSpec() {
     nodes = nodes.addToEnd('dwplugin_inline', {
         content: 'text*',
         attrs: {
-            class: {default: 'dwplugin'},
-            'data-pluginname': {default: ' '},
+            class: { default: 'dwplugin' },
+            'data-pluginname': { default: ' ' },
         },
         marks: '',
         draggable: true,
@@ -284,7 +284,7 @@ export default function getSpec() {
 
     marks = marks.addToEnd('deleted', {
         parseDOM: [
-            {tag: 'del'},
+            { tag: 'del' },
             {
                 style: 'text-decoration',
                 // https://discuss.prosemirror.net/t/dom-parsing-and-getattrs/612
@@ -298,7 +298,7 @@ export default function getSpec() {
 
     marks = marks.addToEnd('underline', {
         parseDOM: [
-            {tag: 'u'},
+            { tag: 'u' },
             {
                 style: 'text-decoration',
                 getAttrs: value => value === 'underline' && null,
@@ -311,7 +311,7 @@ export default function getSpec() {
 
     marks = marks.addToEnd('subscript', {
         parseDOM: [
-            {tag: 'sub'},
+            { tag: 'sub' },
             {
                 style: 'vertical-align',
                 getAttrs: value => value === 'sub' && null,
@@ -324,7 +324,7 @@ export default function getSpec() {
 
     marks = marks.addToEnd('superscript', {
         parseDOM: [
-            {tag: 'sup'},
+            { tag: 'sup' },
             {
                 style: 'vertical-align',
                 getAttrs: value => value === 'super' && null,
@@ -338,15 +338,15 @@ export default function getSpec() {
     marks = marks.addToEnd('unformatted', {
         excludes: '_',
         toDOM() {
-            return ['span', {class: 'unformatted'}];
+            return ['span', { class: 'unformatted' }];
         },
     });
 
     if (window.Prosemirror && window.Prosemirror.pluginSchemas) {
         window.Prosemirror.pluginSchemas.forEach((addSchema) => {
-            ({nodes, marks} = addSchema(nodes, marks));
+            ({ nodes, marks } = addSchema(nodes, marks));
         });
     }
 
-    return {nodes, marks};
+    return { nodes, marks };
 }
