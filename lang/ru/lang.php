@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @license    GPL 2 (https://www.gnu.org/licenses/gpl.html)
+ *
+ * @author Vyacheslav Strenadko <bryanskmap@ya.ru>
+ */
+$lang['switch_editors']        = 'Переключение синтаксис &#11020; визуальный редактор';
+$lang['link target']           = 'Цель ссылки';
+$lang['type:wiki page']        = 'Страница в этой вики';
+$lang['type:interwiki']        = 'Интервики-ссылка';
+$lang['type:email']            = 'Адрес электронной почты';
+$lang['type:external']         = 'Ссылка на внешнюю страницу';
+$lang['type:other']            = 'Другой';
+$lang['type:automatic title']  = 'Автоматический заголовок';
+$lang['type:custom title']     = 'Пользовательский заголовок';
+$lang['type:image']            = 'Использовать изображение в качестве заголовка';
+$lang['placeholder:link name'] = '(автоматический)';
+$lang['legend:media']          = 'Медиа или файл';
+$lang['label:image_properties'] = 'Свойства изображения';
+$lang['legend:size']           = 'Размеры';
+$lang['legend:alignment']      = 'Выравнивание';
+$lang['media target']          = 'Файл изображения или документа';
+$lang['label:caption']         = 'Заголовок / текст ссылки';
+$lang['label:width']           = 'Ширина (пикселей)';
+$lang['label:height']          = 'Высота (пикселей)';
+$lang['label:default alignment'] = 'По умолчанию';
+$lang['label:float left']      = 'Слева';
+$lang['label:center alignment'] = 'Центр';
+$lang['label:float right']     = 'Справа';
+$lang['label:default linking'] = 'По умолчанию';
+$lang['label:nolink']          = 'Без ссылки';
+$lang['label:linkonly']        = 'Только ссылка';
+$lang['label:default caching'] = 'По умолчанию';
+$lang['label:recache']         = 'Повторное кэширование';
+$lang['label:nocache']         = 'Без кэширования';
+$lang['cancel']                = 'Отменить';
+$lang['js']['cancel']          = 'Отменить';
+$lang['js']['linkConfig']      = 'Настройка ссылки';
+$lang['js']['mediaConfig']     = 'Настройка медиа';
+$lang['js']['rssConfig']       = 'Настройка RSS-канала';
+$lang['js']['footnoteViewTitle'] = 'Редактировать сноску';
+$lang['js']['placeholder:page'] = 'namespace:page';
+$lang['js']['label:blockquote'] = 'Блок цитата';
+$lang['js']['label:footnote']  = 'Добавить сноску';
+$lang['js']['label:headings']  = 'Заголовки';
+$lang['js']['label:heading']   = 'Заголовок %s';
+$lang['js']['label:media']     = 'Вставка изображения или файла';
+$lang['js']['label:link']      = 'Вставить ссылку';
+$lang['js']['label:paragraph'] = 'Параграф';
+$lang['js']['label:rss']       = 'Добавить новый RSS-канал';
+$lang['js']['label:smileys']   = 'Смайлики';
+$lang['js']['label:settings']  = 'Настройки страницы';
+$lang['js']['label:nocache']   = 'Деактивировать кэш';
+$lang['js']['label:notoc']     = 'Скрыть оглавление';
+$lang['js']['label:table']     = 'Добавить новую таблицу 2х2';
+$lang['js']['label:table-ops'] = 'Редактировать таблицу';
+$lang['js']['label:table-add-row-before'] = 'Добавить строку перед';
+$lang['js']['label:table-add-row-after'] = 'Добавить строку после';
+$lang['js']['label:table-row-delete'] = 'Удалить строку';
+$lang['js']['label:table-add-column-before'] = 'Добавить столбец перед';
+$lang['js']['label:table-add-column-after'] = 'Добавить столбец после';
+$lang['js']['label:table-column-delete'] = 'Удалить столбец';
+$lang['js']['label:table-cell-header-toggle'] = 'Переключение состояния заголовка';
+$lang['js']['label:table-cell-merge'] = 'Объединить ячеек';
+$lang['js']['label:table-cell-split'] = 'Разделить ячейки';
+$lang['js']['label:table-cell-align-left'] = 'Выровнять по левому краю';
+$lang['js']['label:table-cell-align-center'] = 'Выровнять по центру';
+$lang['js']['label:table-cell-align-right'] = 'Выровнять по правому краю';
+$lang['js']['label:table-delete'] = 'Удалить таблицу';
+$lang['js']['label:marks']     = 'Форматирование';
+$lang['js']['label:em']        = 'курсивный';
+$lang['js']['label:underline'] = 'подчеркнутый';
+$lang['js']['label:superscript'] = 'верхний индекс';
+$lang['js']['label:subscript'] = 'нижний индекс';
+$lang['js']['label:monospaced'] = 'моноширинный';
+$lang['js']['label:unformatted'] = 'игнорировать вики-форматирование';
+$lang['js']['label:undo']      = 'отменить';
+$lang['js']['label:redo']      = 'повторить';
+$lang['js']['label:rss url']   = 'URL-адрес RSS-канала';
+$lang['js']['label:rss nOfItems'] = 'Максимальное количество отображаемых элементов';
+$lang['js']['label:rss reverse'] = 'Сначала отобразить последние элементы в ленте';
+$lang['js']['label:rss author'] = 'Показать имена авторов элементов';
+$lang['js']['label:rss refresh'] = 'Период обновления';
+$lang['js']['code_block_hint'] = 'Нажмите CTRL+Enter для выхода';
