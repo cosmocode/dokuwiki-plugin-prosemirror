@@ -10,7 +10,7 @@ class SmileyNode extends Node implements InlineNodeInterface
     /** @var TextNode */
     protected $textNode;
 
-    public function __construct($data, Node $parent, Node $previous = null)
+    public function __construct($data, Node $parent, ?Node $previous = null)
     {
         $this->parent = &$parent;
         $this->data = $data;

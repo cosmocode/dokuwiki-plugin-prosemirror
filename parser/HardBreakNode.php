@@ -23,7 +23,7 @@ class HardBreakNode extends Node implements InlineNodeInterface
      * @param Node $parent
      * @param Node|null $previous
      */
-    public function __construct($data, Node $parent, Node $previous = null)
+    public function __construct($data, Node $parent, ?Node $previous = null)
     {
         // every inline node needs a TextNode to track marks
         $this->textNode = new TextNode(['marks' => $data['marks'] ?? null], $parent, $previous);

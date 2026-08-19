@@ -9,7 +9,7 @@ class TableCellNode extends Node
     /** @var Node[] */
     protected $subnodes;
 
-    public function __construct($data, Node $parent = null)
+    public function __construct($data, ?Node $parent = null)
     {
         if (empty($data['content'])) {
             $data['content'] = [

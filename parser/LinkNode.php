@@ -18,7 +18,7 @@ abstract class LinkNode extends Node implements InlineNodeInterface
 
     protected $attrs = [];
 
-    public function __construct($data, Node $parent, Node $previousNode = null)
+    public function __construct($data, Node $parent, ?Node $previousNode = null)
     {
         $this->parent = &$parent;
         if ($previousNode !== false) {
