@@ -31,7 +31,13 @@ class QuoteNode extends Node
         $doc = '>';
         $subnodes = [];
         foreach ($this->subnodes as $subnode) {
-            $subnodes[] = $subnode->toSyntax();
+            $syntax = $subnode->toSyntax();
+            // Add a space before the syntax if the subnode is not a QuoteNode.
+            // Prior to Mort, the core parser was preserving the space, now we have to add it ourselves.
+            if (!$subnode instanceof self) {
+                $syntax = ' ' . $syntax;
+            }
+            $subnodes[] = $syntax;
         }
         return $doc . implode("\n>", $subnodes);
     }

@@ -18,7 +18,7 @@
                     "content": [
                         {
                             "type": "text",
-                            "text": " No we shouldn't"
+                            "text": "No we shouldn't"
                         }
                     ]
                 }
@@ -35,7 +35,7 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " Well, I say we should"
+                                    "text": "Well, I say we should"
                                 }
                             ]
                         }
@@ -51,7 +51,7 @@
                     "content": [
                         {
                             "type": "text",
-                            "text": " Really?"
+                            "text": "Really?"
                         }
                     ]
                 }
@@ -68,7 +68,7 @@
                             "content": [
                                 {
                                     "type": "text",
-                                    "text": " Yes!"
+                                    "text": "Yes!"
                                 }
                             ]
                         }
@@ -90,7 +90,7 @@
                                     "content": [
                                         {
                                             "type": "text",
-                                            "text": " Then lets do it!"
+                                            "text": "Then lets do it!"
                                         }
                                     ]
                                 }
