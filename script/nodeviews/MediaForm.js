@@ -12,7 +12,10 @@ class MediaForm extends CustomForm {
         if (!this.instance) {
             this.name = LANG.plugins.prosemirror.mediaConfig;
             this.$form.find('.js-open-mediamanager').on('click', MediaForm.openMediaManager);
-            window.pmMediaSelect = this.mediaSelect.bind(this);
+            window.pmMediaSelect = (edid, mediaid, opts, align) => {
+                this.mediaSelect(edid, mediaid, opts, align);
+            };
+
             this.instance = this;
         }
         return this.instance;
