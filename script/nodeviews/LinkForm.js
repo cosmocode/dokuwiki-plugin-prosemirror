@@ -106,12 +106,101 @@ class LinkForm extends CustomForm {
         this.$form.find('[name="nametype"]').on('change', this.handleNameTypeChange.bind(this));
         this.$form.find('[name="linktype"]').on('change', this.handleLinkTypeChange.bind(this));
 
-        this.$form.find('.js-open-linkwiz').on('click', () => {
-            window.dw_linkwiz.insertLink = this.insertLink.bind(this);
-            window.dw_linkwiz.toggle();
-        });
+        this.$form.find('.js-open-linkwiz').on('click', this.toggleLinkWizard.bind(this));
+        this.hookLinkWizard();
 
         this.resetForm();
+    }
+
+    /**
+     * Pass our insertLink() to DokuWiki's link wizard but leave the original, so that the syntax editor can use it.
+     *
+     * @return {void}
+     */
+    hookLinkWizard() {
+        const wiz = window.dw_linkwiz;
+        if (!wiz || wiz.pmInsertLinkHooked) {
+            return;
+        }
+        const coreInsertLink = wiz.insertLink;
+        wiz.insertLink = (title) => {
+            // if this link form has been initialized and is currently open
+            if (this.hasBeenOpened && this.$form.dialog('isOpen')) {
+                this.insertLink();
+                return;
+            }
+            coreInsertLink.call(wiz, title);
+        };
+        wiz.pmInsertLinkHooked = true;
+    }
+
+    /**
+     * Show or hide DokuWiki's link wizard using our functions.
+     * As of Mort, we can no longer simply rely on toggle(), because now #link__wiz is in #tool__bar,
+     * which we hide.
+     *
+     * @return {void}
+     */
+    toggleLinkWizard() {
+        if (window.dw_linkwiz.$wiz.css('display') === 'none') {
+            this.openLinkWizard();
+        } else {
+            this.closeLinkWizard();
+        }
+    }
+
+    /**
+     * Move the link wizard out of hidden container and position it.
+     * Keep track of the original parent and CSS properties so we can restore them when closing the wizard.
+     *
+     * @return {void}
+     */
+    openLinkWizard() {
+        const wiz = window.dw_linkwiz;
+        if (!this.$linkWizardHome) {
+            this.$linkWizardHome = wiz.$wiz.parent();
+            this.linkWizardCss = {
+                top: wiz.$wiz[0].style.top,
+                left: wiz.$wiz[0].style.left,
+            };
+        }
+        wiz.$wiz.appendTo(jQuery('.dokuwiki').first());
+
+        wiz.show();
+        wiz.$wiz.position({
+            my: 'right top',
+            at: 'right bottom+4',
+            of: this.$form.find('.js-open-linkwiz'),
+            collision: 'flipfit',
+        });
+
+        // clean up when dialog is closed while the wizard is still open
+        this.$form.off('dialogclose.prosemirrorLinkwiz')
+            .one('dialogclose.prosemirrorLinkwiz', this.closeLinkWizard.bind(this));
+    }
+
+    /**
+     * Hide DokuWiki's link wizard and restore original DOM position and CSS properties
+     *
+     * @return {void}
+     */
+    closeLinkWizard() {
+        const wiz = window.dw_linkwiz;
+        if (!wiz || !wiz.$wiz) {
+            return;
+        }
+        if (wiz.$wiz.css('display') !== 'none') {
+            wiz.hide();
+        }
+        if (this.$linkWizardHome && this.$linkWizardHome.length) {
+            wiz.$wiz.appendTo(this.$linkWizardHome);
+        }
+        if (this.linkWizardCss) {
+            // an empty string removes the inline property again
+            wiz.$wiz.css(this.linkWizardCss);
+        }
+        this.$linkWizardHome = null;
+        this.linkWizardCss = null;
     }
 
     /**
@@ -120,8 +209,9 @@ class LinkForm extends CustomForm {
     insertLink() {
         const link = window.dw_linkwiz.$entry.val();
         this.setLinkTarget(null, link);
-        window.dw_linkwiz.toggle();
-        window.dw_linkwiz.$entry.val(window.dw_linkwiz.$entry.val().replace(/[^:]*$/, ''));
+        this.closeLinkWizard();
+        window.dw_linkwiz.$entry.val(link.replace(/[^:]*$/, ''));
+        this.$form.find('[name="linktarget"]').trigger('focus');
     }
 
     handleNameTypeChange() {
