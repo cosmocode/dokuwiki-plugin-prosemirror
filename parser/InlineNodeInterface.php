@@ -4,7 +4,7 @@ namespace dokuwiki\plugin\prosemirror\parser;
 
 interface InlineNodeInterface
 {
-    public function __construct($data, Node $parent, Node $previous = null);
+    public function __construct($data, Node $parent, ?Node $previous = null);
 
     /**
      * If this node has that mark, increase its taillength and call this method on the previous node

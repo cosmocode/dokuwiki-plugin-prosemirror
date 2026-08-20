@@ -13,7 +13,7 @@ class ImageNode extends Node implements InlineNodeInterface
 
     protected $textNode;
 
-    public function __construct($data, Node $parent, Node $previousNode = null)
+    public function __construct($data, Node $parent, ?Node $previousNode = null)
     {
         $this->parent = &$parent;
         $this->attrs = $data['attrs'];

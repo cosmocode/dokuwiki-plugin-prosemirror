@@ -16,7 +16,7 @@ class RootNode extends Node
 
     protected $attr = [];
 
-    public function __construct($data, Node $ignored = null)
+    public function __construct($data, ?Node $ignored = null)
     {
         $this->attr = $data['attrs'] ?? null;
         foreach ($data['content'] as $node) {

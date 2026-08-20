@@ -49,7 +49,7 @@ abstract class Node implements NodeInterface
      *
      * @return Node
      */
-    public static function getSubNode($node, Node $parent, Node $previous = null)
+    public static function getSubNode($node, Node $parent, ?Node $previous = null)
     {
         try {
             if ($node['type'] === 'link') {
