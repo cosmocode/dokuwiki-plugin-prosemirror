@@ -1,6 +1,6 @@
 import { keymap } from 'prosemirror-keymap';
 import { splitListItem, sinkListItem, liftListItem } from 'prosemirror-schema-list';
-import { baseKeymap, chainCommands } from 'prosemirror-commands';
+import { baseKeymap, chainCommands, exitCode } from 'prosemirror-commands';
 import { redo, undo } from 'prosemirror-history';
 
 
@@ -29,12 +29,28 @@ function getKeymapPlugin(schema) {
         'Shift-Tab': liftListItem(schema.nodes.list_item),
     };
 
+    const br = schema.nodes.hard_break;
+    const cmd = chainCommands(exitCode, (state, dispatch) => {
+        if (dispatch) dispatch(state.tr.replaceSelectionWith(br.create()).scrollIntoView());
+        return true;
+    });
+
+    const hardBreakKeymap = {
+        'Mod-Enter': cmd,
+        'Shift-Enter': cmd,
+    };
+
+    if (isMac) {
+        hardBreakKeymap['Ctrl-Enter'] = cmd;
+    }
+
     const mergedKeymap = {
         ...baseKeymap,
         ...customKeymap,
         ...combinedKeymapUnion,
         ...historyKeymap,
         ...indentationKeymap,
+        ...hardBreakKeymap,
     };
 
     return keymap(mergedKeymap);
