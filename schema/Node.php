@@ -93,11 +93,7 @@ class Node implements \JsonSerializable
     public function attr($key, $value = null)
     {
         if (is_null($value)) {
-            if (isset($this->attrs[$key])) {
-                return $this->attrs[$key];
-            } else {
-                return null;
-            }
+            return $this->attrs[$key] ?? null;
         }
 
         $this->attrs[$key] = $value;
