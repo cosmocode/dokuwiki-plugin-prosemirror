@@ -207,10 +207,14 @@ class LinkForm extends CustomForm {
      * Function used by the linkwizard to insert the link into the linktarget input field
      */
     insertLink() {
-        const link = window.dw_linkwiz.$entry.val();
+        const wiz = window.dw_linkwiz;
+        const id = wiz.$entry.val();
+        // the wizard's entry holds a full ID without a leading colon
+        // use core's function to make it relative to be consistent
+        const link = wiz.constructor.createRelativeID(JSINFO.id, id);
         this.setLinkTarget(null, link);
         this.closeLinkWizard();
-        window.dw_linkwiz.$entry.val(link.replace(/[^:]*$/, ''));
+        wiz.$entry.val(id.replace(/[^:]*$/, ''));
         this.$form.find('[name="linktarget"]').trigger('focus');
     }
 
