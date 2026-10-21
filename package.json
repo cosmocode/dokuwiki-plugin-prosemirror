@@ -2,7 +2,7 @@
     "name": "prosemirror",
     "version": "1.0.0",
     "description": "prosemirror Plugin for DokuWiki",
-    "main": "index.js",
+    "private": true,
     "dependencies": {
         "prosemirror-commands": "^1.0.7",
         "prosemirror-history": "^1.0.4",
@@ -17,32 +17,13 @@
         "prosemirror-view": "^1.9.2"
     },
     "devDependencies": {
-        "babel-core": "^6.26.3",
-        "babel-loader": "^7.1.5",
-        "babel-preset-env": "^1.7.0",
-        "babel-preset-stage-2": "^6.24.1",
-        "eslint": "^5.6.1",
-        "eslint-config-airbnb-base": "^13.1.0",
-        "eslint-loader": "^2.1.1",
-        "eslint-plugin-import": "^2.14.0",
-        "jest": "^23.6.0",
-        "stylelint": "^9.6.0",
-        "stylelint-config-rational-order": "^0.0.2",
-        "stylelint-config-standard": "^18.2.0",
-        "webpack": "^4.20.2",
-        "webpack-cli": "^3.1.2"
+        "esbuild": "^0.28.2"
     },
     "scripts": {
-        "dev": "export NODE_OPTIONS=--openssl-legacy-provider && webpack -d",
-        "watch": "export NODE_OPTIONS=--openssl-legacy-provider && webpack -dw",
-        "test": "jest",
-        "build": "export NODE_OPTIONS=--openssl-legacy-provider && webpack -p",
-        "eslint": "NODE_ENV=production eslint script/",
-        "stylelint": "stylelint *.less --syntax less",
-        "lint": "yarn eslint && yarn stylelint"
-    },
-    "jest": {
-        "verbose": true
+        "build": "esbuild script/main.js --bundle --format=iife --target=es2020 --minify --outfile=lib/bundle.js",
+        "dev": "esbuild script/main.js --bundle --format=iife --target=es2020 --sourcemap=inline --outfile=lib/bundle.js",
+        "watch": "npm run dev -- --watch",
+        "test": "esbuild _jstest/test.js --bundle --platform=node --outfile=_jstest/test.bundle.cjs --log-level=warning && node --test _jstest/test.bundle.cjs"
     },
     "author": "",
     "license": "GPL-2.0"
