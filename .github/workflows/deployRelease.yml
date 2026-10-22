@@ -13,27 +13,27 @@ jobs:
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
             -   name: Checkout 🛎️
-                uses: actions/checkout@v2.3.1
+                uses: actions/checkout@v4
+
+            -   name: Setup Node
+                uses: actions/setup-node@v4
+                with:
+                    node-version: lts/*
+                    cache: npm
 
             -   name: Install and Build 🔧
                 run: |
-                    yarn install
-                    yarn build
-                    rm -rf .babelrc
-                    rm -rf .eslintrc.js
+                    npm ci
+                    npm run build
                     rm -rf .github
                     rm -rf .gitignore
-                    rm -rf .travis.yml
                     rm -rf _jstest
                     rm -rf _test
                     rm -rf node_modules
                     rm -rf package.json
-                    rm -rf pre-commit.hook.sh
+                    rm -rf package-lock.json
                     rm -rf requirements.txt
                     rm -rf script
-                    rm -rf stylelint.config.js
-                    rm -rf webpack.config.js
-                    rm -rf yarn.lock
 
             -   name: Deploy 🚀
                 uses: JamesIves/github-pages-deploy-action@4.1.4

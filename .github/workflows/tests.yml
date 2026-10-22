@@ -10,15 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Setup
-        run: |
-          yarn install
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install
+        run: npm ci
 
       - name: Run Tests
-        run: |
-          yarn test
-          yarn lint
+        run: npm test
   testPHP:
     uses: dokuwiki/github-action/.github/workflows/all.yml@main

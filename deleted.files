@@ -5,3 +5,10 @@ prosemirror.less
 trial.css
 trial.php
 
+# 2026-10-21 build moved from webpack/yarn to esbuild/npm
+.babelrc
+.eslintrc.js
+pre-commit.hook.sh
+stylelint.config.js
+webpack.config.js
+yarn.lock
