@@ -187,7 +187,7 @@ class Mark
      */
     protected function getUnformattedSyntax($type)
     {
-        if (strpos($this->parent->getInnerSyntax(), '%%') === false) {
+        if (!str_contains($this->parent->getInnerSyntax(), '%%')) {
             return '%%';
         }
         if ($type === 'opening') {

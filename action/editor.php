@@ -324,13 +324,11 @@ class action_plugin_prosemirror_editor extends ActionPlugin
     {
         if (is_a($form, Form::class)) {
             $textareaPos = $form->findPositionByType('textarea');
-            $readonly = $textareaPos !== false && !empty($form->getElementAt($textareaPos)->attr('readonly'));
-        } else {
-            /** @var Doku_Form $form */
-            $textareaPos = $form->findElementByType('wikitext');
-            $readonly = $textareaPos !== false && !empty($form->getElementAt($textareaPos)['readonly']);
+            return $textareaPos !== false && !empty($form->getElementAt($textareaPos)->attr('readonly'));
         }
-        return $readonly;
+        /** @var Doku_Form $form */
+        $textareaPos = $form->findElementByType('wikitext');
+        return $textareaPos !== false && !empty($form->getElementAt($textareaPos)['readonly']);
     }
 }
 
