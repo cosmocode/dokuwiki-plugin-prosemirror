@@ -1,5 +1,11 @@
 class AbstractNodeView {
     /**
+     * Create the node and render it
+     *
+     * renderNode() is first called from here, before the subclass constructor. A field
+     * that a subclass sets after super() (e.g. this.form) does not exist yet during that first
+     * render. See RSSView for the pattern: set such fields up in the constructor and use them in
+     * renderNode() only from deferred callbacks such as click handlers.
      *
      * @param {Node} node
      * @param {EditorView} view
@@ -17,6 +23,9 @@ class AbstractNodeView {
      * Render the node into this.dom
      *
      * This method must be overwritten by the subclasses!
+     *
+     * It is called from the base constructor, before the subclass constructor body, and again
+     * on every update. Check this.dom to tell the first render from later ones.
      *
      * @param {object} attrs the attributes for the node
      */
