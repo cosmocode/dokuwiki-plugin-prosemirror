@@ -1,5 +1,5 @@
-import MediaForm from './MediaForm';
-import AbstractNodeView from './AbstractNodeView';
+import MediaForm from './MediaForm.js';
+import AbstractNodeView from './AbstractNodeView.js';
 
 class MediaView extends AbstractNodeView {
     constructor(node, view, getPos) {

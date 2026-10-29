@@ -1,9 +1,9 @@
-import { setBlockTypeNoAttrCheck } from '../../../customCommands';
-import RSSView from '../../../nodeviews/RSSView';
-import MenuItem from '../MenuItem';
-import KeyValueForm from '../../../nodeviews/KeyValueForm';
-import { svgIcon } from '../MDI';
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
+import { setBlockTypeNoAttrCheck } from '../../../customCommands.js';
+import RSSView from '../../../nodeviews/RSSView.js';
+import MenuItem from '../MenuItem.js';
+import KeyValueForm from '../../../nodeviews/KeyValueForm.js';
+import { svgIcon } from '../MDI.js';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 
 class RSSMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable({ nodes }) {

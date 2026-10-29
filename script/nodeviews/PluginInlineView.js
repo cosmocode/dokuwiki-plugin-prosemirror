@@ -1,4 +1,4 @@
-import AbstractNodeView from './AbstractNodeView';
+import AbstractNodeView from './AbstractNodeView.js';
 
 class PluginInlineView extends AbstractNodeView {
     /**

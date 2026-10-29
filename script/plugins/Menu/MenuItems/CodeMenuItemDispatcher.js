@@ -1,7 +1,7 @@
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import { svgIcon } from '../MDI';
-import { setBlockTypeNoAttrCheck } from '../../../customCommands';
-import MenuItem from '../MenuItem';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import { svgIcon } from '../MDI.js';
+import { setBlockTypeNoAttrCheck } from '../../../customCommands.js';
+import MenuItem from '../MenuItem.js';
 
 export default class CodeMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable(schema) {

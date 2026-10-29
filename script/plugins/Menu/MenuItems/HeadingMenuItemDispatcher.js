@@ -1,7 +1,7 @@
 import { setBlockType } from 'prosemirror-commands';
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MenuItem from '../MenuItem';
-import { svgIcon } from '../MDI';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MenuItem from '../MenuItem.js';
+import { svgIcon } from '../MDI.js';
 
 export default class HeadingMenuItemDispatcher extends AbstractMenuItemDispatcher {
     /**

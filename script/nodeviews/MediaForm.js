@@ -1,4 +1,4 @@
-import CustomForm from './CustomForm';
+import CustomForm from './CustomForm.js';
 
 class MediaForm extends CustomForm {
     /**

@@ -1,4 +1,4 @@
-import getSpec from '../../schema';
+import getSpec from '../../schema.js';
 
 export default function getFootnoteSpec() {
     const baseSpec = getSpec();

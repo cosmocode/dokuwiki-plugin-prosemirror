@@ -1,4 +1,4 @@
-import NodeForm from './NodeForm';
+import NodeForm from './NodeForm.js';
 
 class KeyValueForm extends NodeForm {
     /**

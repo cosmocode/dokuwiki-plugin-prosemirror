@@ -1,5 +1,5 @@
-import CustomForm from './CustomForm';
-import MediaForm from './MediaForm';
+import CustomForm from './CustomForm.js';
+import MediaForm from './MediaForm.js';
 
 class LinkForm extends CustomForm {
     constructor() {

@@ -1,5 +1,5 @@
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MenuItem from '../MenuItem';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MenuItem from '../MenuItem.js';
 
 export default class SmileyMenuItemDispatcher extends AbstractMenuItemDispatcher {
     constructor(icon, syntax) {

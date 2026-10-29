@@ -1,7 +1,7 @@
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MenuItem from '../MenuItem';
-import SetDocAttrStep from '../../../custom/SetDocAttrStep';
-import { svgIcon } from '../MDI';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MenuItem from '../MenuItem.js';
+import SetDocAttrStep from '../../../custom/SetDocAttrStep.js';
+import { svgIcon } from '../MDI.js';
 
 export default class PageMacroMenuItemDispatcher extends AbstractMenuItemDispatcher {
     /**

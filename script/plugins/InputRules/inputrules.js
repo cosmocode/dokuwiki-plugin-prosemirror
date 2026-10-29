@@ -1,6 +1,6 @@
 import { inputRules, InputRule } from 'prosemirror-inputrules';
 import { TextSelection } from 'prosemirror-state';
-import SmileyConf from '../../custom/SmileyConf';
+import SmileyConf from '../../custom/SmileyConf.js';
 
 /**
  * Smiley input rule

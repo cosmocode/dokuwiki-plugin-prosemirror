@@ -1,5 +1,5 @@
-import AbstractNodeView from './AbstractNodeView';
-import KeyValueForm from './KeyValueForm';
+import AbstractNodeView from './AbstractNodeView.js';
+import KeyValueForm from './KeyValueForm.js';
 
 class RSSView extends AbstractNodeView {
     static getFields(attr) {

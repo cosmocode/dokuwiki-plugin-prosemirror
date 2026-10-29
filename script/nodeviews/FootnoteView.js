@@ -2,14 +2,14 @@ import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Node, Schema } from 'prosemirror-model';
 
-import getKeymapPlugin from '../plugins/Keymap/keymap';
+import getKeymapPlugin from '../plugins/Keymap/keymap.js';
 
-import AbstractNodeView from './AbstractNodeView';
-import MenuInitializer from '../plugins/Menu/MenuInitializer';
+import AbstractNodeView from './AbstractNodeView.js';
+import MenuInitializer from '../plugins/Menu/MenuInitializer.js';
 
 // todo: Fix this cycle
-import getNodeViews from './index'; // eslint-disable-line import/no-cycle
-import getFootnoteSpec from './Footnote/footnoteSchema';
+import getNodeViews from './index.js'; // eslint-disable-line import/no-cycle
+import getFootnoteSpec from './Footnote/footnoteSchema.js';
 
 class FootnoteView extends AbstractNodeView {
     renderNode() {

@@ -1,5 +1,5 @@
-import MenuItem from './MenuItem';
-import { svgIcon } from './MDI';
+import MenuItem from './MenuItem.js';
+import { svgIcon } from './MDI.js';
 
 class Dropdown extends MenuItem {
     /**

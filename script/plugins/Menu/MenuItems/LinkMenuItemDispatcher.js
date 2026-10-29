@@ -1,7 +1,7 @@
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MenuItem from '../MenuItem';
-import LinkForm from '../../../nodeviews/LinkForm';
-import { svgIcon } from '../MDI';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MenuItem from '../MenuItem.js';
+import LinkForm from '../../../nodeviews/LinkForm.js';
+import { svgIcon } from '../MDI.js';
 
 export default class LinkMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable({ nodes }) {

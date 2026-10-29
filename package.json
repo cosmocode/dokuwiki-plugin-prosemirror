@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "prosemirror Plugin for DokuWiki",
     "private": true,
+    "type": "module",
     "dependencies": {
         "prosemirror-commands": "^1.0.7",
         "prosemirror-history": "^1.0.4",
@@ -23,7 +24,7 @@
         "build": "esbuild script/main.js --bundle --format=iife --target=es2020 --minify --outfile=lib/bundle.js",
         "dev": "esbuild script/main.js --bundle --format=iife --target=es2020 --sourcemap=inline --outfile=lib/bundle.js",
         "watch": "npm run dev -- --watch",
-        "test": "esbuild _jstest/test.js --bundle --platform=node --outfile=_jstest/test.bundle.cjs --log-level=warning && node --test _jstest/test.bundle.cjs"
+        "test": "node --test _jstest/test.js"
     },
     "author": "",
     "license": "GPL-2.0"

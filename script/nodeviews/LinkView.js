@@ -1,7 +1,7 @@
 // FIXME: prevent XSS!
 
-import LinkForm from './LinkForm';
-import AbstractNodeView from './AbstractNodeView';
+import LinkForm from './LinkForm.js';
+import AbstractNodeView from './AbstractNodeView.js';
 
 class LinkView extends AbstractNodeView {
     /**

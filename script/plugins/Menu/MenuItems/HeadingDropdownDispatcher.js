@@ -1,5 +1,5 @@
-import AbstractDropdownDispatcher from './AbstractDropdownDispatcher';
-import { svgIcon } from '../MDI';
+import AbstractDropdownDispatcher from './AbstractDropdownDispatcher.js';
+import { svgIcon } from '../MDI.js';
 
 export default class HeadingDropdownDispatcher extends AbstractDropdownDispatcher {
     getMenuItem(schema) {

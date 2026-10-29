@@ -1,7 +1,7 @@
 import { wrapInList } from 'prosemirror-schema-list';
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MenuItem from '../MenuItem';
-import { svgIcon } from '../MDI';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MenuItem from '../MenuItem.js';
+import { svgIcon } from '../MDI.js';
 
 export default class BulletListMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable(schema) {

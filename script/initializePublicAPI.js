@@ -1,8 +1,8 @@
 import { DOMParser } from 'prosemirror-model';
-import KeyValueForm from './nodeviews/KeyValueForm';
-import AbstractMenuItemDispatcher from './plugins/Menu/MenuItems/AbstractMenuItemDispatcher';
-import MenuItem from './plugins/Menu/MenuItem';
-import { setBlockTypeNoAttrCheck } from './customCommands';
+import KeyValueForm from './nodeviews/KeyValueForm.js';
+import AbstractMenuItemDispatcher from './plugins/Menu/MenuItems/AbstractMenuItemDispatcher.js';
+import MenuItem from './plugins/Menu/MenuItem.js';
+import { setBlockTypeNoAttrCheck } from './customCommands.js';
 
 export default function initializePublicAPI() {
     window.Prosemirror = {};

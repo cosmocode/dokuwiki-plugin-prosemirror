@@ -1,9 +1,9 @@
 import { Schema } from 'prosemirror-model';
 
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MenuItem from '../MenuItem';
-import { svgIcon } from '../MDI';
-import getFootnoteSpec from '../../../nodeviews/Footnote/footnoteSchema';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MenuItem from '../MenuItem.js';
+import { svgIcon } from '../MDI.js';
+import getFootnoteSpec from '../../../nodeviews/Footnote/footnoteSchema.js';
 
 export default class FootnoteMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable(schema) {

@@ -1,6 +1,6 @@
 /* globals LANG */
 
-import AbstractNodeView from './AbstractNodeView';
+import AbstractNodeView from './AbstractNodeView.js';
 
 class CodeView extends AbstractNodeView {
     /**

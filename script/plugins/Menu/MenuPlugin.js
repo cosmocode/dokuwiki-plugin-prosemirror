@@ -1,5 +1,5 @@
 import { Plugin } from 'prosemirror-state';
-import MenuView from './MenuView';
+import MenuView from './MenuView.js';
 
 /**
  * Create a new menu plugin from the given items

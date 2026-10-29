@@ -1,4 +1,4 @@
-import Dropdown from '../Dropdown';
+import Dropdown from '../Dropdown.js';
 
 class AbstractDropdownDispatcher {
     constructor(itemDispatchers) {

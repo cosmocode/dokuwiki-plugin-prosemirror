@@ -1,10 +1,10 @@
-import LinkView from './LinkView';
-import MediaView from './MediaView';
-import PluginInlineView from './PluginInlineView';
-import CodeView from './CodeView';
-import RSSView from './RSSView';
+import LinkView from './LinkView.js';
+import MediaView from './MediaView.js';
+import PluginInlineView from './PluginInlineView.js';
+import CodeView from './CodeView.js';
+import RSSView from './RSSView.js';
 // todo: this causes a cycle -- fix it
-import FootnoteView from './FootnoteView'; // eslint-disable-line import/no-cycle
+import FootnoteView from './FootnoteView.js'; // eslint-disable-line import/no-cycle
 
 function getNodeViews() {
     return {

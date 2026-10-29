@@ -95,8 +95,8 @@ in `_test/json/`. This data is used for three sets of tests:
 1. Testing the validity of the Prosemirror JSON against the schema (`script/schema.js`) in `_jstest/test.js`
 
 The rendering and parsing tests are run as usual DokuWiki tests.
-The javascript tests are run with `npm test`. It bundles `_jstest/test.js` with esbuild
-and runs the result with Node's built-in test runner.
+The javascript tests are run with `npm test`, which runs `_jstest/test.js` directly with
+Node's built-in test runner.
 
 ## Copyright
 Copyright (C) CosmoCode GmbH <dokuwiki@cosmocode.de>

@@ -1,7 +1,7 @@
-import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher';
-import MediaForm from '../../../nodeviews/MediaForm';
-import MenuItem from '../MenuItem';
-import { svgIcon } from '../MDI';
+import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
+import MediaForm from '../../../nodeviews/MediaForm.js';
+import MenuItem from '../MenuItem.js';
+import { svgIcon } from '../MDI.js';
 
 export default class ImageMenuItemDispatcher extends AbstractMenuItemDispatcher {
     static isAvailable(schema) {

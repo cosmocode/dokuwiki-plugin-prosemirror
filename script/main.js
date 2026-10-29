@@ -4,13 +4,13 @@ import { Schema, Node } from 'prosemirror-model';
 
 import { tableEditing } from 'prosemirror-tables';
 import { history } from 'prosemirror-history';
-import getSpec from './schema';
-import getKeymapPlugin from './plugins/Keymap/keymap';
-import buildInputRules from './plugins/InputRules/inputrules';
-import initializePublicAPI from './initializePublicAPI';
-import MenuInitializer from './plugins/Menu/MenuInitializer';
-import getNodeViews from './nodeviews';
-import { disableDefaultTabBehavior } from './plugins/disableDefaultTabBehavior';
+import getSpec from './schema.js';
+import getKeymapPlugin from './plugins/Keymap/keymap.js';
+import buildInputRules from './plugins/InputRules/inputrules.js';
+import initializePublicAPI from './initializePublicAPI.js';
+import MenuInitializer from './plugins/Menu/MenuInitializer.js';
+import getNodeViews from './nodeviews/index.js';
+import { disableDefaultTabBehavior } from './plugins/disableDefaultTabBehavior.js';
 
 initializePublicAPI();
 
