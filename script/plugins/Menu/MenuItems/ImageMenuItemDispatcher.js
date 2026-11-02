@@ -35,12 +35,11 @@ export default class ImageMenuItemDispatcher extends AbstractMenuItemDispatcher 
 
                     mediaForm.show();
 
-                    mediaForm.on('submit', MediaForm.resolveSubmittedLinkData(
+                    mediaForm.bindSubmitUntilClose(MediaForm.resolveSubmittedLinkData(
                         {},
                         mediaForm,
                         (newAttrs) => {
                             dispatch(state.tr.replaceSelectionWith(schema.nodes.image.create(newAttrs)));
-                            mediaForm.off('submit');
                             mediaForm.hide();
                             mediaForm.resetForm();
                         },

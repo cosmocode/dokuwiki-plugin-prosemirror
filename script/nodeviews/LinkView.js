@@ -103,7 +103,7 @@ class LinkView extends AbstractNodeView {
         cleanedAttrs = LinkView.unsetPrefixAttributes('data-resolved', cleanedAttrs);
         cleanedAttrs = LinkView.unsetPrefixAttributes('image-', cleanedAttrs);
 
-        this.linkForm.on('submit', LinkForm.resolveSubmittedLinkData(
+        this.linkForm.bindSubmitUntilClose(LinkForm.resolveSubmittedLinkData(
             this.linkForm,
             cleanedAttrs,
             (newAttrs) => {
@@ -123,7 +123,6 @@ class LinkView extends AbstractNodeView {
     deselectNode() {
         this.dom.classList.remove('ProseMirror-selectednode');
 
-        this.linkForm.off('submit');
         this.linkForm.hide();
         this.linkForm.resetForm();
     }

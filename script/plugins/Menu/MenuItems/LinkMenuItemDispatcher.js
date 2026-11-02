@@ -34,13 +34,12 @@ export default class LinkMenuItemDispatcher extends AbstractMenuItemDispatcher {
                         linkForm.setLinkNameType('custom', textContent);
                     }
 
-                    linkForm.on('submit', LinkForm.resolveSubmittedLinkData(
+                    linkForm.bindSubmitUntilClose(LinkForm.resolveSubmittedLinkData(
                         linkForm,
                         {},
                         (newAttrs) => {
                             const linkNode = schema.nodes.link.create(newAttrs);
                             dispatch(state.tr.replaceSelectionWith(linkNode));
-                            linkForm.off('submit');
                             linkForm.hide();
                             linkForm.resetForm();
                         },

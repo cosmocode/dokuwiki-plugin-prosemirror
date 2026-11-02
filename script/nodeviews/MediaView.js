@@ -53,7 +53,7 @@ class MediaView extends AbstractNodeView {
 
 
         const cleanAttrs = AbstractNodeView.unsetPrefixAttributes('data-resolved', { ...this.node.attrs });
-        this.MediaForm.on('submit', MediaForm.resolveSubmittedLinkData(
+        this.MediaForm.bindSubmitUntilClose(MediaForm.resolveSubmittedLinkData(
             cleanAttrs,
             this.MediaForm,
             (newAttrs) => {
@@ -75,7 +75,6 @@ class MediaView extends AbstractNodeView {
 
 
         this.MediaForm.hide();
-        this.MediaForm.off('submit');
         this.MediaForm.resetForm();
     }
 }
