@@ -1,7 +1,20 @@
-import { selectionCell, setCellAttr } from 'prosemirror-tables';
+import { isInTable, selectionCell, setCellAttr } from 'prosemirror-tables';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import { svgIcon } from '../MDI.js';
 import MenuItem from '../MenuItem.js';
+
+/**
+ * Get the table cell the selection is in
+ *
+ * prosemirror-tables' selectionCell() throws a RangeError outside of tables,
+ * but the menu evaluates isActive() for every selection.
+ *
+ * @param {EditorState} state
+ * @return {ResolvedPos|null} position directly before the cell, or null if not in a table
+ */
+function getSelectedCell(state) {
+    return isInTable(state) ? selectionCell(state) : null;
+}
 
 export default class TCellAlignMenuItemDispatcher extends AbstractMenuItemDispatcher {
     constructor(align) {
@@ -20,7 +33,7 @@ export default class TCellAlignMenuItemDispatcher extends AbstractMenuItemDispat
 
         return new MenuItem({
             command: (state, dispatch) => {
-                const cell = selectionCell(state);
+                const cell = getSelectedCell(state);
                 if (!cell) {
                     return false;
                 }
@@ -32,7 +45,7 @@ export default class TCellAlignMenuItemDispatcher extends AbstractMenuItemDispat
             icon: svgIcon(`format-align-${this.align}`),
             label: LANG.plugins.prosemirror[`label:table-cell-align-${this.align}`],
             isActive: (state) => {
-                const cell = selectionCell(state);
+                const cell = getSelectedCell(state);
                 if (!cell) {
                     return false;
                 }
