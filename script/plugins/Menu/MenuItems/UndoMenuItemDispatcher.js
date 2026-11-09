@@ -1,4 +1,4 @@
-import { undo } from 'prosemirror-history';
+import { undo } from '../../../../vendor/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import { svgIcon } from '../MDI.js';
 import MenuItem from '../MenuItem.js';

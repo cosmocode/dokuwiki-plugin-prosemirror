@@ -1,4 +1,4 @@
-import { DOMParser } from 'prosemirror-model';
+import { DOMParser } from '../vendor/prosemirror.js';
 import KeyValueForm from './nodeviews/KeyValueForm.js';
 import AbstractMenuItemDispatcher from './plugins/Menu/MenuItems/AbstractMenuItemDispatcher.js';
 import MenuItem from './plugins/Menu/MenuItem.js';

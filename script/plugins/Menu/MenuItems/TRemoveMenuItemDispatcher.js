@@ -1,4 +1,4 @@
-import { deleteTable } from 'prosemirror-tables';
+import { deleteTable } from '../../../../vendor/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import { svgIcon } from '../MDI.js';
 import MenuItem from '../MenuItem.js';

@@ -1,4 +1,4 @@
-import { Plugin } from 'prosemirror-state';
+import { Plugin } from '../../../vendor/prosemirror.js';
 import MenuView from './MenuView.js';
 
 /**

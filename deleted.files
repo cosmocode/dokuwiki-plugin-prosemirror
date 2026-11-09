@@ -12,3 +12,7 @@ pre-commit.hook.sh
 stylelint.config.js
 webpack.config.js
 yarn.lock
+
+# 2026-11-03 editor loaded as native ES modules, no bundle and no release branch
+.github/workflows/deployRelease.yml
+lib/bundle.js

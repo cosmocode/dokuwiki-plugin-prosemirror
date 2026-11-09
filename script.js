@@ -71,14 +71,23 @@ function disableNativeFirefoxTableControls() {
 }
 
 /**
- * Initialize the prosemirror framework
+ * Load the editor's ES modules, once
  *
- * (This shouldn't do much until we actually use the editor, but we maybe shouldn't do this twice)
+ * The editor lives in script/main.js and its imports, loaded natively by the browser.
+ * Loading is asynchronous, so everything that needs
+ * window.Prosemirror.enableProsemirror() must wait for the returned promise. It resolves to
+ * false (after showing an error) if loading failed.
+ *
+ * @return {Promise<boolean>} whether the editor is available
  */
 function initializeProsemirror() {
-    try {
-        /* DOKUWIKI:include lib/bundle.js */
-    } catch (e) {
+    if (window.prosemirrorLoading) {
+        return window.prosemirrorLoading;
+    }
+
+    window.prosemirrorLoading = import(DOKU_BASE + 'lib/plugins/prosemirror/script/main.js').then(function () {
+        return true;
+    }, function (e) {
         const $textArea = jQuery('#wiki__text');
         console.error(e);
         let message = 'There was an error initializing the WYSIWYG editor.';
@@ -98,7 +107,9 @@ function initializeProsemirror() {
         showErrorMessage(message);
 
         DokuCookie.setValue('plugin_prosemirror_useWYSIWYG', '');
-    }
+        return false;
+    });
+    return window.prosemirrorLoading;
 }
 
 /**
@@ -127,7 +138,11 @@ function toggleEditor() {
         if (window.proseMirrorIsActive) {
             showDefaultEditor(data.text);
         } else {
-            showProsemirror(data.json);
+            initializeProsemirror().then(function (loaded) {
+                if (loaded) {
+                    showProsemirror(data.json);
+                }
+            });
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.error(jqXHR, textStatus, errorThrown); // FIXME: proper error handling
@@ -162,9 +177,12 @@ function toggleEditor() {
  */
 function handleEditSession() {
     const $jsonField = jQuery('#dw__editform').find('[name=prosemirror_json]');
-    if (DokuCookie.getValue('plugin_prosemirror_useWYSIWYG')) {
-        showProsemirror($jsonField.val());
-    }
+    // start loading right away, so switching to WYSIWYG later is instant
+    initializeProsemirror().then(function (loaded) {
+        if (loaded && DokuCookie.getValue('plugin_prosemirror_useWYSIWYG')) {
+            showProsemirror($jsonField.val());
+        }
+    });
     const $toggleEditorButton = jQuery('.plugin_prosemirror_useWYSIWYG');
     $toggleEditorButton.on('click', toggleEditor);
 }
@@ -195,7 +213,6 @@ function stickyMenubar() {
 
 
 jQuery(function () {
-    initializeProsemirror();
     window.proseMirrorIsActive = false;
 
     if (jQuery('#dw__editform').find('[name=prosemirror_json]').length) {

@@ -1,4 +1,4 @@
-import { Node, Schema } from 'prosemirror-model';
+import { Node, Schema } from '../vendor/prosemirror.js';
 import getSpec from '../script/schema.js';
 
 // getSpec() looks for window.Prosemirror.pluginSchemas; Node has no window

@@ -1,7 +1,7 @@
-import { keymap } from 'prosemirror-keymap';
-import { splitListItem, sinkListItem, liftListItem } from 'prosemirror-schema-list';
-import { baseKeymap, chainCommands } from 'prosemirror-commands';
-import { redo, undo } from 'prosemirror-history';
+import { keymap } from '../../../vendor/prosemirror.js';
+import { splitListItem, sinkListItem, liftListItem } from '../../../vendor/prosemirror.js';
+import { baseKeymap, chainCommands } from '../../../vendor/prosemirror.js';
+import { redo, undo } from '../../../vendor/prosemirror.js';
 
 
 function getKeymapPlugin(schema) {

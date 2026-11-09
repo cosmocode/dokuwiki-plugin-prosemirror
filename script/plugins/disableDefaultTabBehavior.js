@@ -1,4 +1,4 @@
-import { Plugin } from 'prosemirror-state';
+import { Plugin } from '../../vendor/prosemirror.js';
 
 /**
  * Disable the browser's default behavior on tab, which is required to support indentation using Tab/Shift-Tab

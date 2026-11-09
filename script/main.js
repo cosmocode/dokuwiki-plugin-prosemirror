@@ -1,9 +1,9 @@
-import { EditorState } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { Schema, Node } from 'prosemirror-model';
+import { EditorState } from '../vendor/prosemirror.js';
+import { EditorView } from '../vendor/prosemirror.js';
+import { Schema, Node } from '../vendor/prosemirror.js';
 
-import { tableEditing } from 'prosemirror-tables';
-import { history } from 'prosemirror-history';
+import { tableEditing } from '../vendor/prosemirror.js';
+import { history } from '../vendor/prosemirror.js';
 import getSpec from './schema.js';
 import getKeymapPlugin from './plugins/Keymap/keymap.js';
 import buildInputRules from './plugins/InputRules/inputrules.js';

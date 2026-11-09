@@ -1,4 +1,4 @@
-import { mergeCells } from 'prosemirror-tables';
+import { mergeCells } from '../../../../vendor/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import { svgIcon } from '../MDI.js';
 import MenuItem from '../MenuItem.js';

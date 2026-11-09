@@ -4,7 +4,8 @@
     "description": "prosemirror Plugin for DokuWiki",
     "private": true,
     "type": "module",
-    "dependencies": {
+    "devDependencies": {
+        "esbuild": "^0.28.2",
         "prosemirror-commands": "^1.7.2",
         "prosemirror-history": "^1.5.1",
         "prosemirror-inputrules": "^1.5.1",
@@ -17,14 +18,9 @@
         "prosemirror-transform": "^1.12.4",
         "prosemirror-view": "^1.42.9"
     },
-    "devDependencies": {
-        "esbuild": "^0.28.2"
-    },
     "scripts": {
-        "build": "esbuild script/main.js --bundle --format=iife --target=es2020 --minify --outfile=lib/bundle.js",
-        "dev": "esbuild script/main.js --bundle --format=iife --target=es2020 --sourcemap=inline --outfile=lib/bundle.js",
-        "watch": "npm run dev -- --watch",
-        "test": "node --test _jstest/test.js"
+        "test": "node --test _jstest/test.js",
+        "vendor": "esbuild vendor/entry.js --bundle --format=esm --target=es2020 --minify --legal-comments=none \"--banner:js=/* ProseMirror and its dependencies, MIT licensed, see LICENSES.txt */\" --metafile=vendor/meta.json --outfile=vendor/prosemirror.js && node vendor/check.js"
     },
     "author": "",
     "license": "GPL-2.0"

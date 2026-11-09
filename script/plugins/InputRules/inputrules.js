@@ -1,5 +1,5 @@
-import { inputRules, InputRule } from 'prosemirror-inputrules';
-import { TextSelection } from 'prosemirror-state';
+import { inputRules, InputRule } from '../../../vendor/prosemirror.js';
+import { TextSelection } from '../../../vendor/prosemirror.js';
 import SmileyConf from '../../custom/SmileyConf.js';
 
 /**

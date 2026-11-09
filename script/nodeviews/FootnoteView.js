@@ -1,6 +1,6 @@
-import { EditorState } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { Node, Schema } from 'prosemirror-model';
+import { EditorState } from '../../vendor/prosemirror.js';
+import { EditorView } from '../../vendor/prosemirror.js';
+import { Node, Schema } from '../../vendor/prosemirror.js';
 
 import getKeymapPlugin from '../plugins/Keymap/keymap.js';
 

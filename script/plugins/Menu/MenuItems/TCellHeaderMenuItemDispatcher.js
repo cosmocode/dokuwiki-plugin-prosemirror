@@ -1,4 +1,4 @@
-import { toggleHeaderCell } from 'prosemirror-tables';
+import { toggleHeaderCell } from '../../../../vendor/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import { svgIcon } from '../MDI.js';
 import MenuItem from '../MenuItem.js';

@@ -1,0 +1,11 @@
+# Development files, left out of the archives GitHub serves as plugin downloads
+/.gitattributes export-ignore
+/.github export-ignore
+/.gitignore export-ignore
+/vendor/check.js export-ignore
+/vendor/entry.js export-ignore
+/_jstest export-ignore
+/_test export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/requirements.txt export-ignore
