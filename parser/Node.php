@@ -70,7 +70,7 @@ abstract class Node implements NodeInterface
             if ($event->advise_before() || !is_a($eventData['newNode'], self::class)) {
                 $exception = new ProsemirrorException('Invalid node type received: ' . $node['type'], 0);
                 $exception->addExtraData('nodeData', $node);
-                $exception->addExtraData('parentNodeType', get_class($parent));
+                $exception->addExtraData('parentNodeType', $parent::class);
 
                 throw $exception;
             }
@@ -82,7 +82,7 @@ abstract class Node implements NodeInterface
                 $e
             );
             $exception->addExtraData('nodeData', $node);
-            $exception->addExtraData('parentNodeType', get_class($parent));
+            $exception->addExtraData('parentNodeType', $parent::class);
 
             throw $exception;
         }
