@@ -533,7 +533,11 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     /** @inheritDoc */
     public function linebreak()
     {
-        $this->nodestack->add(new Node('hard_break'));
+        $node = new Node('hard_break');
+        foreach (array_keys($this->marks) as $mark) {
+            $node->addMark(new Mark($mark));
+        }
+        $this->nodestack->add($node);
     }
 
     /** @inheritDoc */

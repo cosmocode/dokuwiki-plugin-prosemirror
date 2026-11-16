@@ -1,0 +1,44 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Line "
+                },
+                {
+                    "type": "text",
+                    "text": "bold",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "hard_break",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": "still bold",
+                    "marks": [
+                        {
+                            "type": "strong"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": " end."
+                }
+            ]
+        }
+    ]
+}

@@ -20,3 +20,25 @@ export function setBlockTypeNoAttrCheck(nodeType, attrs) { // eslint-disable-lin
         return true;
     };
 }
+
+/**
+ * Returns a command that inserts a hard break (DokuWiki's forced line break `\\ `) at the cursor
+ *
+ * The command fails where a hard break is not allowed, so that a command chained after it can
+ * run instead: in code nodes, and in nodes whose content cannot hold one, such as headings.
+ * The break takes over the marks at the cursor, so a break in bold text stays bold.
+ *
+ * @param {Schema} schema the editor schema
+ * @returns {function(EditorState, function(Transaction)=): boolean} the command
+ */
+export function insertHardBreak(schema) {
+    const hardBreak = schema.nodes.hard_break;
+    return function insertHardBreakDispatch(state, dispatch) {
+        const { $from } = state.selection;
+        if ($from.parent.type.spec.code) return false;
+        const index = $from.index();
+        if (!$from.parent.canReplaceWith(index, index, hardBreak)) return false;
+        if (dispatch) dispatch(state.tr.replaceSelectionWith(hardBreak.create()).scrollIntoView());
+        return true;
+    };
+}

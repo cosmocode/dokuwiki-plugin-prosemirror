@@ -2,6 +2,7 @@ import { keymap } from '../../../vendor/prosemirror.js';
 import { splitListItem, sinkListItem, liftListItem } from '../../../vendor/prosemirror.js';
 import { baseKeymap, chainCommands } from '../../../vendor/prosemirror.js';
 import { redo, undo } from '../../../vendor/prosemirror.js';
+import { insertHardBreak } from '../../customCommands.js';
 
 
 function getKeymapPlugin(schema) {
@@ -29,12 +30,19 @@ function getKeymapPlugin(schema) {
         'Shift-Tab': liftListItem(schema.nodes.list_item),
     };
 
+    // Where no line break is allowed (headings, code blocks), Shift+Enter does what Enter does.
+    // Without a binding there, the browser would handle the key itself.
+    const lineBreakKeymap = {
+        'Shift-Enter': chainCommands(insertHardBreak(schema), combinedKeymapUnion.Enter),
+    };
+
     const mergedKeymap = {
         ...baseKeymap,
         ...customKeymap,
         ...combinedKeymapUnion,
         ...historyKeymap,
         ...indentationKeymap,
+        ...lineBreakKeymap,
     };
 
     return keymap(mergedKeymap);
