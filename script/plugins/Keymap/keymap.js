@@ -2,7 +2,7 @@ import { keymap } from '../../../vendor/prosemirror.js';
 import { splitListItem, sinkListItem, liftListItem } from '../../../vendor/prosemirror.js';
 import { baseKeymap, chainCommands } from '../../../vendor/prosemirror.js';
 import { redo, undo } from '../../../vendor/prosemirror.js';
-import { insertHardBreak } from '../../customCommands.js';
+import { insertHardBreak, enterInTableCell } from '../../customCommands.js';
 
 
 function getKeymapPlugin(schema) {
@@ -11,7 +11,10 @@ function getKeymapPlugin(schema) {
 
     const customKeymap = {};
 
-    customKeymap.Enter = splitListItem(schema.nodes.list_item); // eslint-disable-line import/no-named-as-default-member
+    customKeymap.Enter = chainCommands(
+        enterInTableCell(schema),
+        splitListItem(schema.nodes.list_item), // eslint-disable-line import/no-named-as-default-member
+    );
 
     const combinedKeymapUnion = Object.keys(customKeymap).reduce((acc, key) => {
         if (baseKeymap[key]) {

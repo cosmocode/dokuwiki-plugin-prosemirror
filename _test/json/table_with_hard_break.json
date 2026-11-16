@@ -1,0 +1,301 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "table",
+            "content": [
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_header",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "head"
+                                        },
+                                        {
+                                            "type": "hard_break"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "line"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_header",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "two"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_header",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "x"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_header",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "y"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 4
+                    }
+                },
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "one"
+                                        },
+                                        {
+                                            "type": "hard_break"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "two"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "bold",
+                                            "marks": [
+                                                {
+                                                    "type": "strong"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "hard_break",
+                                            "marks": [
+                                                {
+                                                    "type": "strong"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "end",
+                                            "marks": [
+                                                {
+                                                    "type": "strong"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "x"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "y"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 4
+                    }
+                },
+                {
+                    "type": "table_row",
+                    "content": [
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "a"
+                                        },
+                                        {
+                                            "type": "hard_break"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "b"
+                                        },
+                                        {
+                                            "type": "hard_break"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": "right"
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "c"
+                                        },
+                                        {
+                                            "type": "hard_break"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": "center"
+                            }
+                        },
+                        {
+                            "type": "table_cell",
+                            "content": [
+                                {
+                                    "type": "paragraph",
+                                    "content": [
+                                        {
+                                            "type": "text",
+                                            "text": "d"
+                                        },
+                                        {
+                                            "type": "hard_break"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "align": "left"
+                            }
+                        }
+                    ],
+                    "attrs": {
+                        "columns": 4
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,3 +1,5 @@
+import { CellSelection } from '../vendor/prosemirror.js';
+
 /**
  * Returns a command that tries to set the selected textblocks to the given node type with the given attributes.
  *
@@ -40,5 +42,31 @@ export function insertHardBreak(schema) {
         if (!$from.parent.canReplaceWith(index, index, hardBreak)) return false;
         if (dispatch) dispatch(state.tr.replaceSelectionWith(hardBreak.create()).scrollIntoView());
         return true;
+    };
+}
+
+/**
+ * Returns the Enter command for table cells: it inserts a hard break instead of a new paragraph
+ *
+ * A DokuWiki table cell holds a single line, so a new paragraph cannot be saved. Outside of
+ * table cells and in code blocks within them the command fails, so that the regular Enter
+ * command chained after it runs. With several cells selected it does nothing, because the
+ * regular command would replace the content of the selected cells.
+ *
+ * @param {Schema} schema the editor schema
+ * @returns {function(EditorState, function(Transaction)=): boolean} the command
+ */
+export function enterInTableCell(schema) {
+    const insertBreak = insertHardBreak(schema);
+    return function enterInTableCellDispatch(state, dispatch) {
+        if (state.selection instanceof CellSelection) return true;
+        const { $from } = state.selection;
+        for (let depth = $from.depth; depth > 0; depth -= 1) {
+            const role = $from.node(depth).type.spec.tableRole;
+            if (role === 'cell' || role === 'header_cell') {
+                return insertBreak(state, dispatch);
+            }
+        }
+        return false;
     };
 }

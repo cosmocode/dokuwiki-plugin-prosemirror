@@ -73,9 +73,10 @@
         }
     }
 
-    // reset user agent margins for placeholder p in tables
-    th > p:only-child,
-    td > p:only-child {
+    // A cell is saved as one line, with `\\ ` between its paragraphs (TableCellNode), so
+    // paragraphs in cells must look like lines separated by a line break, without margins.
+    th > p,
+    td > p {
         margin-block-start: 0;
         margin-block-end: 0;
     }

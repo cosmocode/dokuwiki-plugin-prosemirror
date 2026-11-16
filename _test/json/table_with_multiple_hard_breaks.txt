@@ -1,0 +1,8 @@
+^ Layout\\ \\  ^ Note ^
+| one\\ \\ \\ two | space between |
+| \\ \\ text | space above |
+| text\\ \\  | space below |
+|  \\ \\ text | right, space above |
+|  text\\ \\   | centered, space below |
+|  \\ text\\ \\   | centered, space around |
+| \\ \\ text  | left, space above |
