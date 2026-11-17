@@ -1,0 +1,12 @@
+No blank lines around the rule:
+----
+A blank line only after the rule:
+----
+
+A blank line only before the rule:
+
+----
+Two rules:
+----
+----
+The end.

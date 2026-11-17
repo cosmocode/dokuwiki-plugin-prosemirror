@@ -19,6 +19,15 @@ export default function getSpec() {
     };
     nodes = nodes.update('doc', doc);
 
+    // how the rule is written in the syntax, see helper_plugin_prosemirror::getInstructions()
+    const hr = nodes.get('horizontal_rule');
+    hr.attrs = {
+        markup: { default: '----' },
+        blankBefore: { default: true },
+        blankAfter: { default: true },
+    };
+    nodes = nodes.update('horizontal_rule', hr);
+
     // heading shall only contain unmarked text
     const heading = nodes.get('heading');
     heading.content = 'text*';

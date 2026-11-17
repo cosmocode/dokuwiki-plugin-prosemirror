@@ -9,6 +9,7 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
+use dokuwiki\plugin\prosemirror\parser\HruleNode;
 use dokuwiki\plugin\prosemirror\parser\ImageNode;
 use dokuwiki\plugin\prosemirror\parser\LocalLinkNode;
 use dokuwiki\plugin\prosemirror\parser\InternalLinkNode;
@@ -540,10 +541,29 @@ class renderer_plugin_prosemirror extends Doku_Renderer
         $this->nodestack->add($node);
     }
 
-    /** @inheritDoc */
-    public function hr()
+    /**
+     * Horizontal rule
+     *
+     * The arguments are only passed by helper_plugin_prosemirror::getInstructions(). They are
+     * stored only when they differ from the schema's defaults.
+     *
+     * @param bool $blankBefore whether a blank line precedes the rule in the syntax
+     * @param bool $blankAfter whether a blank line follows the rule in the syntax
+     * @param string $markup the rule as written, e.g. `------`, or `***` with Markdown syntax enabled
+     */
+    public function hr($blankBefore = true, $blankAfter = true, $markup = HruleNode::DEFAULT_MARKUP)
     {
-        $this->nodestack->add(new Node('horizontal_rule'));
+        $node = new Node('horizontal_rule');
+        if ($markup !== HruleNode::DEFAULT_MARKUP) {
+            $node->attr('markup', $markup);
+        }
+        if (!$blankBefore) {
+            $node->attr('blankBefore', false);
+        }
+        if (!$blankAfter) {
+            $node->attr('blankAfter', false);
+        }
+        $this->nodestack->add($node);
     }
 
     public function plugin($name, $data, $state = '', $match = '')

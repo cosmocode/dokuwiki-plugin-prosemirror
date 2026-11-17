@@ -102,4 +102,61 @@ class jsonParser_plugin_prosemirror_test extends DokuWikiTest
         $rootNode = SyntaxTreeBuilder::parseDataIntoTree($doc);
         $this->assertEquals($expected, trim($rootNode->toSyntax()));
     }
+
+    /**
+     * @return array[] [top-level nodes, expected syntax]
+     */
+    public function hruleInsertedProvider()
+    {
+        $text = static fn($text) => [['type' => 'text', 'text' => $text]];
+        $para = static fn($str) => ['type' => 'paragraph', 'content' => $text($str)];
+        $hr = ['type' => 'horizontal_rule'];
+
+        return [
+            'in the middle of a paragraph' => [[$para('foo'), $hr, $para('bar')], "foo\n\n----\n\nbar"],
+            'at the start of the page' => [[$hr, $para('foo')], "----\n\nfoo"],
+            'at the end of the page' => [[$para('foo'), $hr, ['type' => 'paragraph']], "foo\n\n----"],
+        ];
+    }
+
+    /**
+     * Documents the horizontal rule menu command produces are saved as valid wiki syntax
+     *
+     * The command splits the paragraph at the cursor and adds an empty paragraph after a rule at
+     * the end of the page. Loading wiki syntax never creates that empty paragraph, so these cases
+     * are not fixtures in `json/`, which are tested both ways.
+     *
+     * @dataProvider hruleInsertedProvider
+     *
+     * @param array $content the document's top-level nodes
+     * @param string $expected the expected wiki syntax
+     */
+    public function test_hruleInserted($content, $expected)
+    {
+        $doc = ['type' => 'doc', 'content' => $content];
+        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($doc);
+        $this->assertEquals($expected, trim($rootNode->toSyntax()));
+    }
+
+    /**
+     * A rule right after a table keeps its blank line, without it the rule isn't parsed as one
+     */
+    public function test_hruleAfterTable()
+    {
+        $cell = [
+            'type' => 'table_cell',
+            'attrs' => ['colspan' => 1, 'rowspan' => 1, 'align' => null],
+            'content' => [['type' => 'paragraph', 'content' => [['type' => 'text', 'text' => 'a']]]],
+        ];
+        $doc = [
+            'type' => 'doc',
+            'content' => [
+                ['type' => 'table', 'content' => [['type' => 'table_row', 'content' => [$cell]]]],
+                ['type' => 'horizontal_rule', 'attrs' => ['blankBefore' => false]],
+            ],
+        ];
+
+        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($doc);
+        $this->assertEquals("| a |\n\n----", trim($rootNode->toSyntax()));
+    }
 }

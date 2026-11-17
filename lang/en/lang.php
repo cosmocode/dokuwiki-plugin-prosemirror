@@ -52,6 +52,7 @@ $lang['js']['footnoteViewTitle'] = 'Edit footnote';
 $lang['js']['placeholder:page'] = 'namespace:page';
 
 $lang['js']['label:blockquote'] = 'Blockquote';
+$lang['js']['label:hrule'] = 'Horizontal line';
 $lang['js']['label:bulletList'] = 'Wrap in bullet list';
 $lang['js']['label:code'] = 'Code Block';
 $lang['js']['label:footnote'] = 'Add a footnote';

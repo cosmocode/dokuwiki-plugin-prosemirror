@@ -19,7 +19,7 @@
         "prosemirror-view": "^1.42.9"
     },
     "scripts": {
-        "test": "node --test _jstest/test.js",
+        "test": "node --test \"_jstest/*test.js\"",
         "vendor": "esbuild vendor/entry.js --bundle --format=esm --target=es2020 --minify --legal-comments=none \"--banner:js=/* ProseMirror and its dependencies, MIT licensed, see LICENSES.txt */\" --metafile=vendor/meta.json --outfile=vendor/prosemirror.js && node vendor/check.js"
     },
     "author": "",

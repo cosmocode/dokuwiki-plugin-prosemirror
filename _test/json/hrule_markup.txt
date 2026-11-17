@@ -1,0 +1,7 @@
+A rule with more dashes:
+
+------
+
+A rule with more dashes and no blank lines:
+--------
+The end.

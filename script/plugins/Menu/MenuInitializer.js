@@ -11,6 +11,7 @@ import SinkListItemMenuItemDispatcher from './MenuItems/SinkListItemMenuItemDisp
 import CodeMenuItemDispatcher from './MenuItems/CodeMenuItemDispatcher.js';
 import ParagraphMenuItemDispatcher from './MenuItems/ParagraphMenuItemDispatcher.js';
 import BlockquoteMenuItemDispatcher from './MenuItems/BlockquoteMenuItemDispatcher.js';
+import HruleMenuItemDispatcher from './MenuItems/HruleMenuItemDispatcher.js';
 import PluginInlineMenuItemDispatcher from './MenuItems/PluginInlineMenuItemDispatcher.js';
 import HeadingDropdownDispatcher from './MenuItems/HeadingDropdownDispatcher.js';
 import HeadingMenuItemDispatcher from './MenuItems/HeadingMenuItemDispatcher.js';
@@ -78,6 +79,7 @@ class MenuInitializer {
             CodeMenuItemDispatcher,
             ParagraphMenuItemDispatcher,
             BlockquoteMenuItemDispatcher,
+            HruleMenuItemDispatcher,
             FootnoteMenuItemDispatcher,
             RSSMenuItemDispatcher,
             new SmileyDropdownDispatcher(smileyItems),

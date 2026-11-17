@@ -148,15 +148,15 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
 
         if ($INPUT->bool('getJSON')) {
             $text = $INPUT->str('data');
-            $instructions = p_get_instructions($text);
+            /** @var \helper_plugin_prosemirror $helper */
+            $helper = plugin_load('helper', 'prosemirror');
+            $instructions = $helper->getInstructions($text);
             try {
                 $prosemirrorJSON = p_render('prosemirror', $instructions, $info);
             } catch (Throwable $e) {
                 $errorMsg = 'Rendering the page\'s syntax for the WYSIWYG editor failed: ';
                 $errorMsg .= $e->getMessage();
 
-                /** @var \helper_plugin_prosemirror $helper */
-                $helper = plugin_load('helper', 'prosemirror');
                 if ($helper->tryToLogErrorToSentry($e, ['text' => $text])) {
                     $errorMsg .= ' -- The error has been logged to Sentry.';
                 } else {

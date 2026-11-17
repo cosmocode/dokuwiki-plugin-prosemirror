@@ -27,13 +27,41 @@ class RootNode extends Node
     public function toSyntax()
     {
         $doc = '';
+        $previous = null;
         foreach ($this->subnodes as $subnode) {
+            if ($previous !== null) {
+                $doc = rtrim($doc) . $this->getSeparator($previous, $subnode);
+            }
             $doc .= $subnode->toSyntax();
-            $doc = rtrim($doc);
-            $doc .= "\n\n";
+            $previous = $subnode;
+        }
+        if ($previous !== null) {
+            $doc = rtrim($doc) . "\n\n";
         }
         $doc .= $this->getMacroSyntax();
         return $doc;
+    }
+
+    /**
+     * Get the line breaks between two top-level nodes
+     *
+     * Blocks are separated by a blank line, except next to a horizontal rule that was written
+     * without one. A rule right after a table always needs it, otherwise it isn't parsed as a rule.
+     *
+     * @param Node $previous
+     * @param Node $next
+     *
+     * @return string
+     */
+    protected function getSeparator(Node $previous, Node $next)
+    {
+        if ($previous instanceof HruleNode && !$previous->hasBlankAfter()) {
+            return "\n";
+        }
+        if ($next instanceof HruleNode && !$next->hasBlankBefore() && !$previous instanceof TableNode) {
+            return "\n";
+        }
+        return "\n\n";
     }
 
     /**

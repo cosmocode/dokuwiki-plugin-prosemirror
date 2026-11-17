@@ -1,0 +1,83 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "No blank lines around the rule:"
+                }
+            ]
+        },
+        {
+            "type": "horizontal_rule",
+            "attrs": {
+                "blankBefore": false,
+                "blankAfter": false
+            }
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "A blank line only after the rule:"
+                }
+            ]
+        },
+        {
+            "type": "horizontal_rule",
+            "attrs": {
+                "blankBefore": false
+            }
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "A blank line only before the rule:"
+                }
+            ]
+        },
+        {
+            "type": "horizontal_rule",
+            "attrs": {
+                "blankAfter": false
+            }
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Two rules:"
+                }
+            ]
+        },
+        {
+            "type": "horizontal_rule",
+            "attrs": {
+                "blankBefore": false,
+                "blankAfter": false
+            }
+        },
+        {
+            "type": "horizontal_rule",
+            "attrs": {
+                "blankBefore": false,
+                "blankAfter": false
+            }
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The end."
+                }
+            ]
+        }
+    ]
+}

@@ -52,6 +52,7 @@ $lang['js']['footnoteViewTitle'] = 'Fußnote bearbeiten';
 $lang['js']['placeholder:page'] = 'namensraum:seite';
 
 $lang['js']['label:blockquote'] = 'Blockzitat';
+$lang['js']['label:hrule'] = 'Horizontale Linie';
 $lang['js']['label:bulletList'] = 'Aufzählungsliste';
 $lang['js']['label:code'] = 'Code Block';
 $lang['js']['label:footnote'] = 'Fußnote hinzufügen';
