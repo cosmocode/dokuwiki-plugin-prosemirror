@@ -1,4 +1,4 @@
-import { toggleMark } from '../../../../vendor/prosemirror.js';
+import { toggleMark } from '../../../../dist/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import MenuItem from '../MenuItem.js';
 import { svgIcon } from '../MDI.js';

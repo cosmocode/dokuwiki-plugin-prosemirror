@@ -1,4 +1,4 @@
-import { deleteColumn } from '../../../../vendor/prosemirror.js';
+import { deleteColumn } from '../../../../dist/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import { svgIcon } from '../MDI.js';
 import MenuItem from '../MenuItem.js';

@@ -22,7 +22,7 @@ class ImportMapTest extends DokuWikiTest
      */
     protected function getModuleFiles(): array
     {
-        $files = array_merge($this->getJsFiles('script'), $this->getJsFiles('vendor'));
+        $files = array_merge($this->getJsFiles('script'), $this->getJsFiles('dist'));
         sort($files);
         return $files;
     }
@@ -80,12 +80,12 @@ class ImportMapTest extends DokuWikiTest
     }
 
     /**
-     * Every module the browser can reach from script/main.js is in the import map, and vendor/
+     * Every module the browser can reach from script/main.js is in the import map, and dist/
      * holds only such modules
      *
      * Follows the relative imports (static, re-exports and string-literal `import()`). A module
      * missing from the map would load unversioned and stay cached, e.g. one added outside
-     * script/ and vendor/. A file in vendor/ that no module imports would be mapped and
+     * script/ and dist/. A file in dist/ that no module imports would be mapped and
      * preloaded on every edit page; build tools belong in _jsbuild/.
      */
     public function testMapCoversImportGraph(): void
@@ -115,7 +115,7 @@ class ImportMapTest extends DokuWikiTest
             }
         }
 
-        foreach ($this->getJsFiles('vendor') as $file) {
+        foreach ($this->getJsFiles('dist') as $file) {
             $this->assertArrayHasKey(
                 $file,
                 $seen,

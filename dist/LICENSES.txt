@@ -1,4 +1,4 @@
-vendor/prosemirror.js bundles the following packages.
+dist/prosemirror.js bundles the following packages.
 
 ========================================================================
 orderedmap (MIT)

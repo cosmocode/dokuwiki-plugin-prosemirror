@@ -1,4 +1,4 @@
-import { Schema } from '../../../../vendor/prosemirror.js';
+import { Schema } from '../../../../dist/prosemirror.js';
 
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import MenuItem from '../MenuItem.js';

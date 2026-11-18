@@ -1,8 +1,8 @@
 /**
- * Entry point for vendor/prosemirror.js, built with `npm run vendor`
+ * Entry point for dist/prosemirror.js, built with `npm run dist`
  *
  * Browsers cannot resolve bare `prosemirror-*` specifiers, so the editor's modules import
- * everything from the prebuilt vendor/prosemirror.js instead. Bundling all packages into one
+ * everything from the prebuilt dist/prosemirror.js instead. Bundling all packages into one
  * file guarantees a single copy of each, which ProseMirror requires (`instanceof` checks,
  * schema identity).
  *

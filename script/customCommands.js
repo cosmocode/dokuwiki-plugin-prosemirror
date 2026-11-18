@@ -1,4 +1,4 @@
-import { CellSelection } from '../vendor/prosemirror.js';
+import { CellSelection } from '../dist/prosemirror.js';
 
 /**
  * Returns a command that tries to set the selected textblocks to the given node type with the given attributes.

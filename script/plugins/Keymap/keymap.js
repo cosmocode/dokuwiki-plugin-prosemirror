@@ -1,7 +1,7 @@
-import { keymap } from '../../../vendor/prosemirror.js';
-import { splitListItem, sinkListItem, liftListItem } from '../../../vendor/prosemirror.js';
-import { baseKeymap, chainCommands } from '../../../vendor/prosemirror.js';
-import { redo, undo } from '../../../vendor/prosemirror.js';
+import { keymap } from '../../../dist/prosemirror.js';
+import { splitListItem, sinkListItem, liftListItem } from '../../../dist/prosemirror.js';
+import { baseKeymap, chainCommands } from '../../../dist/prosemirror.js';
+import { redo, undo } from '../../../dist/prosemirror.js';
 import { insertHardBreak, enterInTableCell } from '../../customCommands.js';
 
 

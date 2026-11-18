@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
     CellSelection, EditorState, Node, Schema, TextSelection,
-} from '../vendor/prosemirror.js';
+} from '../dist/prosemirror.js';
 import getSpec from '../script/schema.js';
 import HruleMenuItemDispatcher from '../script/plugins/Menu/MenuItems/HruleMenuItemDispatcher.js';
 

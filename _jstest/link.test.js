@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync, readdirSync } from 'node:fs';
-import { Node, Schema } from '../vendor/prosemirror.js';
+import { Node, Schema } from '../dist/prosemirror.js';
 import getSpec from '../script/schema.js';
 import {
     getLinkDisplayAttributes, getLinkText, isAllowedExternalUrl, linkToDOM, parseLinkAttributes,

@@ -18,17 +18,17 @@ on how to install plugins in DokuWiki.
 The editor's JavaScript in `script/` is loaded by the browser as native ES modules, so there
 is no build step: edit a file and reload the page.
 
-The ProseMirror library itself is bundled into `vendor/prosemirror.js`, which is committed.
+The ProseMirror library itself is bundled into `dist/prosemirror.js`, which is committed.
 After changing the ProseMirror dependencies in `package.json`, rebuild it locally with
 esbuild and commit the result:
 
     npm install
-    npm run vendor
+    npm run dist
 
-After building, `npm run vendor` runs `_jsbuild/check.js`, which fails if the bundle is likely to
-break in the browser or if `vendor/LICENSES.txt` is out of date. It catches a name exported by
+After building, `npm run dist` runs `_jsbuild/check.js`, which fails if the bundle is likely to
+break in the browser or if `dist/LICENSES.txt` is out of date. It catches a name exported by
 two packages (re-export it explicitly in `_jsbuild/entry.js`) and a package bundled twice.
-`vendor/LICENSES.txt` is maintained by hand, so add or remove a package's license notice when
+`dist/LICENSES.txt` is maintained by hand, so add or remove a package's license notice when
 the set of bundled packages changes.
 
 The JavaScript tests need no installed packages:
@@ -89,7 +89,7 @@ I can see the following possible groups:
 - the schema
 
 `script.js` loads `script/main.js` with `import()` on edit pages. The ProseMirror packages are
-imported from `vendor/prosemirror.js`.
+imported from `dist/prosemirror.js`.
 
 ## Testing
 The central test-data is the collection of DokuWiki-Syntax and corresponding Prosemirror JSON

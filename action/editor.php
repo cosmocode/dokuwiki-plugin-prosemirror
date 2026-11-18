@@ -19,9 +19,9 @@ class action_plugin_prosemirror_editor extends ActionPlugin
      * The directories holding the modules loaded in the browser, and nothing else
      *
      * Build tools live in `_jsbuild/`. `_test/ImportMapTest.php` fails if the modules import a
-     * file outside these directories, or if `vendor/` holds a file they don't import.
+     * file outside these directories, or if `dist/` holds a file they don't import.
      */
-    protected const MODULE_DIRS = ['script', 'vendor'];
+    protected const MODULE_DIRS = ['script', 'dist'];
 
     /** @var array<string, string> the import map's entries, set by addImportMap() */
     protected $moduleUrls = [];

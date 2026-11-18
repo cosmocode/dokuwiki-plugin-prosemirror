@@ -1,4 +1,4 @@
-import { Step, StepResult } from '../../vendor/prosemirror.js';
+import { Step, StepResult } from '../../dist/prosemirror.js';
 
 /**
  * Custom step to set attributes of the root `doc` node

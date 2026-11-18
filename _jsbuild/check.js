@@ -1,5 +1,5 @@
 /**
- * Checks the freshly built vendor/prosemirror.js, run by `npm run vendor` after esbuild
+ * Checks the freshly built dist/prosemirror.js, run by `npm run dist` after esbuild
  *
  * esbuild builds all of these problems without an error or a warning:
  *
@@ -8,7 +8,7 @@
  * - A package bundled twice, e.g. a CommonJS build next to the ESM one, breaks ProseMirror's
  *   `instanceof` checks (prosemirror-tables 0.8 did that: its `CellSelection` no longer
  *   extended the editor's `Selection`).
- * - vendor/LICENSES.txt is maintained by hand and must list every bundled package, including
+ * - dist/LICENSES.txt is maintained by hand and must list every bundled package, including
  *   transitive ones like orderedmap, rope-sequence and w3c-keyname.
  *
  * Reads the metafile esbuild wrote to _jsbuild/meta.json and deletes it. Exits with status 1 if a
@@ -57,17 +57,17 @@ const bundled = new Set(
     inputs.map(path => path.match(/node_modules\/((?:@[^/]+\/)?[^/]+)\//)?.[1]).filter(Boolean)
 );
 const licensed = new Set(
-    [...readFileSync('vendor/LICENSES.txt', 'utf8').matchAll(/^=+\n(\S+) \(/gm)].map(m => m[1])
+    [...readFileSync('dist/LICENSES.txt', 'utf8').matchAll(/^=+\n(\S+) \(/gm)].map(m => m[1])
 );
 for (const pkg of bundled) {
-    if (!licensed.has(pkg)) errors.push(`${pkg} is bundled but missing from vendor/LICENSES.txt`);
+    if (!licensed.has(pkg)) errors.push(`${pkg} is bundled but missing from dist/LICENSES.txt`);
 }
 for (const pkg of licensed) {
-    if (!bundled.has(pkg)) errors.push(`${pkg} is listed in vendor/LICENSES.txt but not bundled`);
+    if (!bundled.has(pkg)) errors.push(`${pkg} is listed in dist/LICENSES.txt but not bundled`);
 }
 
 if (errors.length) {
-    console.error(`vendor/prosemirror.js was built, but has problems:\n- ${errors.join('\n- ')}`);
+    console.error(`dist/prosemirror.js was built, but has problems:\n- ${errors.join('\n- ')}`);
     process.exit(1);
 }
-console.log(`vendor/prosemirror.js: checks passed (${bundled.size} packages bundled)`);
+console.log(`dist/prosemirror.js: checks passed (${bundled.size} packages bundled)`);

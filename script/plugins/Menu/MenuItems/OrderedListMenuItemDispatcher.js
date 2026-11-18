@@ -1,4 +1,4 @@
-import { wrapInList } from '../../../../vendor/prosemirror.js';
+import { wrapInList } from '../../../../dist/prosemirror.js';
 import AbstractMenuItemDispatcher from './AbstractMenuItemDispatcher.js';
 import MenuItem from '../MenuItem.js';
 import { svgIcon } from '../MDI.js';

@@ -4,9 +4,9 @@
  * extends the basic schemas provided by ProseMirror
  */
 
-import { schema as schemaBasic } from '../vendor/prosemirror.js';
-import { tableNodes } from '../vendor/prosemirror.js';
-import { bulletList, listItem, orderedList } from '../vendor/prosemirror.js';
+import { schema as schemaBasic } from '../dist/prosemirror.js';
+import { tableNodes } from '../dist/prosemirror.js';
+import { bulletList, listItem, orderedList } from '../dist/prosemirror.js';
 import { getLinkText, linkToDOM, parseLinkAttributes } from './linkHelpers.js';
 
 export default function getSpec() {
