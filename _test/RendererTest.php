@@ -1,12 +1,16 @@
 <?php
 
+namespace dokuwiki\plugin\prosemirror\test;
+
+use DokuWikiTest;
+
 /**
  * General tests for the prosemirror plugin
  *
  * @group plugin_prosemirror
  * @group plugins
  */
-class renderer_plugin_prosemirror_test extends DokuWikiTest
+class RendererTest extends DokuWikiTest
 {
 
     protected $pluginsEnabled = ['prosemirror', 'wrap'];

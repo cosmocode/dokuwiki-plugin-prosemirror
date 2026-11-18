@@ -1,5 +1,8 @@
 <?php
 
+namespace dokuwiki\plugin\prosemirror\test;
+
+use DokuWikiTest;
 use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
 
 /**
@@ -8,7 +11,7 @@ use dokuwiki\plugin\prosemirror\parser\SyntaxTreeBuilder;
  * @group plugin_prosemirror
  * @group plugins
  */
-class jsonParser_plugin_prosemirror_test extends DokuWikiTest
+class JsonParserTest extends DokuWikiTest
 {
     protected $pluginsEnabled = ['prosemirror', 'wrap'];
 

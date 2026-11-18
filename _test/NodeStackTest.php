@@ -1,5 +1,8 @@
 <?php
 
+namespace dokuwiki\plugin\prosemirror\test;
+
+use DokuWikiTest;
 use dokuwiki\plugin\prosemirror\schema\Node;
 use dokuwiki\plugin\prosemirror\schema\NodeStack;
 
@@ -9,7 +12,7 @@ use dokuwiki\plugin\prosemirror\schema\NodeStack;
  * @group plugin_prosemirror
  * @group plugins
  */
-class nodestack_plugin_prosemirror_test extends DokuWikiTest
+class NodeStackTest extends DokuWikiTest
 {
 
 

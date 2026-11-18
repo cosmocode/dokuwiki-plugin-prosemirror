@@ -3,6 +3,7 @@
 namespace dokuwiki\plugin\prosemirror\test;
 
 use DokuWikiTest;
+use dokuwiki\MailUtils;
 
 /**
  * General tests for the prosemirror plugin
@@ -32,9 +33,9 @@ class GeneralTest extends DokuWikiTest
         $this->assertArrayHasKey('url', $info);
 
         $this->assertEquals('prosemirror', $info['base']);
-        $this->assertRegExp('/^https?:\/\//', $info['url']);
-        $this->assertTrue(mail_isvalid($info['email']));
-        $this->assertRegExp('/^\d\d\d\d-\d\d-\d\d$/', $info['date']);
+        $this->assertMatchesRegularExpression('/^https?:\/\//', $info['url']);
+        $this->assertTrue(MailUtils::isValid($info['email']));
+        $this->assertMatchesRegularExpression('/^\d\d\d\d-\d\d-\d\d$/', $info['date']);
         $this->assertTrue(false !== strtotime($info['date']));
     }
 

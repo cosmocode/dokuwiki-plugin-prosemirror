@@ -94,8 +94,8 @@ imported from `vendor/prosemirror.js`.
 ## Testing
 The central test-data is the collection of DokuWiki-Syntax and corresponding Prosemirror JSON
 in `_test/json/`. This data is used for three sets of tests:
-1. Testing the rendering of DokuWiki-Syntax to Prosemirror JSON in `_test/renderer.test.php`
-1. Testing the parsing of Prosemirror JSON back to the original DokuWiki-Syntax in `_test/jsonParser.test.php`
+1. Testing the rendering of DokuWiki-Syntax to Prosemirror JSON in `_test/RendererTest.php`
+1. Testing the parsing of Prosemirror JSON back to the original DokuWiki-Syntax in `_test/JsonParserTest.php`
 1. Testing the validity of the Prosemirror JSON against the schema (`script/schema.js`) in `_jstest/test.js`
 
 The rendering and parsing tests are run as usual DokuWiki tests.
