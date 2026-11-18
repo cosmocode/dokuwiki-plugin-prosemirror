@@ -2,6 +2,11 @@
 
 import LinkForm from './LinkForm.js';
 import AbstractNodeView from './AbstractNodeView.js';
+import {
+    getLinkDisplayAttributes,
+    getLinkText,
+    isImageLink,
+} from '../linkHelpers.js';
 
 class LinkView extends AbstractNodeView {
     /**
@@ -26,58 +31,36 @@ class LinkView extends AbstractNodeView {
             });
         }
 
-        // href
-        if (attributes['data-resolvedUrl']) {
-            this.dom.setAttribute('href', attributes['data-resolvedUrl']);
+        const display = getLinkDisplayAttributes(attributes, JSINFO.URL_SCHEMES);
+        if (display.href) {
+            this.dom.setAttribute('href', display.href);
         } else {
-            this.dom.setAttribute(
-                'href',
-                LinkView.transformInnerToHref(
-                    attributes['data-type'],
-                    attributes['data-resolvedID'] || attributes['data-inner'],
-                ),
-            );
+            // not "false": Ctrl+click would follow it as a relative URL
+            this.dom.removeAttribute('href');
         }
-
-        // title
-        if (attributes['data-resolvedTitle']) {
-            this.dom.setAttribute('title', attributes['data-resolvedTitle']);
-        } else {
-            this.dom.setAttribute(
-                'title',
-                LinkView.getTitleFromInner(attributes['data-type'], attributes['data-inner']),
-            );
-        }
+        this.dom.setAttribute('title', display.title);
 
         Object.entries(attributes).forEach(([name, value]) => {
             if (name.substr(0, 'image-'.length) === 'image-') {
+                return;
+            }
+            // setAttribute() would write the text "null"
+            if (value === null || value === undefined) {
+                this.dom.removeAttribute(name);
                 return;
             }
             this.dom.setAttribute(name, value);
         });
         this.dom.setAttribute('style', 'cursor: text;');
 
-        const isImage = attributes['image-id'] && attributes['image-id'].length > 0;
-        console.log(`isImage: ${isImage}`);
-        // name
-        if (attributes['data-name']) {
-            this.dom.textContent = attributes['data-name'];
-        } else if (isImage) {
-            this.dom.innerHTML = attributes['data-resolvedImage']; // FIXME: XSS?
-        } else if (attributes['data-resolvedName']) {
-            this.dom.textContent = attributes['data-resolvedName'];
+        // name; data-resolvedImage is sanitised on paste, see sanitizeImageHtml()
+        if (isImageLink(attributes) && !attributes['data-name']) {
+            this.dom.innerHTML = attributes['data-resolvedImage'];
         } else {
-            this.dom.textContent = LinkView.getDefaultNameFromInner(attributes['data-type'], attributes['data-inner']);
+            this.dom.textContent = getLinkText(attributes);
         }
 
-        // class
-        if (isImage) {
-            this.dom.setAttribute('class', 'media');
-        } else if (attributes['data-resolvedClass']) {
-            this.dom.setAttribute('class', attributes['data-resolvedClass']);
-        } else {
-            this.dom.setAttribute('class', LinkView.getClassFromType(attributes['data-type']));
-        }
+        this.dom.setAttribute('class', display.class);
         jQuery(this.dom).addClass('nodeHasForm');
     }
 
@@ -146,80 +129,6 @@ class LinkView extends AbstractNodeView {
             }
         });
         return cleanedAttributes;
-    }
-
-
-    static transformInnerToHref(linktype, inner) {
-        switch (linktype) {
-        case 'externallink':
-            return inner;
-        case 'emaillink':
-            return `mailto:${inner}`;
-        case 'internallink': {
-            return `${DOKU_BASE}doku.php?id=${inner.replace('?', '&')}`;
-        }
-        case 'other':
-            if (inner.substr(0, '\\\\'.length) === '\\\\') {
-                return `file:///${inner.replace('\\', '/')}`;
-            }
-            return inner;
-        default:
-            console.log(`unknown linktype: ${linktype}`);
-            return false;
-        }
-    }
-
-    static getDefaultNameFromInner(linktype, inner) {
-        switch (linktype) {
-        case 'externallink':
-        case 'other':
-        case 'emaillink':
-            return inner;
-        case 'interwikilink': {
-            return inner.split(/>/)[1];
-        }
-        case 'internallink': { // FIXME we have to get the actual name from the server via ajax
-            const id = inner.split(/[?|#]/)[0];
-            return id.split(':').pop();
-        }
-        default:
-            console.warn(`unknown linktype: ${linktype}`);
-            return false;
-        }
-    }
-
-    static getTitleFromInner(linktype, inner) {
-        switch (linktype) {
-        case 'externallink':
-        case 'other':
-        case 'emaillink':
-        case 'interwikilink':
-            return inner;
-        case 'internallink': { // FIXME we have to get the actual title for relative links from the server via ajax
-            const id = inner.split(/[?|#]/)[0];
-            return id;
-        }
-        default:
-            console.warn(`unknown linktype: ${linktype}`);
-            return false;
-        }
-    }
-
-    static getClassFromType(linktype) {
-        switch (linktype) {
-        case 'externallink':
-            return 'urlextern';
-        case 'emaillink':
-            return 'mail';
-        case 'interwikilink':
-        case 'internallink':
-            return ''; // FIXME we need ajax to show whether the page exists or not
-        case 'other':
-            return 'windows'; // FIXME what could other possible uses for 'other' be?
-        default:
-            console.log(`unknown linktype to return class from: ${linktype}`);
-            return false;
-        }
     }
 }
 

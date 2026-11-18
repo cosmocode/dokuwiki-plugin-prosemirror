@@ -7,6 +7,7 @@
 import { schema as schemaBasic } from '../vendor/prosemirror.js';
 import { tableNodes } from '../vendor/prosemirror.js';
 import { bulletList, listItem, orderedList } from '../vendor/prosemirror.js';
+import { getLinkText, linkToDOM, parseLinkAttributes } from './linkHelpers.js';
 
 export default function getSpec() {
     let { nodes, marks } = schemaBasic.spec;
@@ -174,24 +175,39 @@ export default function getSpec() {
         imageAttrs[`image-${key}`] = { default: null };
     });
 
+    const linkAttrs = {
+        'data-type': {},
+        'data-inner': {},
+        'data-name': { default: null },
+        'data-resolvedID': { default: null },
+        'data-resolvedUrl': { default: null },
+        'data-resolvedName': { default: null },
+        'data-resolvedClass': { default: null },
+        'data-resolvedTitle': { default: null },
+        'data-resolvedImage': { default: '' },
+        ...imageAttrs,
+    };
     nodes = nodes.addToEnd('link', {
         group: 'inline',
         inline: true,
-        attrs: {
-            'data-type': {},
-            'data-inner': {},
-            'data-name': { default: null },
-            'data-resolvedID': { default: null },
-            'data-resolvedUrl': { default: null },
-            'data-resolvedName': { default: null },
-            'data-resolvedClass': { default: null },
-            'data-resolvedTitle': { default: null },
-            'data-resolvedImage': { default: '' },
-            ...imageAttrs,
-        },
+        attrs: linkAttrs,
+        // the clipboard format: parseDOM must read back what toDOM writes
         toDOM(node) {
-            return ['a', node.attrs];
+            const sourceId = typeof JSINFO !== 'undefined' ? JSINFO.id : null;
+            const baseUrl = typeof window !== 'undefined' && window.location ? window.location.href : null;
+            const schemes = typeof JSINFO !== 'undefined' ? JSINFO.URL_SCHEMES : [];
+            return linkToDOM(node.attrs, sourceId, baseUrl, schemes);
         },
+        parseDOM: [{
+            tag: 'a[data-type]',
+            getAttrs: dom => parseLinkAttributes(dom, linkAttrs, {
+                currentId: JSINFO.id,
+                schemes: JSINFO.URL_SCHEMES,
+                createRelativeID: window.dw_linkwiz ? window.dw_linkwiz.constructor.createRelativeID : null,
+                parseHtml: html => new window.DOMParser().parseFromString(html, 'text/html'),
+            }),
+        }],
+        leafText: node => getLinkText(node.attrs),
     });
 
     nodes = nodes.addToEnd('footnote', {

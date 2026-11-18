@@ -304,12 +304,19 @@ class action_plugin_prosemirror_editor extends ActionPlugin
     }
 
     /**
-     * Provide the current smiley configuration to Javascript
+     * Provide the smiley configuration and the allowed URL schemes to Javascript
+     *
+     * The editor links an external link only if its scheme is allowed, as core's xhtml renderer
+     * does (`isAllowedExternalUrl()` in `script/linkHelpers.js`).
+     *
+     * @return void
      */
     public function addJSINFO()
     {
         global $JSINFO;
         $JSINFO['SMILEY_CONF'] = getSmileys();
+        // getSchemes() keeps the keys of removed lines, which json_encode() would make an object
+        $JSINFO['URL_SCHEMES'] = array_values(getSchemes());
     }
 
     /**
