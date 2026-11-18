@@ -25,9 +25,9 @@ esbuild and commit the result:
     npm install
     npm run vendor
 
-After building, `npm run vendor` runs `vendor/check.js`, which fails if the bundle is likely to
+After building, `npm run vendor` runs `_jsbuild/check.js`, which fails if the bundle is likely to
 break in the browser or if `vendor/LICENSES.txt` is out of date. It catches a name exported by
-two packages (re-export it explicitly in `vendor/entry.js`) and a package bundled twice.
+two packages (re-export it explicitly in `_jsbuild/entry.js`) and a package bundled twice.
 `vendor/LICENSES.txt` is maintained by hand, so add or remove a package's license notice when
 the set of bundled packages changes.
 

@@ -7,7 +7,7 @@
  * schema identity).
  *
  * If more than one package exports the same name, `export *` drops that name from the bundle,
- * and esbuild gives no warning. No current package does that; vendor/check.js reports it after
+ * and esbuild gives no warning. No current package does that; _jsbuild/check.js reports it after
  * each build. Re-export such a name explicitly from the package it should come from, e.g.
  * `export { name } from 'prosemirror-model';`.
  */

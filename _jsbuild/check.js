@@ -3,7 +3,7 @@
  *
  * esbuild builds all of these problems without an error or a warning:
  *
- * - A name exported by more than one package is dropped by `export *` in vendor/entry.js.
+ * - A name exported by more than one package is dropped by `export *` in _jsbuild/entry.js.
  *   Importing it in the browser then fails. Such a name must be re-exported explicitly there.
  * - A package bundled twice, e.g. a CommonJS build next to the ESM one, breaks ProseMirror's
  *   `instanceof` checks (prosemirror-tables 0.8 did that: its `CellSelection` no longer
@@ -11,12 +11,12 @@
  * - vendor/LICENSES.txt is maintained by hand and must list every bundled package, including
  *   transitive ones like orderedmap, rope-sequence and w3c-keyname.
  *
- * Reads the metafile esbuild wrote to vendor/meta.json and deletes it. Exits with status 1 if a
+ * Reads the metafile esbuild wrote to _jsbuild/meta.json and deletes it. Exits with status 1 if a
  * check fails.
  */
 import { readFileSync, rmSync } from 'node:fs';
 
-const META = 'vendor/meta.json';
+const META = '_jsbuild/meta.json';
 const errors = [];
 
 let meta;
@@ -28,7 +28,7 @@ try {
 const inputs = Object.keys(meta.inputs);
 
 // names dropped by `export *`
-const entry = readFileSync('vendor/entry.js', 'utf8');
+const entry = readFileSync('_jsbuild/entry.js', 'utf8');
 const starred = [...entry.matchAll(/^export \* from '([^']+)'/gm)].map(m => m[1]);
 const explicit = new Set(
     [...entry.matchAll(/^export \{([^}]+)\} from/gm)]
@@ -43,7 +43,7 @@ for (const pkg of starred) {
 }
 for (const [name, pkgs] of Object.entries(exporters)) {
     if (pkgs.length > 1 && !explicit.has(name)) {
-        errors.push(`"${name}" is exported by ${pkgs.join(', ')}: re-export it explicitly in vendor/entry.js`);
+        errors.push(`"${name}" is exported by ${pkgs.join(', ')}: re-export it explicitly in _jsbuild/entry.js`);
     }
 }
 

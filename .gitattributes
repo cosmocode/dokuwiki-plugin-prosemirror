@@ -2,8 +2,7 @@
 /.gitattributes export-ignore
 /.github export-ignore
 /.gitignore export-ignore
-/vendor/check.js export-ignore
-/vendor/entry.js export-ignore
+/_jsbuild export-ignore
 /_jstest export-ignore
 /_test export-ignore
 /package.json export-ignore

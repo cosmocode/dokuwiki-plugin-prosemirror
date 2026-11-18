@@ -16,6 +16,17 @@ use dokuwiki\Form\ButtonElement;
 class action_plugin_prosemirror_editor extends ActionPlugin
 {
     /**
+     * The directories holding the modules loaded in the browser, and nothing else
+     *
+     * Build tools live in `_jsbuild/`. `_test/ImportMapTest.php` fails if the modules import a
+     * file outside these directories, or if `vendor/` holds a file they don't import.
+     */
+    protected const MODULE_DIRS = ['script', 'vendor'];
+
+    /** @var array<string, string> the import map's entries, set by addImportMap() */
+    protected $moduleUrls = [];
+
+    /**
      * Registers a callback function for a given event
      *
      * @param EventHandler $controller DokuWiki's event controller object
@@ -28,6 +39,104 @@ class action_plugin_prosemirror_editor extends ActionPlugin
         $controller->register_hook('ACTION_HEADERS_SEND', 'AFTER', $this, 'addJSINFO');
         $controller->register_hook('FORM_EDIT_OUTPUT', 'BEFORE', $this, 'addDataAndToggleButton');
         $controller->register_hook('TPL_ACT_RENDER', 'AFTER', $this, 'addAddtionalForms');
+        $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'addImportMap');
+        $controller->register_hook('TPL_METAHEADER_OUTPUT', 'AFTER', $this, 'printModulePreloads');
+    }
+
+    /**
+     * Add an import map that gives every editor JS module a versioned URL
+     *
+     * Browsers may cache module files for a long time. `script.js` imports
+     * `script/main.js` by its plain URL and all other modules are imported relative to it, so the
+     * map's keys are the plain URLs. A changed file gets a new URL, unchanged files stay cached.
+     *
+     * The map goes first in the head's scripts: a module loaded before the map exists is not
+     * remapped.
+     *
+     * Triggered by event: TPL_METAHEADER_OUTPUT BEFORE
+     *
+     * @param Event $event
+     * @return void
+     * @throws JsonException
+     */
+    public function addImportMap(Event $event)
+    {
+        if (!$this->loadsEditorModules()) return;
+
+        $this->moduleUrls = $this->getVersionedModuleUrls();
+        $map = ['imports' => $this->moduleUrls];
+        array_unshift($event->data['script'], [
+            'type' => 'importmap',
+            '_data' => json_encode($map, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_THROW_ON_ERROR),
+        ]);
+    }
+
+    /**
+     * Print a modulepreload link for every editor module
+     *
+     * Without them the browser discovers the imports one level at a time. They are printed after
+     * the head's tags instead of being added to the event data, because core prints `link` tags
+     * before `script` tags: preloads printed before the import map would load the modules
+     * unversioned, and the browser would then drop the map's rules for them.
+     *
+     * Triggered by event: TPL_METAHEADER_OUTPUT AFTER
+     *
+     * @param Event $event
+     * @return void
+     */
+    public function printModulePreloads(Event $event)
+    {
+        if (!$this->loadsEditorModules()) return;
+
+        foreach ($this->moduleUrls as $url) {
+            echo '<link rel="modulepreload" href="' . hsc($url) . '" />' . "\n";
+        }
+    }
+
+    /**
+     * Whether `script.js` loads the editor modules on this page
+     *
+     * It does so when the edit form has the `prosemirror_json` field
+     * @see addDataAndToggleButton()
+     *
+     * @return bool
+     */
+    protected function loadsEditorModules()
+    {
+        global $ACT, $INFO;
+        if (!$this->allowWYSIWYG()) return false;
+        if (!in_array($ACT, ['edit', 'preview'], true)) return false;
+        return !empty($INFO['editable']);
+    }
+
+    /**
+     * Map the URL of every module loaded in the browser to the same URL with a version
+     *
+     * The version is the file's modification time. Modules are all `.js` files in MODULE_DIRS.
+     *
+     * @return array<string, string> plain URL => versioned URL
+     */
+    protected function getVersionedModuleUrls()
+    {
+        $dir = DOKU_PLUGIN . $this->getPluginName() . '/';
+        $files = [];
+        foreach (self::MODULE_DIRS as $moduleDir) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dir . $moduleDir, FilesystemIterator::SKIP_DOTS)
+            );
+            foreach ($iterator as $file) {
+                if ($file->getExtension() !== 'js') continue;
+                $files[] = substr(str_replace('\\', '/', $file->getPathname()), strlen($dir));
+            }
+        }
+        sort($files);
+
+        $base = DOKU_BASE . 'lib/plugins/' . $this->getPluginName() . '/';
+        $urls = [];
+        foreach ($files as $file) {
+            $urls[$base . $file] = $base . $file . '?v=' . filemtime($dir . $file);
+        }
+        return $urls;
     }
 
     /**

@@ -20,7 +20,7 @@
     },
     "scripts": {
         "test": "node --test \"_jstest/*test.js\"",
-        "vendor": "esbuild vendor/entry.js --bundle --format=esm --target=es2020 --minify --legal-comments=none \"--banner:js=/* ProseMirror and its dependencies, MIT licensed, see LICENSES.txt */\" --metafile=vendor/meta.json --outfile=vendor/prosemirror.js && node vendor/check.js"
+        "vendor": "esbuild _jsbuild/entry.js --bundle --format=esm --target=es2020 --minify --legal-comments=none \"--banner:js=/* ProseMirror and its dependencies, MIT licensed, see LICENSES.txt */\" --metafile=_jsbuild/meta.json --outfile=vendor/prosemirror.js && node _jsbuild/check.js"
     },
     "author": "",
     "license": "GPL-2.0"
