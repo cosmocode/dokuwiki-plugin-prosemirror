@@ -56,7 +56,7 @@ class ImageNode extends Node implements InlineNodeInterface
         }
 
         $queryString = '';
-        if (!empty($query)) {
+        if ($query !== []) {
             $queryString = '?' . implode('&', $query);
         }
 
