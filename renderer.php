@@ -411,7 +411,7 @@ class renderer_plugin_prosemirror extends Doku_Renderer
     {
         $this->clearBlock();
         $node = new Node('rss');
-        $node->attr('url', hsc($url));
+        $node->attr('url', $url);
         $node->attr('max', $params['max']);
         $node->attr('reverse', (bool)$params['reverse']);
         $node->attr('author', (bool)$params['author']);

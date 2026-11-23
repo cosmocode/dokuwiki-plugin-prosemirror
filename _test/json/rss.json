@@ -4,7 +4,7 @@
         {
             "type": "rss",
             "attrs": {
-                "url": "http:\/\/slashdot.org\/index.rss",
+                "url": "http:\/\/slashdot.org\/index.rss?a=1&b=2",
                 "max": "5",
                 "reverse": false,
                 "author": true,
