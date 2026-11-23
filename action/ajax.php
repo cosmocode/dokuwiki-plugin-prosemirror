@@ -7,6 +7,7 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
+use dokuwiki\ErrorHandler;
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
@@ -49,7 +50,9 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         $event->stopPropagation();
 
         global $INPUT, $ID;
-        $ID = $INPUT->str('id');
+        $ID = getID();
+        if (!$this->mayEdit($ID)) return;
+
         $responseData = [];
         foreach ($INPUT->arr('actions') as $action) {
             switch ($action) {
@@ -107,6 +110,21 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         echo json_encode($responseData);
     }
 
+    /**
+     * Check that the current user may edit the given page
+     *
+     * Sends a 403 status if not.
+     *
+     * @param string $id the page ID
+     * @return bool
+     */
+    protected function mayEdit($id)
+    {
+        if (auth_quickaclcheck($id) >= AUTH_EDIT) return true;
+        http_status(403);
+        return false;
+    }
+
     protected function resolveInterWikiLink($shortcut, $reference)
     {
         $xhtml_renderer = p_get_renderer('xhtml');
@@ -144,7 +162,8 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         $event->stopPropagation();
 
         global $INPUT, $ID;
-        $ID = $INPUT->str('id');
+        $ID = getID();
+        if (!$this->mayEdit($ID)) return;
 
         if ($INPUT->bool('getJSON')) {
             $text = $INPUT->str('data');
@@ -160,8 +179,7 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
                 if ($helper->tryToLogErrorToSentry($e, ['text' => $text])) {
                     $errorMsg .= ' -- The error has been logged to Sentry.';
                 } else {
-                    $errorMsg .= '<code>' . $e->getFile() . ':' . $e->getLine() . '</code>';
-                    $errorMsg .= '<pre>' . $e->getTraceAsString() . '</pre>';
+                    ErrorHandler::logException($e);
                 }
 
                 http_status(500);

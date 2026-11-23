@@ -96,6 +96,7 @@ class RSSView extends AbstractNodeView {
             call: 'plugin_prosemirror',
             actions: ['resolveRSS'],
             attrs: JSON.stringify(attrs),
+            id: JSINFO.id,
             contentType: 'application/json',
         }).done((data) => {
             const renderedHTML = data.resolveRSS;
