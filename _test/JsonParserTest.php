@@ -162,4 +162,37 @@ class JsonParserTest extends DokuWikiTest
         $rootNode = SyntaxTreeBuilder::parseDataIntoTree($doc);
         $this->assertEquals("| a |\n\n----", trim($rootNode->toSyntax()));
     }
+
+    /**
+     * @return array[] [rss attributes, expected syntax]
+     */
+    public function rssAttributesProvider()
+    {
+        $url = 'http://example.com/feed';
+
+        return [
+            'braces in url' => [['url' => 'x}} **BOLD** {{rss>y'], '{{rss>x%7D%7D%20**BOLD**%20%7B%7Brss%3Ey}}'],
+            'spaces in url' => [['url' => "$url?a=1 2\n"], "{{rss>$url?a=1%202%0A}}"],
+            'invalid chars in url' => [['url' => "$url?q=\"<|\\^`"], "{{rss>$url?q=%22%3C%7C%5C%5E%60}}"],
+            'valid chars in url' => [['url' => "$url?a=1&b=%20#x"], "{{rss>$url?a=1&b=%20#x}}"],
+            'syntax in max' => [['url' => $url, 'max' => '5}} **BOLD**'], "{{rss>$url}}"],
+            'syntax in refresh' => [['url' => $url, 'refresh' => '1h}} **BOLD**'], "{{rss>$url}}"],
+            'valid values' => [['url' => $url, 'max' => '5', 'refresh' => '2d'], "{{rss>$url 5 2d}}"],
+        ];
+    }
+
+    /**
+     * Attributes from the editor form cannot break out of the RSS syntax
+     *
+     * @dataProvider rssAttributesProvider
+     *
+     * @param array $attrs the RSS node attributes
+     * @param string $expected the expected wiki syntax
+     */
+    public function test_rssAttributes($attrs, $expected)
+    {
+        $doc = ['type' => 'doc', 'content' => [['type' => 'rss', 'attrs' => $attrs]]];
+        $rootNode = SyntaxTreeBuilder::parseDataIntoTree($doc);
+        $this->assertEquals($expected, trim($rootNode->toSyntax()));
+    }
 }
