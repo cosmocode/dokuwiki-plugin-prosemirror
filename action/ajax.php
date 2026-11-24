@@ -7,6 +7,7 @@
  * @author  Andreas Gohr <gohr@cosmocode.de>
  */
 
+use dokuwiki\ErrorHandler;
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
@@ -49,7 +50,12 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         $event->stopPropagation();
 
         global $INPUT, $ID;
-        $ID = $INPUT->str('id');
+        $ID = getID();
+        if (!$this->mayEdit($ID)) {
+            $this->sendError(403, $this->getLang('error:denied'));
+            return;
+        }
+
         $responseData = [];
         foreach ($INPUT->arr('actions') as $action) {
             switch ($action) {
@@ -107,6 +113,31 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         echo json_encode($responseData);
     }
 
+    /**
+     * Check that the current user may edit the given page
+     *
+     * @param string $id the page ID
+     * @return bool
+     */
+    protected function mayEdit($id)
+    {
+        return auth_quickaclcheck($id) >= AUTH_EDIT;
+    }
+
+    /**
+     * Send an error response that the editor scripts can show to the user
+     *
+     * @param int $status the HTTP status code
+     * @param string $message the error message
+     * @return void
+     */
+    protected function sendError($status, $message)
+    {
+        http_status($status);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => $message]);
+    }
+
     protected function resolveInterWikiLink($shortcut, $reference)
     {
         $xhtml_renderer = p_get_renderer('xhtml');
@@ -144,7 +175,11 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
         $event->stopPropagation();
 
         global $INPUT, $ID;
-        $ID = $INPUT->str('id');
+        $ID = getID();
+        if (!$this->mayEdit($ID)) {
+            $this->sendError(403, $this->getLang('error:denied'));
+            return;
+        }
 
         if ($INPUT->bool('getJSON')) {
             $text = $INPUT->str('data');
@@ -160,13 +195,10 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
                 if ($helper->tryToLogErrorToSentry($e, ['text' => $text])) {
                     $errorMsg .= ' -- The error has been logged to Sentry.';
                 } else {
-                    $errorMsg .= '<code>' . $e->getFile() . ':' . $e->getLine() . '</code>';
-                    $errorMsg .= '<pre>' . $e->getTraceAsString() . '</pre>';
+                    ErrorHandler::logException($e);
                 }
 
-                http_status(500);
-                header('Content-Type: application/json');
-                echo json_encode(['error' => $errorMsg]);
+                $this->sendError(500, $errorMsg);
                 return;
             }
             $responseData = [
@@ -185,11 +217,11 @@ class action_plugin_prosemirror_ajax extends ActionPlugin
 
                 if ($helper->tryToLogErrorToSentry($e, ['json' => $json])) {
                     $errorMsg .= ' -- The error has been logged to Sentry.';
+                } else {
+                    ErrorHandler::logException($e);
                 }
 
-                http_status(500);
-                header('Content-Type: application/json');
-                echo json_encode(['error' => $errorMsg]);
+                $this->sendError(500, $errorMsg);
                 return;
             }
             $responseData = [

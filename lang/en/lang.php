@@ -7,6 +7,7 @@
 
 // custom language strings for the plugin
 $lang['switch_editors'] = 'Toggle syntax &#11020; visual editor';
+$lang['error:denied'] = 'You are not allowed to edit this page. Your session may have expired, please log in again.';
 
 $lang['link target'] = 'Link target';
 $lang['type:wiki page'] = 'A page in this wiki';
