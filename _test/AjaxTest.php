@@ -40,7 +40,7 @@ class AjaxTest extends DokuWikiTest
     }
 
     /**
-     * Users who may not edit the page of the request get no data
+     * Users who may not edit the page of the request get only an error message
      *
      * @dataProvider callProvider
      *
@@ -50,7 +50,7 @@ class AjaxTest extends DokuWikiTest
     {
         foreach (['users:foo', 'USERS:foo', 'private:foo'] as $id) {
             $response = (new TestRequest())->post($params + ['id' => $id], '/lib/exe/ajax.php');
-            $this->assertEquals('', $response->getContent(), $id);
+            $this->assertEquals(['error'], array_keys(json_decode($response->getContent(), true)), $id);
         }
     }
 }
